@@ -1,4 +1,4 @@
-// Enlaces para compartir: /b/<beat> y /p/<preset>
+// Enlaces para compartir: /beat/<beat> y /preset/<preset>
 // Devuelve la portada, el nombre y el precio para WhatsApp, Instagram, YouTube…
 // y lleva al visitante a la ficha del beat o del preset en la tienda.
 const SB = "https://juxmlitraftqvryteexu.supabase.co";
@@ -58,7 +58,7 @@ module.exports = async function handler(req, res) {
 
   const utm = String(req.query.utm_source || "").toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 30);
   if (utm) target += (target.includes("?") ? "&" : "?") + "utm_source=" + utm;
-  const self = `${SITE}/${type}/${slug}`;
+  const self = `${SITE}/${type === "p" ? "preset" : "beat"}/${slug}`;
   const html = `<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>${esc(title)}</title><meta name="description" content="${esc(desc)}"><link rel="canonical" href="${esc(target.split("&utm_source")[0].split("?utm_source")[0])}">
 <meta property="og:type" content="${ogType}"><meta property="og:site_name" content="IVO Beatz"><meta property="og:locale" content="es_ES">

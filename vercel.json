@@ -90,12 +90,24 @@
   ],
   "rewrites": [
     {
-      "source": "/b/:slug",
+      "source": "/beat/:slug",
       "destination": "/api/share?t=b&slug=:slug"
     },
     {
-      "source": "/p/:slug",
+      "source": "/preset/:slug",
       "destination": "/api/share?t=p&slug=:slug"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/b/:slug",
+      "destination": "/beat/:slug",
+      "permanent": true
+    },
+    {
+      "source": "/p/:slug",
+      "destination": "/preset/:slug",
+      "permanent": true
     }
   ]
 }

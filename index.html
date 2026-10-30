@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030171531" data-auto="1">
+<meta name="ivo-version" content="20261030171837" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
@@ -1449,7 +1449,7 @@ document.addEventListener("keydown",function(e){if(e.code!=="Space"||!cs||bar.hi
 
 /* ---- ficha de beat ---- */
 var sh=$("bsheet"),shk=-1,tier="basica";
-function slugUrl(b){return(/ivobeatz\.com$/.test(location.hostname)?location.origin+"/b/":location.origin+location.pathname+"?beat=")+encodeURIComponent(b[10]||"")}
+function slugUrl(b){return(/ivobeatz\.com$/.test(location.hostname)?location.origin+"/beat/":location.origin+location.pathname+"?beat=")+encodeURIComponent(b[10]||"")}
 function openSheet(k){var b=B[k];if(!b)return;if(window.__track&&b[6])window.__track("beat_view",b[6],true);shk=k;var r=rowOf(k),s=r&&r._s,real=!!b[6];
   var rel=B.map(function(x,i){return[x,i]}).filter(function(x){return x[1]!==k&&x[0][3]===b[3]}).slice(0,3);
   if(rel.length<3)rel=rel.concat(B.map(function(x,i){return[x,i]}).filter(function(x){return x[1]!==k&&x[0][3]!==b[3]}).slice(0,3-rel.length));
