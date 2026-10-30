@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030172725">
+<meta name="ivo-version" content="20261030202542">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -243,7 +243,7 @@ $("orders").addEventListener("click",async function(e){var b=e.target.closest("b
 function license(o){var beats=(o.items||[]).filter(function(i){return i.kind==="beat"&&TERMS[i.tier]});if(!beats.length)return;
   var ref=(beats[0].ref)||String(o.stripe_session_id||"").slice(-10).toUpperCase();
   $("dlgB").innerHTML=beats.map(function(it,n){var T=TERMS[it.tier],beat=String(it.name||"").split(" · ")[0];
-    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p><table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz (Iván Montero Fortes, NIF 77796920H)</td></tr><tr><td>Licenciatario</td><td>'+esc(it.buyer||PROF.nombre||SESSION.user.email)+'</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+euro(it.unit!=null?it.unit:it.price)+'</td></tr></table>'+
+    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p><table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz (Iván Montero Fortes, NIF 77796920H)</td></tr><tr><td>Licenciatario</td><td>'+esc(it.buyer||PROF.nombre||SESSION.user.email)+'</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+(it.free?'Gratis (oferta '+((it.free_every||4)-1)+'+1)':euro(it.unit!=null?it.unit:it.price))+'</td></tr></table>'+
     '<h4>Qué recibes</h4><ul>'+T.got.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué puedes hacer</h4><ul>'+T.may.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué tienes que poner</h4><ul>'+MUST.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué no puedes hacer</h4><ul>'+T.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'}).join("")+
   '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn sm" type="button" onclick="window.print()">Imprimir o guardar en PDF</button></div>';
   $("dlg").showModal()}

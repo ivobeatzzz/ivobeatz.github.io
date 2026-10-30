@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030172725">
+<meta name="ivo-version" content="20261030202542">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -247,10 +247,10 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
 
     <!-- AJUSTES -->
     <section id="v-ajustes" hidden>
-      <div class="head"><div><h1>Ajustes</h1><p>Descuentos, medición y accesos rápidos</p></div></div>
+      <div class="head"><div><h1>Ajustes</h1><p>Ofertas, medición y accesos rápidos</p></div></div>
       <div class="g2">
-        <div class="card"><h2>Packs de beats</h2><p class="hint" style="margin-bottom:14px">Descuento automático en el carrito al comprar varias licencias. Pon 0 para desactivarlo</p>
-          <form id="fPack" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
+        <div class="card"><h2>Ofertas de beats</h2><p class="hint" style="margin-bottom:14px">Se aplican solas en el carrito. El beat que sale gratis es siempre el más barato. Cuando hay beat gratis, no se suma el descuento por pack</p>
+          <form id="fPack" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><label>Beat gratis<select id="pkFree"><option value="0">Desactivado</option><option value="2">Compra 1 y llévate otro gratis</option><option value="3">Compra 2 y el 3.º gratis</option><option value="4">Compra 3 y el 4.º gratis</option><option value="5">Compra 4 y el 5.º gratis</option><option value="6">Compra 5 y el 6.º gratis</option></select></label><p class="hint" style="margin:-4px 0 0">Se repite: con la oferta de 3+1, quien compra 8 beats se lleva 2 gratis</p><p class="hint" style="margin:6px 0 0"><b>Descuento por pack</b> cuando no llega a la oferta. Pon 0 para desactivarlo</p><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
         <div class="card"><h2>Cupones</h2><p class="hint">Crea los códigos en Stripe: Catálogo de productos → Cupones → Nuevo, y después «Crear código promocional». El cliente lo escribe en la página de pago</p><p style="margin-top:14px"><a class="btn ghost sm" href="https://dashboard.stripe.com/coupons" target="_blank" rel="noopener">Abrir cupones en Stripe ↗</a></p></div>
         <div class="card"><h2>Medición</h2><p class="hint" style="margin-bottom:12px">Las visitas se cuentan de forma anónima, sin cookies. Tus propias visitas desde este navegador no se cuentan</p><label style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);font-weight:500"><input type="checkbox" id="noTrack"> No contar mis visitas en este navegador</label></div>
         <div class="card"><h2>Verificación en dos pasos</h2><p id="mfaInfo" style="margin:0 0 10px"></p><p class="hint">Cada vez que abras el navegador, el panel te pedirá tu contraseña y el código de tu app de autenticación. Si pierdes el móvil, escríbeme y la restablezco desde Supabase</p></div>
@@ -575,7 +575,7 @@ function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList"
   L.innerHTML=list.map(function(o){var its=o.items||[],svc=its.filter(function(i){return i.kind==="service"})[0];
     var tags=(o.needs_manual?'<span class="tag bad">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag bad">Correo sin enviar</span>')+(svc?' <span class="tag '+(o.service_status==="entregado"?"on":"warn")+'">'+(ST[o.service_status]||"Recibido")+'</span>':'');
     var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+su(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
-      return'<div class="li"><b>'+esc(it.name)+'</b> · '+eur(it.unit!=null?it.unit:it.price)+(it.pack_pct?' (pack −'+it.pack_pct+' %)':'')+(lk?' · '+lk:'')+'</div>'}).join("");
+      return'<div class="li"><b>'+esc(it.name)+'</b> · '+(it.free?'<b style="color:var(--ok)">Gratis</b> (oferta '+((it.free_every||4)-1)+'+1)':eur(it.unit!=null?it.unit:it.price)+(it.pack_pct?' (pack −'+it.pack_pct+' %)':''))+(lk?' · '+lk:'')+'</div>'}).join("");
     var sv="";if(svc){var det=svc.details||{};sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+su(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
       '<div class="g3"><label>Estado<select class="sS">'+Object.keys(ST).map(function(k){return'<option value="'+k+'"'+(o.service_status===k?" selected":"")+'>'+ST[k]+'</option>'}).join("")+'</select></label><label>Enlace de entrega<input class="sU" type="url" placeholder="https://…" value="'+esc(o.delivery_url||"")+'"></label><label>Nota para el cliente<input class="sN" maxlength="300" value="'+esc(o.delivery_note||"")+'"></label></div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="sm" data-a="save">Guardar</button><button type="button" class="ghost sm" data-a="notify">Guardar y avisar al cliente</button><span class="msg sM"></span></div></div>'}
@@ -598,9 +598,9 @@ function renderCli(){var q=$("qCli").value.trim().toLowerCase(),tb=$("cliTbl").q
 $("qCli").addEventListener("input",renderCli);
 
 /* ---------- AJUSTES ---------- */
-async function loadAjustes(){mfaStatus();var s=await sb.from("shop_settings").select("pack2_pct,pack3_pct").eq("id",1).maybeSingle();if(s.data){$("pk2").value=s.data.pack2_pct;$("pk3").value=s.data.pack3_pct}}
+async function loadAjustes(){mfaStatus();var s=await sb.from("shop_settings").select("pack2_pct,pack3_pct,free_every").eq("id",1).maybeSingle();if(s.data){$("pk2").value=s.data.pack2_pct;$("pk3").value=s.data.pack3_pct;$("pkFree").value=String(s.data.free_every||0)}}
 $("fPack").addEventListener("submit",async function(e){e.preventDefault();var a=parseInt($("pk2").value,10)||0,b=parseInt($("pk3").value,10)||0;
-  var r=await sb.from("shop_settings").update({pack2_pct:Math.max(0,Math.min(90,a)),pack3_pct:Math.max(0,Math.min(90,b)),updated_at:new Date().toISOString()}).eq("id",1);say($("pkMsg"),r.error?"No se pudo guardar":"Guardado. El carrito ya usa estos descuentos",r.error?"bad":"ok")});
+  var f=parseInt($("pkFree").value,10)||0;if(f&&(f<2||f>10))f=0;   var r=await sb.from("shop_settings").update({pack2_pct:Math.max(0,Math.min(90,a)),pack3_pct:Math.max(0,Math.min(90,b)),free_every:f,updated_at:new Date().toISOString()}).eq("id",1);say($("pkMsg"),r.error?"No se pudo guardar":"Guardado. El carrito ya usa estas ofertas",r.error?"bad":"ok")});
 $("noTrack").addEventListener("change",function(){try{localStorage.setItem("ivo_notrack",this.checked?"1":"0")}catch(e){}toast(this.checked?"Tus visitas no se contarán":"Tus visitas se contarán")});
 
 boot();

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030172725" data-auto="1">
+<meta name="ivo-version" content="20261030202542" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
@@ -306,6 +306,9 @@ dialog.cartd[open] .drawer{animation:drin .35s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}.toast .lnk{color:var(--lime);margin-left:8px}
 body.has-pbar .toast{bottom:100px}
 #packnote{font-size:13px;color:var(--mute);text-align:center;margin:-8px 0 18px}
+#packnote .offer{display:inline-flex;align-items:center;gap:9px;padding:8px 15px;border-radius:999px;background:var(--panel);border:1px solid var(--line);color:var(--ink);font-size:14px;font-weight:600}
+#packnote .offer i{flex:none;width:8px;height:8px;border-radius:50%;background:var(--lime2);box-shadow:0 0 0 3px color-mix(in srgb,var(--lime2) 30%,transparent)}
+.c-p s{color:var(--mute);font-weight:400;font-size:.9em}.c-free{color:var(--lime)}
 @keyframes drin{from{transform:translateX(40px);opacity:0}to{transform:none;opacity:1}}
 @media (max-width:720px){.bfilt{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}.bfilt .fq{grid-column:1/-1}.bfilt #fsort{grid-column:1/-1}.bfilt select{width:100%;min-width:0;padding:10px 12px;font-size:14px}.beat .btags{display:none}}
 .bs-more .lnk,.bmeta .lnk,#bempty .lnk{background:none;border:0;padding:0;font:inherit;font-size:13px;color:var(--mute);text-decoration:underline;text-underline-offset:3px;cursor:pointer}.bs-more .lnk:hover,.bmeta .lnk:hover{color:var(--ink)}
@@ -1517,7 +1520,7 @@ window.__chips=buildFilters;window.__resetFilters=function(){$("freset").click()
 buildFilters();
 
 /* ---- carrito ---- */
-var KEY="ivo_cart",items=[],PACK={p2:10,p3:20};
+var KEY="ivo_cart",items=[],PACK={p2:0,p3:0,fe:4};
 try{items=JSON.parse(localStorage.getItem(KEY)||"[]")||[]}catch(e){items=[]}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(items))}catch(e){}count()}
 function count(){var n=items.length;$("cartn").textContent=n;$("cartn").hidden=!n;$("cartb").setAttribute("aria-label","Carrito, "+n+(n===1?" artículo":" artículos"))}
@@ -1528,13 +1531,18 @@ var cart={
   open:function(){render();var d=$("cartd");if(!d.open)d.showModal()},
   clear:function(){items=[];save()}};
 window.__cart=cart;
-function totals(){var nb=items.filter(function(x){return x.t==="beat"}).length,pct=nb>=3?PACK.p3:nb===2?PACK.p2:0,sub=0,dis=0;
-  items.forEach(function(x){sub+=x.price;if(x.t==="beat"&&pct)dis+=Math.round(x.price*pct)/100});return{sub:sub,dis:dis,pct:pct,total:Math.round((sub-dis)*100)/100,nb:nb}}
+/* ofertas: cada PACK.fe beats, el más barato sale gratis; si no llega, descuento por pack (igual que en el servidor) */
+function totals(){var bi=[],sub=0,dis=0,free={},nf=0,pct=0;items.forEach(function(x,i){sub+=x.price;if(x.t==="beat")bi.push(i)});var nb=bi.length;
+  if(PACK.fe>=2)nf=Math.floor(nb/PACK.fe);
+  if(nf){bi.slice().sort(function(a,b){return items[a].price-items[b].price}).slice(0,nf).forEach(function(i){free[i]=1;dis+=items[i].price})}
+  else{pct=nb>=3?PACK.p3:nb===2?PACK.p2:0;if(pct)bi.forEach(function(i){dis+=Math.round(items[i].price*pct)/100})}
+  return{sub:sub,dis:dis,pct:pct,free:free,nf:nf,total:Math.round((sub-dis)*100)/100,nb:nb}}
+function offerTxt(){return PACK.fe>=2?"Compra "+(PACK.fe-1)+(PACK.fe-1===1?" beat":" beats")+" y llévate "+(PACK.fe===2?"otro":"el "+PACK.fe+".º")+" gratis":""}
 function render(){var b=$("cartB"),t=totals();
   if(!items.length){b.innerHTML='<div class="c-empty"><b>Tu carrito está vacío</b><p>Escucha los beats y añade las licencias que quieras</p><a class="btn sm" href="#beats" id="cGo">Ver beats</a></div>';$("cGo").addEventListener("click",function(){$("cartd").close()});return}
-  var hint=t.nb===1&&PACK.p2?'<p class="c-hint">Añade otro beat y te llevas un <b>'+PACK.p2+' %</b> de descuento'+(PACK.p3?' (un '+PACK.p3+' % con 3 o más)':'')+'</p>':t.nb===2&&PACK.p3>PACK.p2?'<p class="c-hint">Con un beat más, el descuento sube al <b>'+PACK.p3+' %</b></p>':"";
-  b.innerHTML='<ul class="c-list">'+items.map(function(x,i){return'<li><span class="c-cov'+(x.cov?"":" nocov")+'" style="'+(x.cov?"background-image:url("+hx(x.cov)+")":"")+'"></span><span class="c-n"><b>'+hx(x.name)+'</b><small>'+(x.t==="beat"?"Licencia de beat":"Vocal preset")+'</small></span><span class="c-p">'+euro(x.price)+'</span><button type="button" class="c-x" data-i="'+i+'" aria-label="Quitar '+hx(x.name)+'">×</button></li>'}).join("")+'</ul>'+hint+
-  '<div class="c-tot"><div><span>Subtotal</span><span>'+euro(t.sub)+'</span></div>'+(t.dis?'<div class="c-dis"><span>Pack de '+t.nb+' beats (−'+t.pct+' %)</span><span>−'+euro(t.dis)+'</span></div>':"")+'<div class="c-big"><span>Total</span><span>'+euro(t.total)+'</span></div></div>'+
+  var left=PACK.fe>=2?PACK.fe-(t.nb%PACK.fe):0,hint=PACK.fe>=2&&t.nb&&left===1?'<p class="c-hint">Añade <b>un beat más y te sale gratis</b>. El gratis es siempre el más barato del carrito</p>':PACK.fe>=2&&t.nb&&left<PACK.fe?'<p class="c-hint">'+offerTxt()+'. Te faltan <b>'+left+' beats</b> para el gratis</p>':!PACK.fe&&t.nb===1&&PACK.p2?'<p class="c-hint">Añade otro beat y te llevas un <b>'+PACK.p2+' %</b> de descuento'+(PACK.p3?' (un '+PACK.p3+' % con 3 o más)':'')+'</p>':!PACK.fe&&t.nb===2&&PACK.p3>PACK.p2?'<p class="c-hint">Con un beat más, el descuento sube al <b>'+PACK.p3+' %</b></p>':"";
+  b.innerHTML='<ul class="c-list">'+items.map(function(x,i){return'<li><span class="c-cov'+(x.cov?"":" nocov")+'" style="'+(x.cov?"background-image:url("+hx(x.cov)+")":"")+'"></span><span class="c-n"><b>'+hx(x.name)+'</b><small>'+(x.t==="beat"?"Licencia de beat":"Vocal preset")+'</small></span><span class="c-p">'+(t.free[i]?'<s>'+euro(x.price)+'</s> <b class="c-free">Gratis</b>':euro(x.price))+'</span><button type="button" class="c-x" data-i="'+i+'" aria-label="Quitar '+hx(x.name)+'">×</button></li>'}).join("")+'</ul>'+hint+
+  '<div class="c-tot"><div><span>Subtotal</span><span>'+euro(t.sub)+'</span></div>'+(t.dis?'<div class="c-dis"><span>'+(t.nf?(t.nf===1?"Beat gratis":t.nf+" beats gratis")+" (oferta "+(PACK.fe-1)+"+1)":"Pack de "+t.nb+" beats (−"+t.pct+" %)")+'</span><span>−'+euro(t.dis)+'</span></div>':"")+'<div class="c-big"><span>Total</span><span>'+euro(t.total)+'</span></div></div>'+
   '<button type="button" class="btn c-pay" id="cPay">Pagar con tarjeta</button><p class="c-note">Pago seguro con Stripe. Si tienes un cupón, lo añades en la página de pago. Recibes las descargas al momento y quedan guardadas en tu cuenta</p><p class="lnote" id="cMsg" role="status"></p>';
   $$(".c-x",b).forEach(function(x){x.addEventListener("click",function(){items.splice(+x.dataset.i,1);save();render()})});
   $("cPay").addEventListener("click",function(){var bt=this;$("cMsg").textContent="";
@@ -1544,7 +1552,7 @@ $("cartb").addEventListener("click",function(){cart.open()});
 $("cartd").addEventListener("click",function(e){var r=$("cartd").querySelector(".drawer").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left)$("cartd").close()});
 var tt=null;function toast(m){var t=$("toast");t.innerHTML=hx(m)+' <button type="button" class="lnk">Ver carrito</button>';t.classList.add("on");t.querySelector("button").onclick=function(){t.classList.remove("on");cart.open()};clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on")},3200)}
 count();
-window.__loadPack=function(){fetch("https://juxmlitraftqvryteexu.supabase.co/rest/v1/shop_settings?select=pack2_pct,pack3_pct&id=eq.1",{headers:{apikey:"sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp"}}).then(function(r){return r.ok?r.json():[]}).then(function(j){if(j&&j[0]){PACK.p2=j[0].pack2_pct;PACK.p3=j[0].pack3_pct;var pc=$("packnote");if(pc)pc.innerHTML=PACK.p2||PACK.p3?"Packs: <b>−"+PACK.p2+" %</b> comprando 2 beats y <b>−"+PACK.p3+" %</b> con 3 o más":"";if($("cartd").open)render()}}).catch(function(){});};window.__loadPack();
+window.__loadPack=function(){fetch("https://juxmlitraftqvryteexu.supabase.co/rest/v1/shop_settings?select=pack2_pct,pack3_pct,free_every&id=eq.1",{headers:{apikey:"sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp"}}).then(function(r){return r.ok?r.json():[]}).then(function(j){if(j&&j[0]){PACK.p2=j[0].pack2_pct;PACK.p3=j[0].pack3_pct;PACK.fe=j[0].free_every||0;var pc=$("packnote");if(pc)pc.innerHTML=PACK.fe>=2?'<span class="offer"><i></i>'+offerTxt()+'. El gratis es el más barato del carrito</span>':PACK.p2||PACK.p3?"Packs: <b>−"+PACK.p2+" %</b> comprando 2 beats y <b>−"+PACK.p3+" %</b> con 3 o más":"";if($("cartd").open)render()}}).catch(function(){});};window.__loadPack();
 if(/[?&]compra=ok/.test(location.search))cart.clear();
 })();
 </script>
