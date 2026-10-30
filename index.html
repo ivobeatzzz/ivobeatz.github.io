@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="ivo-version" content="20261030125434" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <meta name="description" content="IVO Beatz: beats con licencia, mezcla y máster profesional, plantillas vocales de artistas, plugins y herramientas gratuitas.">
@@ -1494,7 +1495,7 @@ $("cartb").addEventListener("click",function(){cart.open()});
 $("cartd").addEventListener("click",function(e){var r=$("cartd").querySelector(".drawer").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left)$("cartd").close()});
 var tt=null;function toast(m){var t=$("toast");t.innerHTML=hx(m)+' <button type="button" class="lnk">Ver carrito</button>';t.classList.add("on");t.querySelector("button").onclick=function(){t.classList.remove("on");cart.open()};clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("on")},3200)}
 count();
-fetch("https://juxmlitraftqvryteexu.supabase.co/rest/v1/shop_settings?select=pack2_pct,pack3_pct&id=eq.1",{headers:{apikey:"sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp"}}).then(function(r){return r.ok?r.json():[]}).then(function(j){if(j&&j[0]){PACK.p2=j[0].pack2_pct;PACK.p3=j[0].pack3_pct;var pc=$("packnote");if(pc)pc.innerHTML=PACK.p2||PACK.p3?"Packs: <b>−"+PACK.p2+" %</b> comprando 2 beats y <b>−"+PACK.p3+" %</b> con 3 o más":"";if($("cartd").open)render()}}).catch(function(){});
+window.__loadPack=function(){fetch("https://juxmlitraftqvryteexu.supabase.co/rest/v1/shop_settings?select=pack2_pct,pack3_pct&id=eq.1",{headers:{apikey:"sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp"}}).then(function(r){return r.ok?r.json():[]}).then(function(j){if(j&&j[0]){PACK.p2=j[0].pack2_pct;PACK.p3=j[0].pack3_pct;var pc=$("packnote");if(pc)pc.innerHTML=PACK.p2||PACK.p3?"Packs: <b>−"+PACK.p2+" %</b> comprando 2 beats y <b>−"+PACK.p3+" %</b> con 3 o más":"";if($("cartd").open)render()}}).catch(function(){});};window.__loadPack();
 if(/[?&]compra=ok/.test(location.search))cart.clear();
 })();
 </script>
@@ -1601,15 +1602,26 @@ function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){retur
 
 /* ---- contenido en vivo: beats y presets desde la base de datos ---- */
 function rest(path){return fetch(SB+"/rest/v1/"+path,{headers:{apikey:KEY,Authorization:"Bearer "+KEY}}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
-rest("beats?select=id,name,bpm,key,genre,price_from,preview_path,cover_path,tags,featured,slug,created_at&active=eq.true&order=sort.asc,created_at.desc").then(function(list){
-  if(!list||!list.length||!window.__setBeats)return;
-  window.__setBeats(list.map(function(b){return[b.name,b.bpm+" BPM",b.key,b.genre,b.price_from,b.preview_path?pubUrl("previews",b.preview_path):"",b.id,b.cover_path?pubUrl("fotos",b.cover_path):"",b.tags||[],!!b.featured,b.slug||"",b.created_at]}))});
-rest("presets?select=id,artist,price,photo_path,stripe_link&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
-  if(!list||!list.length)return;var cta=document.querySelector("#plantillas .cta-card");if(!cta)return;
-  list.forEach(function(p){var key="plantilla-db-"+p.id.slice(0,8),d=document.createElement("div");d.className="card art";
+/* contenido en vivo: se actualiza solo cuando cambias algo en el panel */
+var lastB="",lastP="",pendB=null;
+function busy(){return !!(typeof cur!=="undefined"&&cur&&cur.on)||!!document.querySelector("dialog[open]")}
+function applyBeats(list){var j=JSON.stringify(list);if(j===lastB)return;if(busy()&&lastB){pendB=list;return}lastB=j;pendB=null;
+  if(!list.length){if(window.__demoB&&window.__setBeats&&B.length&&B[0][6])window.__setBeats(window.__demoB);return}
+  if(window.__setBeats)window.__setBeats(list.map(function(b){return[b.name,b.bpm+" BPM",b.key,b.genre,b.price_from,b.preview_path?pubUrl("previews",b.preview_path):"",b.id,b.cover_path?pubUrl("fotos",b.cover_path):"",b.tags||[],!!b.featured,b.slug||"",b.created_at]}))}
+function applyPresets(list){var j=JSON.stringify(list);if(j===lastP)return;lastP=j;var cta=document.querySelector("#plantillas .cta-card");if(!cta)return;
+  Array.prototype.forEach.call(document.querySelectorAll("#plantillas .card.dbp"),function(x){x.remove()});
+  list.forEach(function(p){var key="plantilla-db-"+p.id.slice(0,8),d=document.createElement("div");d.className="card art dbp";
     var ph=p.photo_path?' style="background-image:url('+pubUrl("fotos",p.photo_path)+')"':"";
     d.innerHTML='<div class="ph" role="img" aria-label="Foto de '+esc(p.artist)+'"'+ph+'><span>'+esc(p.artist)+'</span></div><div class="cb"><p class="am">Ableton Live y FL Studio · Requiere Waves y FabFilter · Guía incluida</p><div class="ar"><div><small>Vocal preset estilo '+esc(p.artist)+'</small><div class="big">'+esc(String(p.price).replace(/\.0+$/,""))+' €</div></div><a class="btn sm" href="#" data-checkout="'+key+'" data-preset-id="'+p.id+'">Comprar</a></div></div>';
-    if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})});
+    if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})}
+function live(){
+  rest("beats?select=id,name,bpm,key,genre,price_from,preview_path,cover_path,tags,featured,slug,created_at&active=eq.true&order=sort.asc,created_at.desc").then(function(l){if(Array.isArray(l))applyBeats(l)});
+  rest("presets?select=id,artist,price,photo_path,stripe_link&active=eq.true&show_card=eq.true&order=sort.asc,created_at.asc").then(function(l){if(Array.isArray(l))applyPresets(l)});
+  if(window.__loadPack)window.__loadPack()}
+window.__demoB=B.slice();live();
+setInterval(function(){if(!document.hidden)live()},90000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden)live()});
+setInterval(function(){if(pendB&&!busy()){var l=pendB;pendB=null;lastB="";applyBeats(l)}},3000);
 
 /* ---- pago con Stripe ---- */
 var pending=null;
@@ -1620,7 +1632,13 @@ window.__checkout=function(body,btn){var t=btn?btn.textContent:"";if(btn){btn.di
   return lib().then(function(){return sb.auth.getSession()}).then(function(r){var s=r.data.session;if(!s)return ask();
     return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})
     .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
-    .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();return restore()})}).catch(restore)};
+    .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();if(x.status===403&&x.j&&x.j.error==="verify")return verifyAsk(x.j.email||s.user.email,body);return restore()})}).catch(restore)};
+function verifyAsk(email,body){if(btn0)btn0=null;document.querySelectorAll("dialog[open]").forEach(function(x){if(x.id!=="acc")x.close()});if(!d.open)d.showModal();
+  body0=body;d.querySelector("#abody").innerHTML='<h3 id="at">Verifica tu email</h3><p class="ls">Para comprar necesitas confirmar tu correo</p><p>Te enviamos un enlace a <b>'+esc(email)+'</b>. Ábrelo y después vuelve aquí. Revisa también spam o promociones</p><div class="lact" style="margin-top:18px"><button type="button" class="btn sm" id="vDone">Ya lo he verificado</button><button type="button" class="btn sm ghost ink" id="vRe">Reenviar el correo</button></div><p class="amsg" id="amsg" role="status"></p>';
+  document.getElementById("vRe").addEventListener("click",async function(){msg("Enviando…");var r=await sb.auth.resend({type:"signup",email:email,options:{emailRedirectTo:location.origin+"/cuenta.html"}});msg(r.error?err(r.error.message):"Correo reenviado. Mira tu bandeja de entrada",r.error?"bad":"ok")});
+  document.getElementById("vDone").addEventListener("click",async function(){msg("Comprobando…");await sb.auth.refreshSession();var u=(await sb.auth.getUser()).data.user;if(!u||!u.email_confirmed_at){msg("Todavía no aparece verificado. Abre el enlace del correo y vuelve a intentarlo","bad");return}d.close();window.__checkout(body0)});
+  return true}
+var btn0=null,body0=null;
 /* ---- cuentas ---- */
 var d=$("acc"),body=$("abody"),btn=$("accb"),sb=null,loading=null,prof=null;
 if(!d||!btn)return;
@@ -1765,6 +1783,20 @@ d.addEventListener("cancel",function(){try{history.replaceState(null,"",location
 if(LEG[location.hash.slice(1)])open(location.hash.slice(1),false);
 window.addEventListener("hashchange",function(){var k=location.hash.slice(1);if(LEG[k])open(k,false)});
 })();
+</script>
+<script>
+/* aviso de versión nueva: la web se actualiza sola cuando subimos cambios */
+(function(){var m=document.querySelector('meta[name="ivo-version"]'),V=m&&m.content,AUTO=!!(m&&m.getAttribute("data-auto"));if(!V)return;
+try{if(/[?&]v=\d+/.test(location.search)){var q=location.search.replace(/([?&])v=\d+&?/,"$1").replace(/[?&]$/,"");history.replaceState(null,"",location.pathname+q+location.hash)}}catch(e){}
+var shown=false;
+function idle(){var a=document.activeElement;return !document.querySelector("dialog[open]")&&!(typeof cur!=="undefined"&&cur&&cur.on)&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))}
+function go(v){location.replace(location.pathname+(location.search?location.search+"&":"?")+"v="+v+location.hash)}
+function banner(v){var b=document.createElement("div");b.setAttribute("role","status");b.style.cssText="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#0e0f0d;color:#f2f4ea;padding:10px 12px 10px 18px;border-radius:999px;font:600 14px/1.2 Inter,system-ui,sans-serif;display:flex;gap:12px;align-items:center;box-shadow:0 14px 34px -14px rgba(0,0,0,.6)";
+  b.innerHTML='Hay una versión nueva de la web <button type="button" style="font:inherit;border:0;border-radius:999px;padding:7px 14px;background:#b9d86c;color:#17240a;cursor:pointer">Actualizar</button>';b.querySelector("button").onclick=function(){go(v)};document.body.appendChild(b)}
+function check(){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===V)return;
+  var tried="";try{tried=sessionStorage.getItem("ivo_v_try")||""}catch(e){}
+  if(AUTO&&idle()&&tried!==j.v){try{sessionStorage.setItem("ivo_v_try",j.v)}catch(e){}go(j.v)}else if(!shown){shown=true;banner(j.v)}}).catch(function(){})}
+setInterval(check,180000);document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});setTimeout(check,20000)})();
 </script>
 </body>
 </html>

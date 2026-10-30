@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
+<meta name="ivo-version" content="20261030125434">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel IVO Beatz</title>
@@ -361,6 +362,20 @@ $("fPack").addEventListener("submit",async function(e){e.preventDefault();var a=
 
 boot();
 })();
+</script>
+<script>
+/* aviso de versión nueva: la web se actualiza sola cuando subimos cambios */
+(function(){var m=document.querySelector('meta[name="ivo-version"]'),V=m&&m.content,AUTO=!!(m&&m.getAttribute("data-auto"));if(!V)return;
+try{if(/[?&]v=\d+/.test(location.search)){var q=location.search.replace(/([?&])v=\d+&?/,"$1").replace(/[?&]$/,"");history.replaceState(null,"",location.pathname+q+location.hash)}}catch(e){}
+var shown=false;
+function idle(){var a=document.activeElement;return !document.querySelector("dialog[open]")&&!(typeof cur!=="undefined"&&cur&&cur.on)&&!(a&&/INPUT|TEXTAREA|SELECT/.test(a.tagName))}
+function go(v){location.replace(location.pathname+(location.search?location.search+"&":"?")+"v="+v+location.hash)}
+function banner(v){var b=document.createElement("div");b.setAttribute("role","status");b.style.cssText="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:80;background:#0e0f0d;color:#f2f4ea;padding:10px 12px 10px 18px;border-radius:999px;font:600 14px/1.2 Inter,system-ui,sans-serif;display:flex;gap:12px;align-items:center;box-shadow:0 14px 34px -14px rgba(0,0,0,.6)";
+  b.innerHTML='Hay una versión nueva de la web <button type="button" style="font:inherit;border:0;border-radius:999px;padding:7px 14px;background:#b9d86c;color:#17240a;cursor:pointer">Actualizar</button>';b.querySelector("button").onclick=function(){go(v)};document.body.appendChild(b)}
+function check(){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(function(r){return r.ok?r.json():null}).then(function(j){if(!j||!j.v||j.v===V)return;
+  var tried="";try{tried=sessionStorage.getItem("ivo_v_try")||""}catch(e){}
+  if(AUTO&&idle()&&tried!==j.v){try{sessionStorage.setItem("ivo_v_try",j.v)}catch(e){}go(j.v)}else if(!shown){shown=true;banner(j.v)}}).catch(function(){})}
+setInterval(check,180000);document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});setTimeout(check,20000)})();
 </script>
 </body>
 </html>
