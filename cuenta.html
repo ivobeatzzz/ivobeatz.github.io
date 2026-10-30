@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030210129">
+<meta name="ivo-version" content="20261030212536">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -238,6 +238,7 @@ $("orders").addEventListener("click",async function(e){var b=e.target.closest("b
   var box=card.querySelector(".dl");if(box.classList.contains("open")&&box.dataset.ok){box.classList.remove("open");return}
   box.classList.add("open");box.innerHTML='<span class="spin"></span> Preparando…';
   var r=await sb.functions.invoke("my-downloads",{body:{order_id:o.id}});
+  if(r.error&&r.error.context&&r.error.context.status===409){box.innerHTML='<p>Estoy revisando este pedido. Te enviaré las descargas por correo en breve</p>';return}
   if(r.error||!r.data){box.innerHTML='<p style="color:var(--bad)">No se han podido preparar las descargas. Inténtalo de nuevo o escribe a ivobeatzzz@gmail.com</p>';return}
   var d=r.data,multi=(d.items||[]).length>1;box.dataset.ok="1";
   var h=(d.items||[]).map(function(it){
@@ -277,7 +278,7 @@ async function boot(){
 var rwTimer=null;
 async function loadReward(){var box=$("rwc");if(!box)return;clearInterval(rwTimer);box.hidden=true;
   var r=await sb.from("beat_rewards").select("pct,expires_at,used_at").maybeSingle();var x=r.data;
-  if(r.error||!x||x.used_at||!x.expires_at)return;var exp=Date.parse(x.expires_at);if(!(exp>Date.now()))return;
+  if(r.error||!x||x.used_at||!x.expires_at)return;var exp=Date.parse(x.expires_at)-31*60e3;if(!(exp>Date.now()))return;
   box.innerHTML='<div><small>Un regalo por tu primera compra</small><b class="h">−'+(Number(x.pct)||50)+' % en tu próximo beat con licencia Básica</b><p>Se aplica solo en el carrito con esta cuenta. Caduca en <span class="t" id="rwt"></span></p></div><a class="btn" href="/#beats">Elegir beat</a>';box.hidden=false;
   function tick(){var l=Math.max(0,exp-Date.now()),t=Math.floor(l/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sx=t%60,e=$("rwt");if(e)e.textContent=(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(sx<10?"0":"")+sx;if(!l){clearInterval(rwTimer);box.hidden=true}}
   tick();rwTimer=setInterval(tick,1000)}
