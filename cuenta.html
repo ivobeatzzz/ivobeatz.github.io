@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030154215">
+<meta name="ivo-version" content="20261030155224">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -149,7 +149,7 @@ dialog::backdrop{background:rgba(17,17,17,.6);backdrop-filter:blur(4px)}
 
 <dialog id="dlg"><div class="box"><button type="button" class="x" aria-label="Cerrar">×</button><div id="dlgB"></div></div></dialog>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.104.0/dist/umd/supabase.js"></script>
 <script>
 (function(){
 var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp";
@@ -253,7 +253,7 @@ async function boot(){
   if(!s){view("auth");authForm(/alta/.test(location.hash)?"alta":"login");return}
   var p=await sb.from("profiles").select("nombre,role,email").eq("id",s.user.id).maybeSingle();PROF=p.data||{};
   $("hi").textContent="Hola, "+(PROF.nombre||s.user.email.split("@")[0]);$("hiMail").textContent=s.user.email;
-  $("dName").value=PROF.nombre||"";$("dMail").value=s.user.email;$("hAdmin").hidden=PROF.role!=="admin";
+  $("dName").value=PROF.nombre||"";$("dMail").value=s.user.email;window.__userEmail=s.user.email;$("hAdmin").hidden=PROF.role!=="admin";
   $("delAcc").href="mailto:ivobeatzzz@gmail.com?subject="+encodeURIComponent("Eliminar mi cuenta")+"&body="+encodeURIComponent("Hola, quiero eliminar mi cuenta de IVO Beatz asociada a "+s.user.email);
   $("vban").hidden=!!s.user.email_confirmed_at;
   view("app");loadOrders()}
@@ -274,6 +274,21 @@ function check(){fetch("version.json?t="+Date.now(),{cache:"no-store"}).then(fun
   var tried="";try{tried=sessionStorage.getItem("ivo_v_try")||""}catch(e){}
   if(AUTO&&idle()&&tried!==j.v){try{sessionStorage.setItem("ivo_v_try",j.v)}catch(e){}go(j.v)}else if(!shown){shown=true;banner(j.v)}}).catch(function(){})}
 setInterval(check,180000);document.addEventListener("visibilitychange",function(){if(!document.hidden)check()});setTimeout(check,20000)})();
+</script>
+<script>
+/* contraseñas seguras: mínimo 8 caracteres, letras y números, no comunes ni parecidas al email */
+(function(){var COMMON=["12345678","123456789","1234567890","password","password1","contraseña","contrasena","qwerty123","qwertyui","11111111","00000000","abc12345","abcd1234","iloveyou","123123123","ivobeatz","ivobeatz1","beats123","asdf1234","1q2w3e4r","passw0rd","admin123","12341234","87654321"];
+var css=document.createElement("style");css.textContent=".pwm{margin-top:6px;font-size:12.5px;font-weight:600;display:grid;gap:5px}.pwm i{display:block;height:4px;border-radius:9px;background:rgba(127,127,127,.25);overflow:hidden}.pwm i b{display:block;height:100%;width:0;border-radius:inherit;transition:width .25s,background .25s}";document.head.appendChild(css);
+function why(pw,email){if(!pw)return"";if(pw.length<8)return"Usa al menos 8 caracteres";if(!/[A-Za-zÀ-ÿ]/.test(pw))return"Añade al menos una letra";if(!/\d/.test(pw))return"Añade al menos un número";
+  var l=pw.toLowerCase();if(COMMON.indexOf(l)>-1||/^(.)\1+$/.test(pw))return"Es una contraseña demasiado común";var u=String(email||"").toLowerCase().split("@")[0];if(u.length>=4&&l.indexOf(u)>-1)return"No uses tu email en la contraseña";return""}
+function score(pw){var s=0;if(pw.length>=8)s++;if(pw.length>=12)s++;if(/[a-z]/.test(pw)&&/[A-Z]/.test(pw))s++;if(/[^A-Za-z0-9]/.test(pw))s++;return Math.min(s,4)}
+document.addEventListener("input",function(e){var t=e.target;if(!t||t.tagName!=="INPUT"||t.getAttribute("autocomplete")!=="new-password")return;
+  var f=t.form,em=f&&f.querySelector('input[type="email"]'),email=em?em.value:(window.__userEmail||""),w=why(t.value,email);t.setCustomValidity(w);
+  var m=t.parentNode.querySelector(".pwm");if(!m){m=document.createElement("div");m.className="pwm";m.setAttribute("aria-live","polite");m.innerHTML="<i><b></b></i><span></span>";t.insertAdjacentElement("afterend",m)}
+  var sc=w?1:score(t.value),C=["#c0392b","#c0392b","#d08a00","#6f8f2e","#3f6b1d"],L=["","Débil","Aceptable","Buena","Muy buena"];
+  if(!t.value){m.hidden=true;return}m.hidden=false;var bar=m.querySelector("b");bar.style.width=(w?20:sc*25)+"%";bar.style.background=C[w?0:sc];m.querySelector("span").textContent=w||("Seguridad: "+L[sc]);m.querySelector("span").style.color=w?"#c0392b":"inherit"});
+document.addEventListener("submit",function(e){var f=e.target;if(!f||!f.querySelectorAll)return;var ins=f.querySelectorAll('input[autocomplete="new-password"]');for(var i=0;i<ins.length;i++){var t=ins[i],em=f.querySelector('input[type="email"]'),w=why(t.value,em?em.value:(window.__userEmail||""));t.setCustomValidity(w);if(w){e.preventDefault();e.stopImmediatePropagation();t.reportValidity();t.dispatchEvent(new Event("input",{bubbles:true}));return}}},true);
+})();
 </script>
 </body>
 </html>

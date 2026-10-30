@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030154215">
+<meta name="ivo-version" content="20261030155224">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -271,7 +271,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 
 <div class="toast" id="toast"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.104.0/dist/umd/supabase.js"></script>
 <script>
 /* detector de BPM y tonalidad (el mismo que el de Herramientas) */
 function srOf(ab){var d=new DataView(ab);try{if(d.getUint32(0)===0x52494646&&d.getUint32(8)===0x57415645)return d.getUint32(24,true);var o=0;if(d.getUint32(0)>>>8===0x494433)o=10+((d.getUint8(6)&127)<<21|(d.getUint8(7)&127)<<14|(d.getUint8(8)&127)<<7|(d.getUint8(9)&127));for(var i=o;i<Math.min(o+65536,d.byteLength-4);i++){if(d.getUint8(i)===255&&(d.getUint8(i+1)&224)===224){var v=(d.getUint8(i+1)>>3)&3,r=(d.getUint8(i+2)>>2)&3;if(v!==1&&r!==3){var t=[44100,48000,32000][r];return v===3?t:v===2?t/2:t/4}}}}catch(e){}return 0}
@@ -369,12 +369,15 @@ async function delR2(paths){for(var i=0;i<paths.length;i++){try{var u=await r2si
 async function upload(bucket,path,file){var r=await sb.storage.from(bucket).upload(path,file,{upsert:true,contentType:file.type||undefined,cacheControl:"3600"});if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
 
 /* filas de archivo (enlace externo o subida a R2) */
+/* validación de archivos antes de subir: tipo y tamaño */
+var FRULE={mp3:{x:/\.mp3$/i,m:100,t:"un MP3"},wav:{x:/\.wav$/i,m:1024,t:"un WAV"},stems:{x:/\.zip$/i,m:5000,t:"un ZIP"},fl:{x:/\.(flp|zip)$/i,m:2048,t:"un .flp o un ZIP"},ableton:{x:/\.(als|alp|zip)$/i,m:2048,t:"un .als, .alp o ZIP"},preview:{x:/\.(mp3|wav|m4a|aac|ogg|flac)$/i,m:15,t:"un audio (MP3 recomendado)"},cover:{x:/\.(jpe?g|png|webp|avif)$/i,m:5,t:"una imagen JPG, PNG o WebP"}};
+function badFile(k,f){var r=FRULE[k];if(!f||!r)return"";if(!r.x.test(f.name))return"«"+f.name+"» no es válido: tiene que ser "+r.t;if(f.size>r.m*1048576)return"«"+f.name+"» pesa "+mb(f.size)+". El máximo es "+(r.m>=1024?(r.m/1024).toFixed(r.m%1024?1:0).replace(".",",")+" GB":r.m+" MB");if(!f.size)return"«"+f.name+"» está vacío";return""}
 function fname(p){return String(p||"").split("/").pop().replace(/^(mp3|wav|stems|fl|ableton)-/,"")}
 function fileRows(box,defs,existing){box.innerHTML=defs.map(function(d){var f=(existing||[]).filter(function(x){return x.kind===d.k})[0];
   var st=f?(f.file_path?'<div class="fst ok">✓ Subido · '+esc(fname(f.file_path))+'</div>':'<div class="fst warn">Enlace antiguo · sube el archivo para reemplazarlo</div>'):'<div class="fst">Sin archivo · arrástralo aquí o elígelo</div>';
   return'<div class="filerow'+(f?" has":"")+'" data-k="'+d.k+'"><span class="fi">'+d.i+'</span><div style="min-width:0"><b>'+d.l+'</b><small>'+d.h+'</small>'+st+'</div><div class="fa"><span class="btn ghost sm up">'+(f?"Cambiar":"Elegir archivo")+'<input type="file" accept="'+d.a+'"></span>'+(f?'<button type="button" class="danger sm" data-rm>Quitar</button>':'')+'</div></div>'}).join("");
   $$(".filerow",box).forEach(function(r){var i=r.querySelector("input[type=file]"),st=r.querySelector(".fst"),orig=st.outerHTML;
-    function pick(){var f=i.files[0];delete r.dataset.rm;if(f){st.className="fst new";st.textContent="Se subirá al guardar · "+f.name+" ("+mb(f.size)+")"}}
+    function pick(){var f=i.files[0];delete r.dataset.rm;if(f){var bad=badFile(r.dataset.k,f);if(bad){i.value="";st.className="fst rm";st.textContent=bad;return}st.className="fst new";st.textContent="Se subirá al guardar · "+f.name+" ("+mb(f.size)+")"}}
     i.addEventListener("change",pick);
     ["dragenter","dragover"].forEach(function(n){r.addEventListener(n,function(e){e.preventDefault();r.classList.add("on")})});["dragleave","drop"].forEach(function(n){r.addEventListener(n,function(e){e.preventDefault();r.classList.remove("on")})});
     r.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files;if(f&&f.length){try{i.files=f}catch(er){}pick()}});
@@ -445,8 +448,8 @@ function openBeat(b){editB=b||null;$("fBeat").reset();$("dBeatT").textContent=b?
 $("newBeat").addEventListener("click",function(){openBeat(null)});
 $("bGenre").addEventListener("change",function(){$("bGenreOtherW").hidden=$("bGenre").value!=="Otro"});
 ["dropPv","dropCov"].forEach(function(id){var z=$(id),i=z.querySelector("input");["dragenter","dragover"].forEach(function(n){z.addEventListener(n,function(e){e.preventDefault();z.classList.add("on")})});["dragleave","drop"].forEach(function(n){z.addEventListener(n,function(e){e.preventDefault();z.classList.remove("on")})});z.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files;if(f&&f.length){try{i.files=f}catch(er){}i.dispatchEvent(new Event("change"))}})});
-$("bCover").addEventListener("change",function(){var f=this.files[0];if(!f)return;$("covName").textContent=f.name;var u=URL.createObjectURL(f),cp=$("covPrev");cp.style.backgroundImage="url("+u+")";cp.textContent=""});
-$("bPrev").addEventListener("change",function(){var f=this.files[0];if(!f)return;$("pvName").textContent=f.name;$("pvSub").textContent=mb(f.size)+" · analizando BPM y tonalidad…";analyze(f)});
+$("bCover").addEventListener("change",function(){var f=this.files[0];if(!f)return;var bad=badFile("cover",f);if(bad){this.value="";$("covName").textContent=bad;toast(bad);return}$("covName").textContent=f.name;var u=URL.createObjectURL(f),cp=$("covPrev");cp.style.backgroundImage="url("+u+")";cp.textContent=""});
+$("bPrev").addEventListener("change",function(){var f=this.files[0];if(!f)return;var bad=badFile("preview",f);if(bad){this.value="";$("pvName").textContent=bad;$("pvSub").textContent="Elige otro archivo";toast(bad);return}$("pvName").textContent=f.name;$("pvSub").textContent=mb(f.size)+" · analizando BPM y tonalidad…";analyze(f)});
 function analyze(f){var box=$("detect");box.hidden=false;box.innerHTML="Analizando el audio…";
   if(!$("bName").value){$("bName").value=f.name.replace(/\.[^.]+$/,"").replace(/\s*[-–—(\[].*$/,"").replace(/[_]+/g," ").trim().slice(0,60)}
   dec(f).then(function(b){setTimeout(function(){try{var x=mono(b),k=keyOf(x,b.sampleRate),bp=bpmOf(x,b.sampleRate);
@@ -472,7 +475,7 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
 async function saveFiles(table,fk,id,box,existing,prefix,barId,msg,start){var rows=$$(".filerow",box),n=rows.length;
   for(var k=0;k<n;k++){var r=rows[k],kind=r.dataset.k,fl=r.querySelector("input[type=file]").files[0],old=(existing||[]).filter(function(x){return x.kind===kind})[0];
     var base=start+(95-start)*k/n,span=(95-start)/n,row={};row[fk]=id;row.kind=kind;
-    if(fl){var pth=prefix+kind+"-"+safe(fl.name);await putR2(pth,fl,function(q){bar(barId,Math.round(base+span*q));say(msg,"Subiendo "+fl.name+" ("+mb(fl.size)+") · "+Math.round(q*100)+"%")});
+    if(fl){var bad=badFile(kind,fl);if(bad)throw new Error(bad);var pth=prefix+kind+"-"+safe(fl.name);await putR2(pth,fl,function(q){bar(barId,Math.round(base+span*q));say(msg,"Subiendo "+fl.name+" ("+mb(fl.size)+") · "+Math.round(q*100)+"%")});
       row.file_path=pth;row.url=null;var a=await sb.from(table).upsert(row,{onConflict:fk+",kind"});if(a.error)throw a.error;if(old&&old.file_path&&old.file_path!==pth)await delR2([old.file_path])}
     else if(r.dataset.rm&&old){if(old.file_path)await delR2([old.file_path]);var d=await sb.from(table).delete().eq(fk,id).eq("kind",kind);if(d.error)throw d.error}}}
 
