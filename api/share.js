@@ -7,7 +7,7 @@ const SITE = "https://www.ivobeatz.com";
 const KEY_NAMES = { C: "Do", "C#": "Do#", D: "Re", "D#": "Re#", E: "Mi", F: "Fa", "F#": "Fa#", G: "Sol", "G#": "Sol#", A: "La", "A#": "La#", B: "Si" };
 const esc = (t) => String(t == null ? "" : t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const keyName = (k) => { const m = /^([A-G]#?)(m?)$/.exec(String(k || "")); return m ? `${KEY_NAMES[m[1]]}${m[2] ? " menor" : " mayor"}` : ""; };
-const STATIC_PRESETS = { mvrk: "mvrk", enzocrebulto: "enzocrebulto", ladiferencia2006: "ladiferencia2006", guxo: "Guxo", cero: "cero*", tarchi: "tarchi" };
+const STATIC_PRESETS = { mvrk: "mvrk", enzocerobulto: "enzocerobulto", ladiferencia2006: "ladiferencia2006", guxo: "Guxo", cero: "cero*", tarchi: "tarchi" };
 
 async function rest(path) {
   try {

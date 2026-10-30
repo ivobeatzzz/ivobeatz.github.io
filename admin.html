@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030171348">
+<meta name="ivo-version" content="20261030171531">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -342,7 +342,7 @@ var sb=supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:
 var $=function(i){return document.getElementById(i)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var NOTE=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],KEYS=[];NOTE.forEach(function(k){KEYS.push(k+"m")});NOTE.forEach(function(k){KEYS.push(k)});
 $("bKey").innerHTML=KEYS.map(function(k){return"<option>"+k+"</option>"}).join("");
-var STATIC_PRESETS=["mvrk","enzocrebulto","ladiferencia2006","guxo","cero","tarchi"];
+var STATIC_PRESETS=["mvrk","enzocerobulto","ladiferencia2006","guxo","cero","tarchi"];
 var PERIOD=30,STATS=null;
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 /* solo enlaces web (nunca javascript: ni otros esquemas) */
