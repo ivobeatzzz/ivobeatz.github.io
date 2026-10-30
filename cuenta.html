@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030155224">
+<meta name="ivo-version" content="20261030155854">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -136,10 +136,10 @@ dialog::backdrop{background:rgba(17,17,17,.6);backdrop-filter:blur(4px)}
     <div id="tDatos" hidden>
       <div class="g2">
         <div class="card"><h2>Datos personales</h2>
-          <form id="fName"><label>Nombre<input id="dName" maxlength="60" autocomplete="name"></label><label>Email<input id="dMail" readonly></label><button class="btn" type="submit">Guardar cambios</button><p class="msg" id="mName" role="status"></p></form>
+          <form id="fName" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Nombre<input id="dName" maxlength="60" autocomplete="name"></label><label>Email<input id="dMail" readonly></label><button class="btn" type="submit">Guardar cambios</button><p class="msg" id="mName" role="status"></p></form>
         </div>
         <div class="card"><h2>Contraseña</h2>
-          <form id="fPass"><label>Nueva contraseña (mínimo 8 caracteres)<input type="password" id="dPass" minlength="8" autocomplete="new-password" required></label><label>Repite la contraseña<input type="password" id="dPass2" minlength="8" autocomplete="new-password" required></label><button class="btn" type="submit">Cambiar contraseña</button><p class="msg" id="mPass" role="status"></p></form>
+          <form id="fPass" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Nueva contraseña (mínimo 8 caracteres)<input type="password" id="dPass" minlength="8" autocomplete="new-password" required></label><label>Repite la contraseña<input type="password" id="dPass2" minlength="8" autocomplete="new-password" required></label><button class="btn" type="submit">Cambiar contraseña</button><p class="msg" id="mPass" role="status"></p></form>
         </div>
       </div>
       <div class="card" style="margin-top:20px"><h2>Privacidad</h2><p class="sub" style="margin:0 0 14px">Puedes pedir una copia de tus datos o eliminar tu cuenta. Tus licencias seguirán siendo válidas, pero perderás el acceso a las descargas desde aquí</p><a class="btn ghost sm" id="delAcc" href="#">Solicitar eliminar mi cuenta</a></div>
@@ -178,14 +178,14 @@ function view(v){$("loading").hidden=true;$("vAuth").hidden=v!=="auth";$("vApp")
 
 function authForm(tab,note,noteCls){
   var c=$("authCard");
-  if(tab==="nueva"){c.innerHTML='<h2 style="font-size:24px">Nueva contraseña</h2><p class="sub">Elige una contraseña nueva para tu cuenta</p><form id="fN"><label>Contraseña nueva (mínimo 8 caracteres)<input type="password" id="nP" minlength="8" autocomplete="new-password" required></label><button class="btn" type="submit">Guardar y entrar</button><p class="msg" id="aM" role="status"></p></form>';
+  if(tab==="nueva"){c.innerHTML='<h2 style="font-size:24px">Nueva contraseña</h2><p class="sub">Elige una contraseña nueva para tu cuenta</p><form id="fN" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Contraseña nueva (mínimo 8 caracteres)<input type="password" id="nP" minlength="8" autocomplete="new-password" required></label><button class="btn" type="submit">Guardar y entrar</button><p class="msg" id="aM" role="status"></p></form>';
     $("fN").addEventListener("submit",async function(e){e.preventDefault();msg("aM","Guardando…");var r=await sb.auth.updateUser({password:$("nP").value});if(r.error){msg("aM",err(r.error.message),"bad");return}recovery=false;boot()});return}
   c.innerHTML='<div class="seg" style="margin-bottom:22px"><button type="button" data-t="login" aria-selected="'+(tab==="login")+'">Entrar</button><button type="button" data-t="alta" aria-selected="'+(tab==="alta")+'">Crear cuenta</button></div>'+
   (tab==="login"?
-   '<h2 style="font-size:24px">Bienvenido de nuevo</h2><p class="sub">Entra para ver tus compras y descargas</p><form id="fL"><label>Email<input type="email" id="lE" autocomplete="username" required></label><label>Contraseña<input type="password" id="lP" autocomplete="current-password" required></label><button class="btn" type="submit">Entrar</button><button type="button" class="lnk" id="fg" style="justify-self:start">He olvidado mi contraseña</button><p class="msg" id="aM" role="status"></p></form>':
+   '<h2 style="font-size:24px">Bienvenido de nuevo</h2><p class="sub">Entra para ver tus compras y descargas</p><form id="fL" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Email<input type="email" id="lE" autocomplete="username" required></label><label>Contraseña<input type="password" id="lP" autocomplete="current-password" required></label><button class="btn" type="submit">Entrar</button><button type="button" class="lnk" id="fg" style="justify-self:start">He olvidado mi contraseña</button><p class="msg" id="aM" role="status"></p></form>':
    tab==="olvido"?
-   '<h2 style="font-size:24px">Recuperar contraseña</h2><p class="sub">Te llegará un enlace para elegir una nueva</p><form id="fR"><label>Email<input type="email" id="rE" autocomplete="username" required></label><button class="btn" type="submit">Enviar enlace</button><button type="button" class="lnk" id="bk" style="justify-self:start">Volver a entrar</button><p class="msg" id="aM" role="status"></p></form>':
-   '<h2 style="font-size:24px">Crea tu cuenta</h2><p class="sub">La necesitas para comprar y guardar tus descargas</p><form id="fA"><label>Nombre<input id="aN" autocomplete="name" maxlength="60" required></label><label>Email<input type="email" id="aE" autocomplete="username" required></label><label>Contraseña (mínimo 8 caracteres)<input type="password" id="aP" minlength="8" autocomplete="new-password" required></label><label class="chk"><input type="checkbox" id="aC" required><span>Acepto la <a href="/#privacidad" target="_blank" rel="noopener">política de privacidad</a> y las <a href="/#condiciones" target="_blank" rel="noopener">condiciones de compra</a></span></label><button class="btn" type="submit">Crear cuenta</button><p class="msg" id="aM" role="status"></p></form>');
+   '<h2 style="font-size:24px">Recuperar contraseña</h2><p class="sub">Te llegará un enlace para elegir una nueva</p><form id="fR" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Email<input type="email" id="rE" autocomplete="username" required></label><button class="btn" type="submit">Enviar enlace</button><button type="button" class="lnk" id="bk" style="justify-self:start">Volver a entrar</button><p class="msg" id="aM" role="status"></p></form>':
+   '<h2 style="font-size:24px">Crea tu cuenta</h2><p class="sub">La necesitas para comprar y guardar tus descargas</p><form id="fA" method="post" action="https://www.ivobeatz.com/cuenta.html"><label>Nombre<input id="aN" autocomplete="name" maxlength="60" required></label><label>Email<input type="email" id="aE" autocomplete="username" required></label><label>Contraseña (mínimo 8 caracteres)<input type="password" id="aP" minlength="8" autocomplete="new-password" required></label><label class="chk"><input type="checkbox" id="aC" required><span>Acepto la <a href="/#privacidad" target="_blank" rel="noopener">política de privacidad</a> y las <a href="/#condiciones" target="_blank" rel="noopener">condiciones de compra</a></span></label><button class="btn" type="submit">Crear cuenta</button><p class="msg" id="aM" role="status"></p></form>');
   c.querySelectorAll(".seg button").forEach(function(b){b.addEventListener("click",function(){authForm(b.dataset.t)})});
   if(note)msg("aM",note,noteCls||"ok");
   if(tab==="login"){

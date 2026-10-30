@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030155224">
+<meta name="ivo-version" content="20261030155854">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -151,7 +151,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 <div id="vLogin" class="login" hidden>
   <div class="card">
     <div class="brand" style="margin-bottom:18px"><i>IVO</i>Panel IVO Beatz</div>
-    <form id="fLogin" style="display:grid;gap:14px">
+    <form id="fLogin" style="display:grid;gap:14px" method="post" action="https://www.ivobeatz.com/admin.html">
       <label>Email<input type="email" id="lEmail" autocomplete="username" required></label>
       <label>Contraseña<input type="password" id="lPass" autocomplete="current-password" required></label>
       <button type="submit">Entrar</button>
@@ -225,7 +225,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
       <div class="head"><div><h1>Ajustes</h1><p>Descuentos, medición y accesos rápidos</p></div></div>
       <div class="g2">
         <div class="card"><h2>Packs de beats</h2><p class="hint" style="margin-bottom:14px">Descuento automático en el carrito al comprar varias licencias. Pon 0 para desactivarlo</p>
-          <form id="fPack" style="display:grid;gap:12px"><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
+          <form id="fPack" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
         <div class="card"><h2>Cupones</h2><p class="hint">Crea los códigos en Stripe: Catálogo de productos → Cupones → Nuevo, y después «Crear código promocional». El cliente lo escribe en la página de pago</p><p style="margin-top:14px"><a class="btn ghost sm" href="https://dashboard.stripe.com/coupons" target="_blank" rel="noopener">Abrir cupones en Stripe ↗</a></p></div>
         <div class="card"><h2>Medición</h2><p class="hint" style="margin-bottom:12px">Las visitas se cuentan de forma anónima, sin cookies. Tus propias visitas desde este navegador no se cuentan</p><label style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);font-weight:500"><input type="checkbox" id="noTrack"> No contar mis visitas en este navegador</label></div>
         <div class="card"><h2>Tu sesión</h2><p class="hint" style="margin-bottom:12px" id="who2"></p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost sm" href="/" target="_blank" rel="noopener">↗ Ver la web</a><button type="button" class="ghost sm" id="bOut2">Cerrar sesión</button></div></div>
@@ -236,7 +236,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 </div>
 
 <!-- EDITOR DE BEAT -->
-<dialog id="dBeat" class="drawer" aria-labelledby="dBeatT"><form class="dw" id="fBeat">
+<dialog id="dBeat" class="drawer" aria-labelledby="dBeatT"><form class="dw" id="fBeat" method="post" action="https://www.ivobeatz.com/admin.html">
   <div class="dw-h"><h3 id="dBeatT">Nuevo beat</h3><button type="button" class="ghost icon" data-close aria-label="Cerrar">×</button></div>
   <div class="dw-b">
     <div class="sec">Previsualización</div>
@@ -257,7 +257,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 </form></dialog>
 
 <!-- EDITOR DE PRESET -->
-<dialog id="dPre" class="drawer" aria-labelledby="dPreT"><form class="dw" id="fPre">
+<dialog id="dPre" class="drawer" aria-labelledby="dPreT"><form class="dw" id="fPre" method="post" action="https://www.ivobeatz.com/admin.html">
   <div class="dw-h"><h3 id="dPreT">Nuevo preset</h3><button type="button" class="ghost icon" data-close aria-label="Cerrar">×</button></div>
   <div class="dw-b">
     <div class="g3"><label style="grid-column:span 2">Artista<input id="pArtist" required maxlength="60" placeholder="Nombre del artista"></label><label>Precio (€)<input id="pPrice" type="number" min="1" max="1000" step="0.5" value="15" required></label></div>
