@@ -1,0 +1,10 @@
+# nunca subir claves ni archivos de entorno
+.env
+.env.*
+*.env
+*.pem
+*.key
+secrets*
+supabase/.temp/
+node_modules/
+.DS_Store

@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin.html
+Disallow: /cuenta.html
 
 Sitemap: https://ivobeatz.com/sitemap.xml

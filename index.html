@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030152555" data-auto="1">
+<meta name="ivo-version" content="20261030153626" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <meta name="description" content="IVO Beatz: beats con licencia, mezcla y máster profesional, plantillas vocales de artistas, plugins y herramientas gratuitas.">
@@ -1693,7 +1693,7 @@ window.__checkout=function(body,btn){if(window.__track)window.__track("checkout"
   return lib().then(function(){return sb.auth.getSession()}).then(function(r){var s=r.data.session;if(!s)return ask();
     return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})
     .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
-    .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();if(x.status===403&&x.j&&x.j.error==="verify")return verifyAsk(x.j.email||s.user.email,body);return restore()})}).catch(restore)};
+    .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();if(x.status===429){if(btn){btn.textContent="Demasiados intentos. Espera unos minutos";setTimeout(restore,5000)}return true}if(x.status===403&&x.j&&x.j.error==="verify")return verifyAsk(x.j.email||s.user.email,body);return restore()})}).catch(restore)};
 function verifyAsk(email,body){if(btn0)btn0=null;document.querySelectorAll("dialog[open]").forEach(function(x){if(x.id!=="acc")x.close()});if(!d.open)d.showModal();
   body0=body;d.querySelector("#abody").innerHTML='<h3 id="at">Verifica tu email</h3><p class="ls">Para comprar necesitas confirmar tu correo</p><p>Se ha enviado un enlace a <b>'+esc(email)+'</b>. Ábrelo y después vuelve aquí. Revisa también spam o promociones</p><div class="lact" style="margin-top:18px"><button type="button" class="btn sm" id="vDone">Ya lo he verificado</button><button type="button" class="btn sm ghost ink" id="vRe">Reenviar el correo</button></div><p class="amsg" id="amsg" role="status"></p>';
   document.getElementById("vRe").addEventListener("click",async function(){msg("Enviando…");var r=await sb.auth.resend({type:"signup",email:email,options:{emailRedirectTo:location.origin+"/cuenta.html"}});msg(r.error?err(r.error.message):"Correo reenviado. Mira tu bandeja de entrada",r.error?"bad":"ok")});

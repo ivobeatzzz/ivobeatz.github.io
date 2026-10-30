@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030152555">
+<meta name="ivo-version" content="20261030153626">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -475,12 +475,12 @@ async function saveFiles(table,fk,id,box,existing,prefix,barId,msg,start){var ro
 /* ---------- PRESETS ---------- */
 var PRES=[],editP=null;
 function preLink(p){return SITE+"/?preset="+encodeURIComponent(p.slug||p.id)}
-async function loadPre(){var r=await sb.from("presets").select("*, preset_files(kind,url,file_path)").order("sort").order("created_at");PRES=r.data||[];if(!STATS)await getStats();renderPre()}
+async function loadPre(){var r=await sb.from("presets").select("id,artist,price,slug,active,show_card,sort,created_at,preset_files(kind,url,file_path)").order("sort").order("created_at");PRES=r.data||[];if(!STATS)await getStats();renderPre()}
 function renderPre(){var tb=$("preTbl").querySelector("tbody"),st={},sales={};((STATS&&STATS.presets)||[]).forEach(function(x){st[x.id]=x});((STATS&&STATS.sales)||[]).forEach(function(x){if(x.kind==="preset"){var n=String(x.name).replace(/^Vocal preset estilo /,"").split(" · ")[0];sales[n]=(sales[n]||0)+Number(x.n)}});
   if(!PRES.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">Aún no hay presets</div></td></tr>';return}
   tb.innerHTML=PRES.map(function(p){var k=(p.preset_files||[]).map(function(f){return f.kind}),s=st[p.id]||{},web=p.show_card||STATIC_PRESETS.indexOf(p.slug)>-1;
     return'<tr data-id="'+p.id+'"><td><div class="item"><span class="cov">'+esc((p.artist||"?").slice(0,1).toUpperCase())+'</span><div style="min-width:0"><b>'+esc(p.artist)+'</b><small>'+eur(p.price)+(p.active?"":" · oculto")+'</small></div></div></td>'+
-    '<td class="hide-m"><span class="tag'+(k.indexOf("fl")>-1?" on":"")+'">FL Studio</span> <span class="tag'+(k.indexOf("ableton")>-1?" on":"")+'">Ableton</span>'+(!k.length&&p.download_url?' <span class="tag on">Enlace antiguo</span>':'')+'</td>'+
+    '<td class="hide-m"><span class="tag'+(k.indexOf("fl")>-1?" on":"")+'">FL Studio</span> <span class="tag'+(k.indexOf("ableton")>-1?" on":"")+'">Ableton</span>'+''+'</td>'+
     '<td class="hide-m">'+(web?'<span class="tag on">Publicado</span>':'<span class="tag warn">Pendiente de foto</span>')+'</td><td class="num hide-m">'+num(s.views)+'</td><td class="num hide-m">'+num(sales[p.artist])+'</td>'+
     '<td><div class="acts"><button type="button" class="ghost sm" data-a="link">Enlace</button><button type="button" class="ghost sm" data-a="edit">Editar</button><button type="button" class="ghost sm" data-a="vis">'+(p.active?"Ocultar":"Mostrar")+'</button><button type="button" class="danger sm" data-a="del">Borrar</button></div></td></tr>'}).join("")}
 $("preTbl").addEventListener("click",async function(e){var btn=e.target.closest("button[data-a]");if(!btn)return;var p=PRES.filter(function(x){return x.id===btn.closest("tr").dataset.id})[0];if(!p)return;
