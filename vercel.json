@@ -87,5 +87,15 @@
         }
       ]
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/b/:slug",
+      "destination": "/api/share?t=b&slug=:slug"
+    },
+    {
+      "source": "/p/:slug",
+      "destination": "/api/share?t=p&slug=:slug"
+    }
   ]
 }

@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030162953">
+<meta name="ivo-version" content="20261030164117">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -221,7 +221,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
       <div class="head"><div><h1>Beats</h1><p>Sube, edita y comparte tus beats</p></div><button type="button" class="lime" id="newBeat">＋ Nuevo beat</button></div>
       <div class="toolbar"><input type="search" id="qBeats" placeholder="Buscar beat"><div class="chips" id="fBeats"><button type="button" data-f="all" aria-pressed="true">Todos</button><button type="button" data-f="on">Visibles</button><button type="button" data-f="off">Ocultos</button><button type="button" data-f="miss">Sin archivos</button></div></div>
       <div class="card" style="padding:8px 14px"><div class="twrap"><table class="tbl" id="beatTbl"><thead><tr><th>Beat</th><th class="hide-m">Archivos</th><th class="num hide-m">Reprod.</th><th class="num hide-m">Vistas</th><th class="num hide-m">Ventas</th><th></th></tr></thead><tbody></tbody></table></div></div>
-      <p class="hint" style="margin-top:12px">«Enlace» copia la dirección directa del beat. «YouTube» la copia marcada para que en el Resumen veas cuántas visitas llegan desde tus vídeos</p>
+      <p class="hint" style="margin-top:12px">«Enlace» copia la dirección del beat; al compartirla se ve su portada, BPM y precio. «YouTube» la copia marcada para que en el Resumen veas cuántas visitas llegan desde tus vídeos</p>
     </section>
 
     <!-- PRESETS -->
@@ -471,7 +471,7 @@ async function pendingSvc(){var r=await sb.from("orders").select("id",{count:"ex
 
 /* ---------- BEATS ---------- */
 var BEATS=[],editB=null,BF="all";
-function beatLink(b,yt){return SITE+"/?beat="+encodeURIComponent(b.slug||"")+(yt?"&utm_source=youtube":"")}
+function beatLink(b,yt){return SITE+"/b/"+encodeURIComponent(b.slug||"")+(yt?"?utm_source=youtube":"")}
 async function loadBeats(){var r=await sb.from("beats").select("*, beat_files(kind,url,file_path)").order("sort").order("created_at",{ascending:false});BEATS=r.data||[];
   if(!STATS)await getStats();renderBeats()}
 function renderBeats(){var q=$("qBeats").value.trim().toLowerCase(),tb=$("beatTbl").querySelector("tbody"),st={},sales={};
@@ -537,7 +537,7 @@ async function saveFiles(table,fk,id,box,existing,prefix,barId,msg,start){var ro
 
 /* ---------- PRESETS ---------- */
 var PRES=[],editP=null;
-function preLink(p){return SITE+"/?preset="+encodeURIComponent(p.slug||p.id)}
+function preLink(p){return SITE+"/p/"+encodeURIComponent(p.slug||p.id)}
 async function loadPre(){var r=await sb.from("presets").select("id,artist,price,slug,active,show_card,sort,created_at,preset_files(kind,url,file_path)").order("sort").order("created_at");PRES=r.data||[];if(!STATS)await getStats();renderPre()}
 function renderPre(){var tb=$("preTbl").querySelector("tbody"),st={},sales={};((STATS&&STATS.presets)||[]).forEach(function(x){st[x.id]=x});((STATS&&STATS.sales)||[]).forEach(function(x){if(x.kind==="preset"){var n=String(x.name).replace(/^Vocal preset estilo /,"").split(" · ")[0];sales[n]=(sales[n]||0)+Number(x.n)}});
   if(!PRES.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">Aún no hay presets</div></td></tr>';return}
