@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030131043">
+<meta name="ivo-version" content="20261030132103">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -117,14 +117,14 @@ dialog::backdrop{background:rgba(17,17,17,.6);backdrop-filter:blur(4px)}
           <li><i>✓</i><span>Pago seguro con Stripe y entrega al momento</span></li>
         </ul>
       </div>
-      <small>Tus datos se tratan según nuestra política de privacidad</small>
+      <small>Tus datos se tratan según la política de privacidad</small>
     </div>
     <div class="card" id="authCard"></div>
   </section>
 
   <!-- PANEL -->
   <section id="vApp" hidden>
-    <div class="vbanner" id="vban" hidden><b>Verifica tu email para poder comprar</b><span>Te enviamos un enlace al registrarte. Revisa también spam o promociones</span><button type="button" class="btn sm" id="vbRe">Reenviar el correo</button><span class="msg" id="vbM"></span></div>
+    <div class="vbanner" id="vban" hidden><b>Verifica tu email para poder comprar</b><span>Se envió un enlace al registrarte. Revisa también spam o promociones</span><button type="button" class="btn sm" id="vbRe">Reenviar el correo</button><span class="msg" id="vbM"></span></div>
     <div class="hello"><div><h1 id="hi">Hola</h1><p class="sub" style="margin:0" id="hiMail"></p></div><div class="seg" role="tablist"><button type="button" data-v="compras" aria-selected="true">Mis compras</button><button type="button" data-v="datos" aria-selected="false">Mis datos</button></div></div>
 
     <div id="tCompras">
@@ -157,7 +157,7 @@ var $=function(i){return document.getElementById(i)};
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
 function msg(id,t,c){var e=$(id);if(e){e.textContent=t||"";e.className="msg"+(c?" "+c:"")}}
 function err(m){m=String(m||"");
-  if(/Invalid login/i.test(m))return"Email o contraseña incorrectos";if(/not confirmed/i.test(m))return"Confirma primero tu email: te enviamos un enlace al crear la cuenta";
+  if(/Invalid login/i.test(m))return"Email o contraseña incorrectos";if(/not confirmed/i.test(m))return"Confirma primero tu email: el enlace te llegó al crear la cuenta";
   if(/already registered/i.test(m))return"Ya existe una cuenta con ese email. Entra o recupera tu contraseña";if(/rate limit|too many/i.test(m))return"Demasiados intentos. Prueba de nuevo en unos minutos";
   if(/should be different/i.test(m))return"La nueva contraseña debe ser distinta de la anterior";
   if(/password/i.test(m)&&/least|weak|short/i.test(m))return"La contraseña debe tener al menos 8 caracteres";return"No se ha podido completar. Inténtalo de nuevo"}
@@ -182,7 +182,7 @@ function authForm(tab,note,noteCls){
   (tab==="login"?
    '<h2 style="font-size:24px">Bienvenido de nuevo</h2><p class="sub">Entra para ver tus compras y descargas</p><form id="fL"><label>Email<input type="email" id="lE" autocomplete="username" required></label><label>Contraseña<input type="password" id="lP" autocomplete="current-password" required></label><button class="btn" type="submit">Entrar</button><button type="button" class="lnk" id="fg" style="justify-self:start">He olvidado mi contraseña</button><p class="msg" id="aM" role="status"></p></form>':
    tab==="olvido"?
-   '<h2 style="font-size:24px">Recuperar contraseña</h2><p class="sub">Te enviamos un enlace para elegir una nueva</p><form id="fR"><label>Email<input type="email" id="rE" autocomplete="username" required></label><button class="btn" type="submit">Enviar enlace</button><button type="button" class="lnk" id="bk" style="justify-self:start">Volver a entrar</button><p class="msg" id="aM" role="status"></p></form>':
+   '<h2 style="font-size:24px">Recuperar contraseña</h2><p class="sub">Te llegará un enlace para elegir una nueva</p><form id="fR"><label>Email<input type="email" id="rE" autocomplete="username" required></label><button class="btn" type="submit">Enviar enlace</button><button type="button" class="lnk" id="bk" style="justify-self:start">Volver a entrar</button><p class="msg" id="aM" role="status"></p></form>':
    '<h2 style="font-size:24px">Crea tu cuenta</h2><p class="sub">La necesitas para comprar y guardar tus descargas</p><form id="fA"><label>Nombre<input id="aN" autocomplete="name" maxlength="60" required></label><label>Email<input type="email" id="aE" autocomplete="username" required></label><label>Contraseña (mínimo 8 caracteres)<input type="password" id="aP" minlength="8" autocomplete="new-password" required></label><label class="chk"><input type="checkbox" id="aC" required><span>Acepto la <a href="/#privacidad" target="_blank" rel="noopener">política de privacidad</a> y las <a href="/#condiciones" target="_blank" rel="noopener">condiciones de compra</a></span></label><button class="btn" type="submit">Crear cuenta</button><p class="msg" id="aM" role="status"></p></form>');
   c.querySelectorAll(".seg button").forEach(function(b){b.addEventListener("click",function(){authForm(b.dataset.t)})});
   if(note)msg("aM",note,noteCls||"ok");
@@ -191,13 +191,13 @@ function authForm(tab,note,noteCls){
     $("fg").addEventListener("click",function(){authForm("olvido")})}
   if(tab==="olvido"){
     $("bk").addEventListener("click",function(){authForm("login")});
-    $("fR").addEventListener("submit",async function(e){e.preventDefault();msg("aM","Enviando…");var r=await sb.auth.resetPasswordForEmail($("rE").value.trim(),{redirectTo:location.origin+location.pathname});msg("aM",r.error?err(r.error.message):"Si el email tiene cuenta, te hemos enviado un enlace. Revisa también spam",r.error?"bad":"ok")})}
+    $("fR").addEventListener("submit",async function(e){e.preventDefault();msg("aM","Enviando…");var r=await sb.auth.resetPasswordForEmail($("rE").value.trim(),{redirectTo:location.origin+location.pathname});msg("aM",r.error?err(r.error.message):"Si el email tiene cuenta, te llegará un enlace. Revisa también spam",r.error?"bad":"ok")})}
   if(tab==="alta"){
     $("fA").addEventListener("submit",async function(e){e.preventDefault();if($("aP").value.length<8){msg("aM","La contraseña debe tener al menos 8 caracteres","bad");return}msg("aM","Creando tu cuenta…");
       var r=await sb.auth.signUp({email:$("aE").value.trim(),password:$("aP").value,options:{data:{nombre:$("aN").value.trim()},emailRedirectTo:location.origin+location.pathname}});
       if(r.error){msg("aM",err(r.error.message),"bad");return}
       if(r.data.session){boot();return}
-      authForm("login","Te hemos enviado un correo para confirmar tu cuenta. Pulsa el enlace y después entra aquí")})}
+      authForm("login","Te llegará un correo para confirmar tu cuenta. Pulsa el enlace y después entra aquí")})}
 }
 
 /* ---------- panel ---------- */
@@ -220,10 +220,10 @@ $("orders").addEventListener("click",async function(e){var b=e.target.closest("b
   var box=card.querySelector(".dl");if(box.classList.contains("open")&&box.dataset.ok){box.classList.remove("open");return}
   box.classList.add("open");box.innerHTML='<span class="spin"></span> Preparando…';
   var r=await sb.functions.invoke("my-downloads",{body:{order_id:o.id}});
-  if(r.error||!r.data){box.innerHTML='<p style="color:var(--bad)">No hemos podido preparar las descargas. Inténtalo de nuevo o escríbenos a ivobeatzzz@gmail.com</p>';return}
+  if(r.error||!r.data){box.innerHTML='<p style="color:var(--bad)">No se han podido preparar las descargas. Inténtalo de nuevo o escribe a ivobeatzzz@gmail.com</p>';return}
   var d=r.data,multi=(d.items||[]).length>1;box.dataset.ok="1";
   var h=(d.items||[]).map(function(it){
-    if(it.kind==="service")return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<p style="margin:0">Estado: <strong>'+(SVST[d.service_status]||"Recibido")+'</strong>'+(d.service_status==="entregado"?"":". Te avisaremos por correo cuando esté listo")+'</p>'+(d.delivery_note?'<p style="margin:6px 0 0">'+esc(d.delivery_note)+'</p>':'')+(d.delivery_url?'<div class="bts" style="margin-top:10px"><a class="btn lime sm" href="'+esc(d.delivery_url)+'" target="_blank" rel="noopener">↓ Descargar la entrega</a></div>':'')+'</div>';
+    if(it.kind==="service")return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<p style="margin:0">Estado: <strong>'+(SVST[d.service_status]||"Recibido")+'</strong>'+(d.service_status==="entregado"?"":". Recibirás un aviso por correo cuando esté listo")+'</p>'+(d.delivery_note?'<p style="margin:6px 0 0">'+esc(d.delivery_note)+'</p>':'')+(d.delivery_url?'<div class="bts" style="margin-top:10px"><a class="btn lime sm" href="'+esc(d.delivery_url)+'" target="_blank" rel="noopener">↓ Descargar la entrega</a></div>':'')+'</div>';
     return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<div class="bts">'+(it.links||[]).map(function(l){return l.url?'<a class="btn lime sm" href="'+esc(l.url)+'" target="_blank" rel="noopener">↓ '+esc(l.label)+'</a>':'<span class="tag">'+esc(l.label)+': pendiente de envío</span>'}).join("")+'</div></div>'}).join("");
   var anyDl=(d.items||[]).some(function(i){return i.kind!=="service"});
   box.innerHTML=h+(d.receipt?'<div class="bts" style="margin-top:12px"><a class="btn ghost sm" href="'+esc(d.receipt)+'" target="_blank" rel="noopener">Recibo de pago</a></div>':'')+(anyDl?'<p>Los enlaces son personales y caducan en 24 horas. Vuelve aquí cuando necesites otros</p>':'')});
