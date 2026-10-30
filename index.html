@@ -206,6 +206,7 @@ th{color:var(--mute);font-weight:500}
 .atabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .aord{margin:0;padding:0;list-style:none}.aord li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .dls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.beat.nopv .play{opacity:.35;cursor:not-allowed}.beat.nopv .play:hover{transform:none}
 /* contacto y pie */
 form{display:grid;gap:12px;max-width:560px;margin:0 auto}
 input,textarea,select{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%;transition:border-color .2s,box-shadow .2s}
@@ -998,10 +999,11 @@ s.raf=requestAnimationFrame(tick)}
 function mk(b,k){var r=rng(k*977+13),bars="",i;
 for(i=0;i<NB;i++){var env=0.35+0.65*Math.abs(Math.sin(i/NB*Math.PI*(1.5+(k%3)*0.4)+k)),h=Math.max(0.14,Math.min(1,env*(0.45+0.55*r())));bars+='<i style="--h:'+h.toFixed(2)+';--d:-'+(r()*0.8).toFixed(2)+'s"></i>'}
 var d=document.createElement("div");d.className="beat";
-d.innerHTML='<button class="play" aria-pressed="false" aria-label="Reproducir '+b[0]+'"><svg class="i1" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg><svg class="i2" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg></button><div><b>'+b[0]+'</b><small>'+b[1]+' · '+b[2]+' · '+b[3]+'</small></div><div class="wave" role="slider" tabindex="0" aria-label="Posición de '+b[0]+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">'+bars+'</div><span class="price"><small>desde</small>'+b[4]+' €</span><a class="btn sm" href="#licencias">Licencia</a>';
+var nopv=!!b[6]&&!b[5];if(nopv)d.classList.add("nopv");
+d.innerHTML='<button class="play" aria-pressed="false" '+(nopv?'disabled title="Previsualización próximamente" ':'')+'aria-label="Reproducir '+b[0]+'"><svg class="i1" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg><svg class="i2" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg></button><div><b>'+b[0]+'</b><small>'+b[1]+' · '+b[2]+' · '+b[3]+'</small></div><div class="wave" role="slider" tabindex="0" aria-label="Posición de '+b[0]+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">'+bars+'</div><span class="price"><small>desde</small>'+b[4]+' €</span><a class="btn sm" href="#licencias">Licencia</a>';
 var w=d.querySelector(".wave");d._s={row:d,btn:d.querySelector(".play"),wave:w,bars:w.children,p:0,n:-1,on:false,a:null,src:b[5],name:b[0]};return d}
-function paint(){L.innerHTML="";B.forEach(function(b,k){L.appendChild(mk(b,k))})}paint();
-window.__setBeats=function(list){B.length=0;list.forEach(function(b){B.push(b)});paint();if(window.__chips)window.__chips();if(window.__pickReset)window.__pickReset()};
+function renderList(){L.innerHTML="";B.forEach(function(b,k){L.appendChild(mk(b,k))})}renderList();
+window.__setBeats=function(list){B.length=0;list.forEach(function(b){B.push(b)});renderList();if(window.__chips)window.__chips();if(window.__pickReset)window.__pickReset()};
 L.addEventListener("click",function(e){var row=e.target.closest(".beat");if(!row)return;var s=row._s;
 if(e.target.closest(".play")){s.on?pause(s):play(s);return}
 var w=e.target.closest(".wave");if(w){var q=w.getBoundingClientRect();seek(s,(e.clientX-q.left)/q.width)}});

@@ -239,7 +239,7 @@ $("beatList").addEventListener("click",async function(e){
     if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);
     var r2p=(b.beat_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");loadBeats()}});
-$("fBeat").addEventListener("submit",async function(e){e.preventDefault();var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
+$("fBeat").addEventListener("submit",async function(e){e.preventDefault();if(!(editB&&editB.preview_path)&&!$("bPrev").files[0]&&!confirm("Este beat no tiene previsualización: en la web aparecerá, pero no se podrá escuchar. ¿Guardarlo igualmente?"))return;var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
   try{
     var genre=$("bGenre").value==="Otro"?($("bGenreOther").value.trim()||"Otro"):$("bGenre").value;
     var row={name:$("bName").value.trim(),bpm:parseInt($("bBpm").value,10),key:$("bKey").value,genre:genre,price_from:parseInt($("bPrice").value,10),sort:parseInt($("bSort").value,10)||0};
