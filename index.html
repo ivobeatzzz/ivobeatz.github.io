@@ -1282,7 +1282,7 @@ var pk=$("pick"),pl=$("plist"),pgo=$("pgo"),lk=null,sel=null,rows=[],pre=null;
 closeOn(pk);pk.addEventListener("close",function(){if(typeof cur!=="undefined"&&cur)pause(cur)});
 window.__pickReset=function(){rows.length=0;pl.innerHTML=""};
 function build(){if(rows.length)return;B.forEach(function(b,k){var d=mk(b,k),a=d.querySelector("a.btn"),bt=document.createElement("button");bt.type="button";bt.className="btn sm sel";bt.textContent="Elegir";d.replaceChild(bt,a);pl.appendChild(d);rows.push(d)})}
-function choose(row){rows.forEach(function(r){var on=r===row;r.classList.toggle("chosen",on);r.querySelector(".sel").textContent=on?"Elegido ✓":"Elegir"});sel=row._s.name;pgo.disabled=false;pgo.textContent="Continuar con «"+sel+"»"}
+function choose(row){window.__selIdx=rows.indexOf(row);rows.forEach(function(r){var on=r===row;r.classList.toggle("chosen",on);r.querySelector(".sel").textContent=on?"Elegido ✓":"Elegir"});sel=row._s.name;pgo.disabled=false;pgo.textContent="Continuar con «"+sel+"»"}
 pl.addEventListener("click",function(e){var row=e.target.closest(".beat");if(!row)return;var s=row._s;
 if(e.target.closest(".play")){s.on?pause(s):play(s);return}
 var w=e.target.closest(".wave");if(w){var q=w.getBoundingClientRect();seek(s,(e.clientX-q.left)/q.width);return}
@@ -1295,7 +1295,7 @@ $("pnote").textContent="";sel=null;pgo.disabled=true;pgo.textContent="Elige un b
 rows.forEach(function(r){r.classList.remove("chosen");r.querySelector(".sel").textContent="Elegir"});
 if(pre){var m=rows.filter(function(r){return r._s.name===pre})[0];if(m)choose(m)}
 if(!pk.open)pk.showModal();pk.querySelector(".lbox").scrollTop=0}
-pgo.addEventListener("click",async function(){if(!sel)return;var c=LIC[lk],u=PAYHIP["licencia-"+lk],bb=B.filter(function(x){return x[0]===sel})[0];
+pgo.addEventListener("click",async function(){if(!sel)return;var c=LIC[lk],u=PAYHIP["licencia-"+lk],bb=B[window.__selIdx]||B.filter(function(x){return x[0]===sel})[0];
 if(bb&&bb[6]&&window.__checkout){$("pnote").textContent="Abriendo el pago seguro…";var okc=await window.__checkout({type:"beat",beat_id:bb[6],tier:lk},pgo);if(okc)return;$("pnote").textContent="";pgo.textContent="Continuar con «"+sel+"»"}
 if(u){window.open(u+(u.indexOf("?")<0?"?":"&")+"beat="+encodeURIComponent(sel),"_blank","noopener");$("pnote").textContent="Te hemos abierto el pago de la licencia "+c[0]+" para «"+sel+"».";return}
 mail("Licencia "+c[0]+" · "+sel,"Hola, equipo de IVO Beatz, quiero la licencia "+c[0]+" ("+c[1]+") del beat «"+sel+"».\n\nMi nombre:\n");
