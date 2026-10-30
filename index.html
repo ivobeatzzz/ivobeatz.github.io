@@ -814,7 +814,7 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 </head>
 <body>
 <header class="nav"><div class="wrap"><a class="logo" href="#top">IVO Beatz</a>
-<nav id="mnav" aria-label="Principal"><a href="#beats">Beats</a><a href="#licencias">Licencias</a><a href="#servicios">Servicios</a><a href="#plugins">Plugins</a><a href="#plantillas">Plantillas</a><a href="#herramientas">Herramientas</a><a href="#sobre-mi">Sobre nosotros</a><a href="#cuenta" id="accb">Cuenta</a><a class="mcta" href="#contacto">Contacto</a></nav>
+<nav id="mnav" aria-label="Principal"><a href="#beats">Beats</a><a href="#licencias">Licencias</a><a href="#servicios">Servicios</a><a href="#plugins">Plugins</a><a href="#plantillas">Plantillas</a><a href="#herramientas">Herramientas</a><a href="#sobre-mi">Sobre nosotros</a><a href="cuenta.html" id="accb">Mi cuenta</a><a class="mcta" href="#contacto">Contacto</a></nav>
 <a class="btn sm hcta" href="#contacto">Contacto</a><button class="menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mnav"><span></span><span></span></button></div></header>
 
 <main id="top">
@@ -1374,11 +1374,15 @@ rest("presets?select=id,artist,price,photo_path,stripe_link&active=eq.true&order
     if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})});
 
 /* ---- pago con Stripe ---- */
+var pending=null;
 window.__checkout=function(body,btn){var t=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="Abriendo el pago…"}
   var restore=function(){if(btn){btn.disabled=false;btn.textContent=t}return false};
-  return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(body)})
-  .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
-  .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}return restore()}).catch(restore)};
+  var ask=function(){restore();pending={body:body};document.querySelectorAll("dialog[open]").forEach(function(x){if(x.id!=="acc")x.close()});
+    if(!d.open)d.showModal();entrar("login","Para comprar necesitas una cuenta: así tus descargas quedan guardadas en tu panel. Entra o crea una gratis");return true};
+  return lib().then(function(){return sb.auth.getSession()}).then(function(r){var s=r.data.session;if(!s)return ask();
+    return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+s.access_token},body:JSON.stringify(body)})
+    .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
+    .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();return restore()})}).catch(restore)};
 /* ---- cuentas ---- */
 var d=$("acc"),body=$("abody"),btn=$("accb"),sb=null,loading=null,prof=null;
 if(!d||!btn)return;
@@ -1403,21 +1407,22 @@ function entrar(tab,note){
   '<form class="af" id="afA"><label>Nombre<input id="aAn" autocomplete="name" maxlength="60"></label><label>Email<input type="email" id="aAe" autocomplete="username" required></label><label>Contraseña (mínimo 8 caracteres)<input type="password" id="aAp" autocomplete="new-password" minlength="8" required></label><label class="achk"><input type="checkbox" id="aAc" required><span>He leído la <button type="button" class="alnk" data-leg="privacidad">política de privacidad</button></span></label><button class="btn" type="submit">Crear cuenta</button><p class="amsg" id="amsg" role="status"></p></form>'));
   body.querySelectorAll(".atabs button").forEach(function(b){b.addEventListener("click",function(){entrar(b.dataset.t)})});
   if(tab==="login"){$("afL").addEventListener("submit",async function(e){e.preventDefault();msg("Entrando…");var r=await sb.auth.signInWithPassword({email:$("aLe").value.trim(),password:$("aLp").value});if(r.error){msg(err(r.error.message),"bad");return}cuenta(r.data.session)});
-    $("aFor").addEventListener("click",async function(){var em=$("aLe").value.trim();if(!em){msg("Escribe tu email arriba y vuelve a pulsar","bad");return}msg("Enviando…");var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});msg(r.error?err(r.error.message):"Si el email existe, te hemos enviado un enlace para cambiar la contraseña",r.error?"bad":"ok")})}
+    $("aFor").addEventListener("click",async function(){var em=$("aLe").value.trim();if(!em){msg("Escribe tu email arriba y vuelve a pulsar","bad");return}msg("Enviando…");var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+"/cuenta.html"});msg(r.error?err(r.error.message):"Si el email existe, te hemos enviado un enlace para cambiar la contraseña",r.error?"bad":"ok")})}
   else{$("afA").addEventListener("submit",async function(e){e.preventDefault();var pw=$("aAp").value;if(pw.length<8){msg("La contraseña debe tener al menos 8 caracteres","bad");return}msg("Creando cuenta…");
-    var r=await sb.auth.signUp({email:$("aAe").value.trim(),password:pw,options:{data:{nombre:$("aAn").value.trim()},emailRedirectTo:location.origin+location.pathname}});
+    var r=await sb.auth.signUp({email:$("aAe").value.trim(),password:pw,options:{data:{nombre:$("aAn").value.trim()},emailRedirectTo:location.origin+"/cuenta.html"}});
     if(r.error){msg(err(r.error.message),"bad");return}
     if(r.data.session){cuenta(r.data.session);return}
     entrar("login","Te hemos enviado un correo para confirmar tu cuenta. Después podrás entrar")})}}
 async function cuenta(s){
+  if(pending){var pb=pending.body;pending=null;d.close();window.__checkout(pb);return}
   var u=s.user;shell('<h3 id="at">Tu cuenta</h3><p class="ls">Cargando…</p>');
   var p=await sb.from("profiles").select("nombre,role,email").eq("id",u.id).maybeSingle();prof=p.data||{};
   var o=await sb.from("orders").select("id,created_at,status,total,items").eq("user_id",u.id).order("created_at",{ascending:false}).limit(20);
   var list=(o.data||[]).map(function(x){var its=(x.items||[]).map(function(i){return esc(i.name||i.title||"")}).filter(Boolean).join(", ");return'<li><b>'+new Date(x.created_at).toLocaleDateString("es-ES")+'</b>'+(its?' · '+its:'')+(x.total!=null?' · '+x.total+' €':'')+'</li>'}).join("");
   shell('<h3 id="at">Hola, '+esc(prof.nombre||u.email.split("@")[0])+'</h3><p class="ls">'+esc(u.email)+'</p><h4>Tus compras</h4>'+(list?'<ul class="aord">'+list+'</ul>':'<p class="lnote" style="margin:0">Todavía no tienes compras. Cuando compres, aparecerán aquí</p>')+
-  '<div class="lact" style="margin-top:22px">'+(prof.role==="admin"?'<a class="btn sm" href="admin.html">Panel de administración</a>':'')+'<button type="button" class="btn sm ghost ink" id="aOut">Cerrar sesión</button></div>');
+  '<div class="lact" style="margin-top:22px"><a class="btn sm" href="cuenta.html">Ir a mi panel</a>'+(prof.role==="admin"?'<a class="btn sm ghost ink" href="admin.html">Panel de administración</a>':'')+'<button type="button" class="btn sm ghost ink" id="aOut">Cerrar sesión</button></div>');
   $("aOut").addEventListener("click",async function(){await sb.auth.signOut();entrar("login")})}
-btn.addEventListener("click",async function(e){e.preventDefault();var m=document.getElementById("mnav"),mb=document.querySelector(".menu");if(m&&mb&&mb.getAttribute("aria-expanded")==="true")mb.click();
+btn.addEventListener("click",async function(e){if(!e.altKey)return;e.preventDefault();var m=document.getElementById("mnav"),mb=document.querySelector(".menu");if(m&&mb&&mb.getAttribute("aria-expanded")==="true")mb.click();
   try{await lib()}catch(x){alert("No se pudo cargar el acceso. Revisa tu conexión");return}view("login")});
 d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()});
 (function(){var q=new URLSearchParams(location.search),c=q.get("compra"),sid=q.get("s");if(!c)return;
@@ -1491,7 +1496,7 @@ say("Licencias de beats: "+parts.join(", ")+" y Exclusiva desde 200 €. Cambian
 {k:/(pago|pagar|payhip|tarjeta|paypal|como recibo|descarga|descargar|recibo|factura)/,a:function(){say("Los pagos se hacen con Stripe y, al completar el pago, recibes el enlace de descarga por correo. Ahora mismo estamos activando el pago online; mientras tanto puedes hacer tu pedido desde la web y se envía por correo",[["Elegir licencia",function(){go("licencias")}]])}},
 {k:/(devoluc|reembols|cancelar|desisti)/,a:function(){say("Al ser contenido digital que se entrega al momento, se pierde el derecho de desistimiento una vez iniciada la descarga. Si el archivo llega defectuoso o no coincide con lo que compraste, escríbenos y lo solucionamos o devolvemos el importe",[["Ver condiciones",function(){leg("condiciones")}],["Escribirnos",function(){go("contacto")}]])}},
 {k:/(cuanto tarda|plazo|tardan|tiempo de entrega|cuando (esta|llega|entregan)|dias)/,a:function(){say("Mezcla, unos 5 días. Máster, unas 48 horas. Mezcla y máster juntos, unos 6 días. Son plazos orientativos y dependen de la carga de trabajo",[["Pedir un servicio",function(){go("servicios")}]])}},
-{k:/(cuenta|registr|iniciar sesion|login|contrasena|mis compras|mis descargas|entrar)/,a:function(){say("Con una cuenta puedes ver tus compras y tus descargas en un solo sitio",[["Entrar",function(){closeP();if(window.__openAccount)window.__openAccount("login")}],["Crear cuenta",function(){closeP();if(window.__openAccount)window.__openAccount("alta")}]])}},
+{k:/(cuenta|registr|iniciar sesion|login|contrasena|mis compras|mis descargas|entrar)/,a:function(){say("Con tu cuenta tienes todas tus compras en un panel y puedes volver a descargarlas cuando quieras. Para comprar necesitas una",[["Ir a mi cuenta",function(){location.href="cuenta.html"}],["Crear cuenta",function(){location.href="cuenta.html#alta"}]])}},
 {k:/(contacto|contactar|email|correo|mail|instagram|escribir|hablar|persona|whatsapp|telefono|llamar)/,a:function(){say("Puedes escribirnos por correo o por Instagram. Respondemos normalmente en 24 a 48 horas",[["Ir al formulario",function(){go("contacto")}],["Copiar email",function(b){copyMail(b)}],["Instagram",function(){open_("https://ig.me/m/ivobeatzzz")}]])}},
 {k:/(privacidad|cookies|datos personales|aviso legal|legal|rgpd|condiciones)/,a:function(){say("Aquí tienes los textos legales",[["Aviso legal",function(){leg("aviso-legal")}],["Privacidad",function(){leg("privacidad")}],["Cookies",function(){leg("cookies")}],["Licencias y devoluciones",function(){leg("condiciones")}]])}},
 {k:/(quienes sois|quien eres|sobre (vosotros|nosotros)|experiencia|malaga|equipo)/,a:function(){say("Somos IVO Beatz, de Málaga, con más de 8 años de experiencia en producción musical y formación de Técnico de Sonido para Audiovisuales y Espectáculos",[["Sobre nosotros",function(){go("sobre-mi")}]])}},

@@ -302,7 +302,7 @@ async function loadOrders(){
   if(!r.data.length){L.innerHTML='<p class="hint">Todavía no hay pedidos. Aparecerán aquí en cuanto alguien pague con Stripe</p>';return}
   L.innerHTML=r.data.map(function(o){var it=(o.items||[])[0]||{},links=(it.links||[]);
     var st=o.needs_manual?'<span class="tag" style="border-color:var(--bad);color:var(--bad)">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag" style="border-color:var(--bad);color:var(--bad)">Correo sin enviar</span>';
-    var lk=links.map(function(l){return l.url?'<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
+    var lk=links.map(function(l){return l.url==="r2"?'<span>'+esc(l.label)+' (R2)</span>':l.url?'<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
     return'<div class="row"><div class="t"><b>'+esc(it.name||"Pedido")+'</b><small>'+new Date(o.created_at).toLocaleString("es-ES")+' · '+esc(o.email)+(o.total!=null?' · '+o.total+' €':'')+'</small>'+(lk?'<div style="margin-top:6px;font-size:13px">Enlaces del cliente: '+lk+'</div>':'')+'</div>'+st+'</div>'}).join("")}
 
 boot();
