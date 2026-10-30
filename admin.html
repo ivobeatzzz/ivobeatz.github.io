@@ -107,11 +107,11 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
         <label id="bGenreOtherW" hidden>Otro estilo<input id="bGenreOther" maxlength="30"></label>
         <label>Previsualización (MP3, 30 a 60 s, con marca de voz)<input id="bPrev" type="file" accept="audio/mpeg,audio/mp3,.mp3"></label>
         <div class="g3">
-          <label>Enlace de descarga: MP3<input id="lMp3" type="url" placeholder="https://drive.google.com/…"></label>
-          <label>Enlace de descarga: WAV<input id="lWav" type="url" placeholder="https://drive.google.com/…"></label>
-          <label>Enlace de descarga: stems<input id="lZip" type="url" placeholder="https://drive.google.com/…"></label>
+          <div style="display:grid;gap:8px"><label>MP3 · enlace externo<input id="lMp3" type="url" placeholder="https://drive.google.com/…"></label><label>o subir a R2 (caduca)<input id="fMp3" type="file" accept=".mp3,audio/mpeg"></label></div>
+          <div style="display:grid;gap:8px"><label>WAV · enlace externo<input id="lWav" type="url" placeholder="https://drive.google.com/…"></label><label>o subir a R2 (caduca)<input id="fWav" type="file" accept=".wav,audio/wav,audio/x-wav"></label></div>
+          <div style="display:grid;gap:8px"><label>Stems · enlace externo<input id="lZip" type="url" placeholder="https://drive.google.com/…"></label><label>o subir a R2 (caduca)<input id="fZip" type="file" accept=".zip,application/zip"></label></div>
         </div>
-        <p class="hint">Solo la previsualización se guarda en la web. Los archivos completos los tienes tú en Drive, Dropbox o similar, y aquí pegas su enlace: se enviará por correo al cliente solo cuando compre (MP3 en Básica, MP3 y WAV en Estándar, WAV y stems en el resto)</p>
+        <p class="hint">Solo la previsualización se guarda en la web. Para cada versión elige una de dos vías: pegar un enlace de Drive o Dropbox (no caduca) o subir el archivo a Cloudflare R2 (el cliente recibe un enlace que caduca). Se envía por correo solo cuando compre: MP3 en Básica, MP3 y WAV en Estándar, WAV y stems en el resto</p>
         <div class="bar" id="bBar" hidden><i></i></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button type="submit" id="bSave">Guardar beat</button>
@@ -198,6 +198,20 @@ async function upload(bucket,path,file,onDone){
   if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
 
 
+
+/* ---------- archivos grandes: Cloudflare R2 (enlaces que caducan) ---------- */
+async function r2sign(action,path){
+  var r=await sb.functions.invoke("r2-sign",{body:{action:action,path:path}});
+  if(r.error||!r.data||!r.data.url){var m="";try{var j=await r.error.context.json();m=j.error}catch(x){}
+    throw new Error(m==="R2 no configurado"?"R2 aún no está configurado. Usa un enlace externo o completa la configuración de R2":"No se pudo preparar la subida"+(m?": "+m:""))}
+  return r.data.url}
+function putR2(path,file,onPct){return r2sign("put",path).then(function(url){return new Promise(function(res,rej){
+  var x=new XMLHttpRequest();x.open("PUT",url);
+  x.upload.onprogress=function(e){if(e.lengthComputable&&onPct)onPct(e.loaded/e.total)};
+  x.onload=function(){x.status>=200&&x.status<300?res(path):rej(new Error("Error al subir «"+file.name+"» (código "+x.status+"). Revisa la configuración CORS de R2"))};
+  x.onerror=function(){rej(new Error("No se pudo subir «"+file.name+"». Revisa la configuración CORS de R2"))};
+  x.send(file)})})}
+async function delR2(paths){for(var i=0;i<paths.length;i++){try{var u=await r2sign("delete",paths[i]);await fetch(u,{method:"DELETE"})}catch(e){}}}
 function mb(n){return(n/1048576).toFixed(0)+" MB"}
 
 /* ---------- BEATS ---------- */
@@ -206,7 +220,7 @@ $("bGenre").addEventListener("change",function(){$("bGenreOtherW").hidden=$("bGe
 function resetBeat(){editB=null;$("fBeat").reset();$("bPrice").value=19;$("bSort").value=0;$("beatTitle").textContent="Nuevo beat";$("bCancel").hidden=true;$("bGenreOtherW").hidden=true;bar("bBar",null)}
 $("bCancel").addEventListener("click",function(){resetBeat();say($("bMsg"),"")});
 async function loadBeats(){
-  var r=await sb.from("beats").select("*, beat_files(kind,url)").order("sort").order("created_at");
+  var r=await sb.from("beats").select("*, beat_files(kind,url,file_path)").order("sort").order("created_at");
   var L=$("beatList");if(r.error){L.textContent="No se pudieron cargar los beats";return}
   if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún beat. Mientras no haya ninguno, la web muestra beats de ejemplo</p>';return}
   L.innerHTML=r.data.map(function(b){var kinds=(b.beat_files||[]).map(function(f){return f.kind});
@@ -219,10 +233,11 @@ $("beatList").addEventListener("click",async function(e){
   var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),b=$("beatList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!b)return;
   if(btn.dataset.a==="edit"){editB=b;$("bName").value=b.name;$("bBpm").value=b.bpm;$("bKey").value=b.key;
     var known=["Trap","Crank","Waera","Reggaeton"].indexOf(b.genre)>-1;$("bGenre").value=known?b.genre:"Otro";$("bGenreOtherW").hidden=known;$("bGenreOther").value=known?"":b.genre;
-    $("bPrice").value=b.price_from;$("bSort").value=b.sort;["mp3","wav","stems"].forEach(function(k){var f=(b.beat_files||[]).filter(function(x){return x.kind===k})[0];$({mp3:"lMp3",wav:"lWav",stems:"lZip"}[k]).value=f&&f.url?f.url:""});$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no cambias la previsualización, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
+    $("bPrice").value=b.price_from;$("bSort").value=b.sort;["mp3","wav","stems"].forEach(function(k){var f=(b.beat_files||[]).filter(function(x){return x.kind===k})[0];var el=$({mp3:"lMp3",wav:"lWav",stems:"lZip"}[k]);el.value=f&&f.url?f.url:"";el.placeholder=f&&f.file_path?"Guardado en R2 · sube otro archivo para reemplazarlo":"https://drive.google.com/…"});$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no cambias la previsualización, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
   if(btn.dataset.a==="vis"){await sb.from("beats").update({active:!b.active}).eq("id",b.id);loadBeats()}
   if(btn.dataset.a==="del"){if(!confirm("¿Borrar «"+b.name+"» y todos sus archivos? No se puede deshacer"))return;
     if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);
+    var r2p=(b.beat_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");loadBeats()}});
 $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
   try{
@@ -234,10 +249,16 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
     var pv=$("bPrev").files[0];
     if(pv){say(msg,"Subiendo la previsualización…");bar("bBar",40);var p=id+"/"+Date.now()+"."+ext(pv);await upload("previews",p,pv);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;
       if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
-    var L3=[["mp3","lMp3"],["wav","lWav"],["stems","lZip"]];bar("bBar",75);
-    for(var k=0;k<L3.length;k++){var v=$(L3[k][1]).value.trim();
-      if(v){if(!/^https:\/\//i.test(v))throw new Error("Los enlaces de descarga deben empezar por https://");var fr=await sb.from("beat_files").upsert({beat_id:id,kind:L3[k][0],url:v,file_path:null},{onConflict:"beat_id,kind"});if(fr.error)throw fr.error}
-      else{await sb.from("beat_files").delete().eq("beat_id",id).eq("kind",L3[k][0])}}
+    var L3=[["mp3","lMp3","fMp3"],["wav","lWav","fWav"],["stems","lZip","fZip"]];
+    var ex=editB?(editB.beat_files||[]):[];
+    for(var k=0;k<L3.length;k++){var kind=L3[k][0],v=$(L3[k][1]).value.trim(),fl=$(L3[k][2]).files[0],old=ex.filter(function(x){return x.kind===kind})[0];
+      if(fl){var pth=id+"/"+kind+"-"+safe(fl.name),base=10+80*k/L3.length,span=80/L3.length;
+        await putR2(pth,fl,function(q){bar("bBar",Math.round(base+span*q));say(msg,"Subiendo "+fl.name+" ("+mb(fl.size)+") · "+Math.round(q*100)+"%")});
+        var f1=await sb.from("beat_files").upsert({beat_id:id,kind:kind,file_path:pth,url:null},{onConflict:"beat_id,kind"});if(f1.error)throw f1.error;
+        if(old&&old.file_path&&old.file_path!==pth)await delR2([old.file_path])}
+      else if(v){if(!/^https:\/\//i.test(v))throw new Error("Los enlaces de descarga deben empezar por https://");var f2=await sb.from("beat_files").upsert({beat_id:id,kind:kind,url:v,file_path:null},{onConflict:"beat_id,kind"});if(f2.error)throw f2.error;
+        if(old&&old.file_path)await delR2([old.file_path])}
+      else if(old&&old.url){await sb.from("beat_files").delete().eq("beat_id",id).eq("kind",kind)}}
     bar("bBar",100);say(msg,"Beat guardado","ok");setTimeout(function(){bar("bBar",null)},800);resetBeat();loadBeats();say(msg,"Beat guardado","ok")
   }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
   sv.disabled=false});
