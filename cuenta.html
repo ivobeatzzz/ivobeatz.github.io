@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030202936">
+<meta name="ivo-version" content="20261030210129">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -57,6 +57,10 @@ form{display:grid;gap:14px}
 /* panel */
 .hello{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:44px 0 24px}
 .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:26px}
+.rwc{display:flex;align-items:center;justify-content:space-between;gap:16px 24px;flex-wrap:wrap;background:var(--camo);color:#f5f5f2;border-radius:20px;padding:22px 24px;margin-bottom:16px}
+.rwc small{display:block;font-size:13px;opacity:.75}.rwc b.h{display:block;font-size:24px;font-weight:800;letter-spacing:-.02em;margin:2px 0 4px}
+.rwc p{margin:0;font-size:14px;opacity:.9}.rwc .t{font-variant-numeric:tabular-nums;font-weight:700}
+.rwc .btn{background:#c6e27a;border-color:#c6e27a;color:#111}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px 20px}
 .stat small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
 .stat b{display:block;font-size:26px;letter-spacing:-.02em;margin-top:4px}
@@ -139,6 +143,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
     <div class="hello"><div><h1 id="hi">Hola</h1><p class="sub" style="margin:0" id="hiMail"></p></div><div class="seg" role="tablist"><button type="button" data-v="compras" aria-selected="true">Mis compras</button><button type="button" data-v="datos" aria-selected="false">Mis datos</button></div></div>
 
     <div id="tCompras">
+      <div class="rwc" id="rwc" hidden></div>
       <div class="stats"><div class="stat hl"><small>Compras</small><b id="sN">0</b></div><div class="stat"><small>Licencias de beats</small><b id="sL">0</b></div><div class="stat"><small>Presets</small><b id="sP">0</b></div></div>
       <h2>Tus compras</h2>
       <div class="orders" id="orders"></div>
@@ -267,7 +272,15 @@ async function boot(){
   $("dName").value=PROF.nombre||"";$("dMail").value=s.user.email;window.__userEmail=s.user.email;$("hAdmin").hidden=PROF.role!=="admin";
   $("delAcc").href="mailto:ivobeatzzz@gmail.com?subject="+encodeURIComponent("Eliminar mi cuenta")+"&body="+encodeURIComponent("Hola, quiero eliminar mi cuenta de IVO Beatz asociada a "+s.user.email);
   $("vban").hidden=!!s.user.email_confirmed_at;
-  view("app");loadOrders()}
+  view("app");loadOrders();loadReward()}
+/* regalo de primera compra: −50 % en una licencia Básica durante 24 horas */
+var rwTimer=null;
+async function loadReward(){var box=$("rwc");if(!box)return;clearInterval(rwTimer);box.hidden=true;
+  var r=await sb.from("beat_rewards").select("pct,expires_at,used_at").maybeSingle();var x=r.data;
+  if(r.error||!x||x.used_at||!x.expires_at)return;var exp=Date.parse(x.expires_at);if(!(exp>Date.now()))return;
+  box.innerHTML='<div><small>Un regalo por tu primera compra</small><b class="h">−'+(Number(x.pct)||50)+' % en tu próximo beat con licencia Básica</b><p>Se aplica solo en el carrito con esta cuenta. Caduca en <span class="t" id="rwt"></span></p></div><a class="btn" href="/#beats">Elegir beat</a>';box.hidden=false;
+  function tick(){var l=Math.max(0,exp-Date.now()),t=Math.floor(l/1000),h=Math.floor(t/3600),m=Math.floor(t%3600/60),sx=t%60,e=$("rwt");if(e)e.textContent=(h<10?"0":"")+h+":"+(m<10?"0":"")+m+":"+(sx<10?"0":"")+sx;if(!l){clearInterval(rwTimer);box.hidden=true}}
+  tick();rwTimer=setInterval(tick,1000)}
 sb.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY"){recovery=true;view("auth");authForm("nueva")}});
 setTimeout(boot,/access_token|type=/.test(location.hash)?500:0);
 })();

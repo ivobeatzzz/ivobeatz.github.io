@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030202936">
+<meta name="ivo-version" content="20261030210129">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -575,7 +575,7 @@ function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList"
   L.innerHTML=list.map(function(o){var its=o.items||[],svc=its.filter(function(i){return i.kind==="service"})[0];
     var tags=(o.needs_manual?'<span class="tag bad">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag bad">Correo sin enviar</span>')+(svc?' <span class="tag '+(o.service_status==="entregado"?"on":"warn")+'">'+(ST[o.service_status]||"Recibido")+'</span>':'');
     var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+su(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
-      return'<div class="li"><b>'+esc(it.name)+'</b> · '+(it.free?'<b style="color:var(--ok)">Gratis</b> (oferta '+((it.free_every||4)-1)+'+1)':eur(it.unit!=null?it.unit:it.price)+(it.pack_pct?' (pack −'+it.pack_pct+' %)':''))+(lk?' · '+lk:'')+'</div>'}).join("");
+      return'<div class="li"><b>'+esc(it.name)+'</b> · '+(it.free?'<b style="color:var(--ok)">Gratis</b> (oferta '+((it.free_every||4)-1)+'+1)':eur(it.unit!=null?it.unit:it.price)+(it.reward_pct?' (regalo de primera compra −'+it.reward_pct+' %)':it.pack_pct?' (pack −'+it.pack_pct+' %)':''))+(lk?' · '+lk:'')+'</div>'}).join("");
     var sv="";if(svc){var det=svc.details||{};sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+su(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
       '<div class="g3"><label>Estado<select class="sS">'+Object.keys(ST).map(function(k){return'<option value="'+k+'"'+(o.service_status===k?" selected":"")+'>'+ST[k]+'</option>'}).join("")+'</select></label><label>Enlace de entrega<input class="sU" type="url" placeholder="https://…" value="'+esc(o.delivery_url||"")+'"></label><label>Nota para el cliente<input class="sN" maxlength="300" value="'+esc(o.delivery_note||"")+'"></label></div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="sm" data-a="save">Guardar</button><button type="button" class="ghost sm" data-a="notify">Guardar y avisar al cliente</button><span class="msg sM"></span></div></div>'}
