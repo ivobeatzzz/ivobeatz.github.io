@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030160750">
+<meta name="ivo-version" content="20261030162631">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -136,6 +136,13 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 @media (max-width:900px){.filerow{grid-template-columns:44px minmax(0,1fr)}.filerow .fa{grid-column:1/-1}}
 .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:120px}.bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .2s}
 .copyok{color:var(--ok)!important;border-color:var(--ok)!important}
+.mfa{width:min(460px,100%)}
+.mfa h2{font-size:20px;margin:14px 0 4px;letter-spacing:-.01em}.mfa .sub{color:var(--mute);margin:0 0 16px;font-size:14px}
+.mfa ol{margin:0 0 16px;padding-left:20px;display:grid;gap:12px;font-size:14px}
+.mfa .qr{display:grid;place-items:center;background:#fff;border-radius:14px;padding:12px;width:212px;margin:8px 0}.mfa .qr img{width:188px;height:188px;display:block}
+.mfa .secret{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.mfa code{font:600 13px/1.4 ui-monospace,Menlo,monospace;background:var(--soft);border:1px solid var(--line);border-radius:8px;padding:6px 8px;word-break:break-all}
+.mfa .code{font:700 26px/1 ui-monospace,Menlo,monospace;letter-spacing:.4em;text-align:center;padding:14px 10px}
+.mfa form{display:grid;gap:12px}.mfa .row{display:flex;gap:8px;flex-wrap:wrap}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:90}.toast.on{opacity:1;transform:translate(-50%,0)}
 .svc{margin-top:10px;padding:12px;border-radius:14px;background:var(--soft);border:1px solid var(--line);display:grid;gap:10px}
 .svc table{font-size:13px;width:auto}.svc td{padding:2px 10px 2px 0;border:0}.svc td:first-child{color:var(--mute)}
@@ -168,6 +175,13 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
       <button type="submit">Entrar</button>
       <p class="msg" id="lMsg" role="status"></p>
     </form>
+  </div>
+</div>
+
+<div id="vMfa" class="login" hidden>
+  <div class="card mfa">
+    <div class="brand" style="margin-bottom:6px"><i>IVO</i>Panel IVO Beatz</div>
+    <div id="mfaBody"></div>
   </div>
 </div>
 
@@ -239,6 +253,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
           <form id="fPack" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
         <div class="card"><h2>Cupones</h2><p class="hint">Crea los códigos en Stripe: Catálogo de productos → Cupones → Nuevo, y después «Crear código promocional». El cliente lo escribe en la página de pago</p><p style="margin-top:14px"><a class="btn ghost sm" href="https://dashboard.stripe.com/coupons" target="_blank" rel="noopener">Abrir cupones en Stripe ↗</a></p></div>
         <div class="card"><h2>Medición</h2><p class="hint" style="margin-bottom:12px">Las visitas se cuentan de forma anónima, sin cookies. Tus propias visitas desde este navegador no se cuentan</p><label style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);font-weight:500"><input type="checkbox" id="noTrack"> No contar mis visitas en este navegador</label></div>
+        <div class="card"><h2>Verificación en dos pasos</h2><p id="mfaInfo" style="margin:0 0 10px"></p><p class="hint">Cada vez que abras el navegador, el panel te pedirá tu contraseña y el código de tu app de autenticación. Si pierdes el móvil, escríbeme y la restablezco desde Supabase</p></div>
         <div class="card"><h2>Tu sesión</h2><p class="hint" style="margin-bottom:12px" id="who2"></p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost sm" href="/" target="_blank" rel="noopener">↗ Ver la web</a><button type="button" class="ghost sm" id="bOut2">Cerrar sesión</button></div></div>
         <div class="card"><h2>Accesos rápidos</h2><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn ghost sm" href="https://dashboard.stripe.com" target="_blank" rel="noopener">Stripe ↗</a><a class="btn ghost sm" href="https://supabase.com/dashboard/project/juxmlitraftqvryteexu" target="_blank" rel="noopener">Supabase ↗</a><a class="btn ghost sm" href="https://resend.com/emails" target="_blank" rel="noopener">Resend ↗</a><a class="btn ghost sm" href="https://dash.cloudflare.com/?to=/:account/r2" target="_blank" rel="noopener">Cloudflare R2 ↗</a></div></div>
       </div>
@@ -347,13 +362,43 @@ async function copy(t,btn){try{await navigator.clipboard.writeText(t)}catch(e){v
   toast("Enlace copiado");if(btn){btn.classList.add("copyok");setTimeout(function(){btn.classList.remove("copyok")},1500)}}
 
 /* ---------- sesión ---------- */
-function show(v){$("vLogin").hidden=v!=="login";$("vApp").hidden=v!=="app"}
+function show(v){$("vLogin").hidden=v!=="login";$("vMfa").hidden=v!=="mfa";$("vApp").hidden=v!=="app"}
 async function boot(){
   var s=(await sb.auth.getSession()).data.session;if(!s){show("login");return}
   var p=await sb.from("profiles").select("role,email").eq("id",s.user.id).maybeSingle();
   if(!p.data||p.data.role!=="admin"){await sb.auth.signOut();show("login");say($("lMsg"),"Esta cuenta no tiene permisos de administrador","bad");return}
+  if(await needMfa(p.data.email))return;
   try{if(localStorage.getItem("ivo_notrack")===null)localStorage.setItem("ivo_notrack","1");$("noTrack").checked=localStorage.getItem("ivo_notrack")==="1"}catch(e){}
   $("who").textContent=p.data.email;$("who2").textContent="Conectado como "+p.data.email;show("app");go(location.hash.slice(1)||"resumen")}
+/* ---------- verificación en dos pasos (app de autenticación) ---------- */
+function mfaErr(m){m=String(m||"");if(/invalid|incorrect|expired/i.test(m))return"Código incorrecto o caducado. Escribe el código que se ve ahora en la app";if(/rate|too many/i.test(m))return"Demasiados intentos. Espera un minuto y vuelve a probar";if(/disabled|not enabled/i.test(m))return"La verificación en dos pasos no está activada en Supabase";return"No se ha podido comprobar el código. Inténtalo de nuevo"}
+async function needMfa(email){
+  var a=(await sb.auth.mfa.getAuthenticatorAssuranceLevel()).data;if(a&&a.currentLevel==="aal2")return false;
+  var f=(await sb.auth.mfa.listFactors()).data||{},ok=(f.totp||[]).filter(function(x){return x.status==="verified"});
+  show("mfa");if(ok.length)mfaVerify(ok[0].id);else mfaEnroll(f.all||[],email);return true}
+function codeForm(btn){return'<form id="fMfa" method="post" action="https://www.ivobeatz.com/admin.html"><label>Código de 6 dígitos<input id="mCode" class="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" maxlength="6" required placeholder="000000"></label><button type="submit">'+btn+'</button><p class="msg" id="mMsg" role="status"></p></form><div class="row" style="margin-top:6px"><button type="button" class="ghost sm" id="mOut">Cerrar sesión</button></div>'}
+function codeWire(factorId,onOk){var i=$("mCode");i.addEventListener("input",function(){i.value=i.value.replace(/\D/g,"").slice(0,6)});setTimeout(function(){i.focus()},50);
+  $("mOut").addEventListener("click",async function(){await sb.auth.signOut();show("login")});
+  $("fMfa").addEventListener("submit",async function(e){e.preventDefault();var b=this.querySelector("button[type=submit]");b.disabled=true;say($("mMsg"),"Comprobando…");
+    var r=await sb.auth.mfa.challengeAndVerify({factorId:factorId,code:i.value});b.disabled=false;
+    if(r.error){say($("mMsg"),mfaErr(r.error.message),"bad");i.select();return}onOk()})}
+function mfaVerify(factorId){
+  $("mfaBody").innerHTML='<h2>Verificación en dos pasos</h2><p class="sub">Abre tu app de autenticación y escribe el código de IVO Beatz</p>'+codeForm("Entrar");
+  codeWire(factorId,function(){boot()})}
+async function mfaEnroll(all,email){
+  $("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="sub">Preparando…</p>';
+  for(var k=0;k<all.length;k++){if(all[k].status!=="verified"){try{await sb.auth.mfa.unenroll({factorId:all[k].id})}catch(e){}}}
+  var r=await sb.auth.mfa.enroll({factorType:"totp",friendlyName:"Panel IVO Beatz "+new Date().toISOString().slice(0,16),issuer:"IVO Beatz"});
+  if(r.error||!r.data){$("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="msg bad">'+esc(mfaErr(r.error&&r.error.message))+'</p><div class="row"><button type="button" class="ghost sm" id="mOut2">Cerrar sesión</button></div>';$("mOut2").onclick=async function(){await sb.auth.signOut();show("login")};return}
+  var t=r.data.totp||{},qr=String(t.qr_code||"");if(qr&&qr.indexOf("data:")!==0)qr="data:image/svg+xml;utf8,"+encodeURIComponent(qr);
+  $("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="sub">A partir de ahora, además de tu contraseña, el panel te pedirá un código que cambia cada 30 segundos. Así nadie puede entrar aunque consiga tu contraseña</p>'+
+   '<ol><li>Instala en tu móvil <b>Google Authenticator</b>, <b>Microsoft Authenticator</b> o <b>1Password</b></li>'+
+   '<li>En la app, pulsa «Añadir» y escanea este código<div class="qr"><img id="mQr" alt="Código QR para la app de autenticación"></div><div class="secret"><span class="hint">¿No puedes escanearlo? Escribe esta clave:</span><code id="mSec"></code><button type="button" class="ghost sm" id="mCopy">Copiar</button></div></li>'+
+   '<li>Escribe el código de 6 dígitos que aparece en la app</li></ol>'+codeForm("Activar y entrar");
+  $("mQr").src=qr;$("mSec").textContent=t.secret||"";$("mCopy").onclick=function(){copy(t.secret||"",this)};
+  codeWire(r.data.id,function(){toast("Verificación en dos pasos activada");boot()})}
+async function mfaStatus(){var b=$("mfaInfo");if(!b)return;var f=(await sb.auth.mfa.listFactors()).data||{},ok=(f.totp||[]).filter(function(x){return x.status==="verified"});
+  b.innerHTML=ok.length?'<span class="tag on">Activada</span> <span class="hint" style="display:inline">desde el '+fdate(ok[0].created_at)+'</span>':'<span class="tag warn">Sin activar</span>'}
 $("fLogin").addEventListener("submit",async function(e){e.preventDefault();say($("lMsg"),"Entrando…");
   var r=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lPass").value,options:{captchaToken:await __captcha()}});
   if(r.error){say($("lMsg"),/captcha/i.test(r.error.message)?"No se ha podido comprobar que no eres un robot. Inténtalo de nuevo":/Invalid login/i.test(r.error.message)?"Email o contraseña incorrectos":/not confirmed/i.test(r.error.message)?"Confirma primero tu email":"No se pudo entrar","bad");return}boot()});
@@ -553,7 +598,7 @@ function renderCli(){var q=$("qCli").value.trim().toLowerCase(),tb=$("cliTbl").q
 $("qCli").addEventListener("input",renderCli);
 
 /* ---------- AJUSTES ---------- */
-async function loadAjustes(){var s=await sb.from("shop_settings").select("pack2_pct,pack3_pct").eq("id",1).maybeSingle();if(s.data){$("pk2").value=s.data.pack2_pct;$("pk3").value=s.data.pack3_pct}}
+async function loadAjustes(){mfaStatus();var s=await sb.from("shop_settings").select("pack2_pct,pack3_pct").eq("id",1).maybeSingle();if(s.data){$("pk2").value=s.data.pack2_pct;$("pk3").value=s.data.pack3_pct}}
 $("fPack").addEventListener("submit",async function(e){e.preventDefault();var a=parseInt($("pk2").value,10)||0,b=parseInt($("pk3").value,10)||0;
   var r=await sb.from("shop_settings").update({pack2_pct:Math.max(0,Math.min(90,a)),pack3_pct:Math.max(0,Math.min(90,b)),updated_at:new Date().toISOString()}).eq("id",1);say($("pkMsg"),r.error?"No se pudo guardar":"Guardado. El carrito ya usa estos descuentos",r.error?"bad":"ok")});
 $("noTrack").addEventListener("change",function(){try{localStorage.setItem("ivo_notrack",this.checked?"1":"0")}catch(e){}toast(this.checked?"Tus visitas no se contarán":"Tus visitas se contarán")});
