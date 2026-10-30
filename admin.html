@@ -54,6 +54,12 @@ table{width:100%;border-collapse:collapse;font-size:14px}
 th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);padding:8px 6px;border-bottom:1px solid var(--line)}
 td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
 .login{max-width:420px;margin:12vh auto 0}
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:18px 20px}.kpi small{display:block;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}.kpi b{display:block;font-size:26px;margin-top:4px;letter-spacing:-.02em}
+.kpi.hl{background:var(--lime);border-color:var(--lime);color:#17240a}.kpi.hl small{color:#3c4d1f}
+.bars{display:flex;align-items:flex-end;gap:10px;height:170px;padding-top:10px}.bars div{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;height:100%;justify-content:flex-end;font-size:12px;color:var(--mute)}.bars i{display:block;width:100%;max-width:46px;border-radius:8px 8px 4px 4px;background:var(--lime);min-height:3px}.bars b{font-size:12px;color:var(--ink)}
+.svc{margin-top:10px;padding:12px;border-radius:14px;background:var(--bg);border:1px solid var(--line);display:grid;gap:10px}.svc table{font-size:13px}.svc td{padding:3px 8px 3px 0;border:0;vertical-align:top}.svc td:first-child{color:var(--mute)}
+@media(max-width:720px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
 [hidden]{display:none!important}
 .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
 .bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .2s}
@@ -87,6 +93,7 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
     <button type="button" data-v="beats" aria-selected="true">Beats</button>
     <button type="button" data-v="presets" aria-selected="false">Presets</button>
     <button type="button" data-v="orders" aria-selected="false">Pedidos</button>
+    <button type="button" data-v="stats" aria-selected="false">Estadísticas</button>
   </div>
 
   <!-- BEATS -->
@@ -105,7 +112,8 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
           <label>Orden<input id="bSort" type="number" value="0"></label>
         </div>
         <label id="bGenreOtherW" hidden>Otro estilo<input id="bGenreOther" maxlength="30"></label>
-        <label>Previsualización (MP3, 30 a 60 s, con marca de voz)<input id="bPrev" type="file" accept="audio/mpeg,audio/mp3,.mp3"></label>
+        <div class="g"><label>Previsualización (MP3, 30 a 60 s, con marca de voz)<input id="bPrev" type="file" accept="audio/mpeg,audio/mp3,.mp3"></label><label>Portada (cuadrada, JPG o PNG)<input id="bCover" type="file" accept="image/*"></label></div>
+        <div class="g"><label>Etiquetas (separadas por comas)<input id="bTags" maxlength="120" placeholder="oscuro, melódico, drill"></label><label style="align-self:end;display:flex;gap:10px;align-items:center;text-transform:none;letter-spacing:0;font-size:14px;color:var(--ink)"><input type="checkbox" id="bFeat" style="width:20px;height:20px"> Destacar este beat (sale primero en la tienda)</label></div>
         <div class="g3">
           <div style="display:grid;gap:8px"><label>MP3 · enlace externo<input id="lMp3" type="url" placeholder="https://drive.google.com/…"></label><label>o subir a R2 (caduca)<input id="fMp3" type="file" accept=".mp3,audio/mpeg"></label></div>
           <div style="display:grid;gap:8px"><label>WAV · enlace externo<input id="lWav" type="url" placeholder="https://drive.google.com/…"></label><label>o subir a R2 (caduca)<input id="fWav" type="file" accept=".wav,audio/wav,audio/x-wav"></label></div>
@@ -149,6 +157,18 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
     <div class="card"><h2>Tus presets</h2><div id="preList"></div></div>
   </section>
 
+  <!-- ESTADÍSTICAS -->
+  <section id="tStats" hidden>
+    <div class="kpis" id="kpis"></div>
+    <div class="g" style="margin-top:16px">
+      <div class="card"><h2>Ventas por mes</h2><div id="chart"></div></div>
+      <div class="card"><h2>Lo más vendido</h2><div id="top"></div></div>
+    </div>
+    <div class="card"><h2>Packs de beats</h2><p class="hint" style="margin:0 0 14px">Descuento automático en el carrito al comprar varias licencias de beats. Pon 0 para desactivarlo</p>
+      <form id="fPack" class="g3" style="align-items:end"><label>Comprando 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Comprando 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label><button type="submit">Guardar</button></form><p class="msg" id="pkMsg"></p>
+      <p class="hint">Cupones: créalos en Stripe, en Catálogo de productos → Cupones → Crear código promocional. El cliente lo escribe en la página de pago</p></div>
+  </section>
+
   <!-- PEDIDOS -->
   <section id="tOrders" hidden>
     <div class="card"><h2>Pedidos</h2><div id="ordList"></div></div>
@@ -189,8 +209,8 @@ $("bOut").addEventListener("click",async function(){await sb.auth.signOut();show
 /* ---------- pestañas ---------- */
 document.querySelectorAll(".tabs button").forEach(function(b){b.addEventListener("click",function(){
   document.querySelectorAll(".tabs button").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
-  $("tBeats").hidden=b.dataset.v!=="beats";$("tPresets").hidden=b.dataset.v!=="presets";$("tOrders").hidden=b.dataset.v!=="orders";
-  if(b.dataset.v==="beats")loadBeats();if(b.dataset.v==="presets")loadPre();if(b.dataset.v==="orders")loadOrders()})});
+  $("tBeats").hidden=b.dataset.v!=="beats";$("tPresets").hidden=b.dataset.v!=="presets";$("tOrders").hidden=b.dataset.v!=="orders";$("tStats").hidden=b.dataset.v!=="stats";
+  if(b.dataset.v==="beats")loadBeats();if(b.dataset.v==="presets")loadPre();if(b.dataset.v==="orders")loadOrders();if(b.dataset.v==="stats")loadStats()})});
 
 function bar(id,pct){var b=$(id);b.hidden=pct==null;if(pct!=null)b.firstChild.style.width=pct+"%"}
 async function upload(bucket,path,file,onDone){
@@ -217,14 +237,14 @@ function mb(n){return(n/1048576).toFixed(0)+" MB"}
 /* ---------- BEATS ---------- */
 var editB=null;
 $("bGenre").addEventListener("change",function(){$("bGenreOtherW").hidden=$("bGenre").value!=="Otro"});
-function resetBeat(){editB=null;$("fBeat").reset();$("bPrice").value=19;$("bSort").value=0;$("beatTitle").textContent="Nuevo beat";$("bCancel").hidden=true;$("bGenreOtherW").hidden=true;bar("bBar",null)}
+function resetBeat(){editB=null;$("fBeat").reset();$("bFeat").checked=false;$("bPrice").value=19;$("bSort").value=0;$("beatTitle").textContent="Nuevo beat";$("bCancel").hidden=true;$("bGenreOtherW").hidden=true;bar("bBar",null)}
 $("bCancel").addEventListener("click",function(){resetBeat();say($("bMsg"),"")});
 async function loadBeats(){
   var r=await sb.from("beats").select("*, beat_files(kind,url,file_path)").order("sort").order("created_at");
   var L=$("beatList");if(r.error){L.textContent="No se pudieron cargar los beats";return}
   if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún beat. Mientras no haya ninguno, la web muestra beats de ejemplo</p>';return}
   L.innerHTML=r.data.map(function(b){var kinds=(b.beat_files||[]).map(function(f){return f.kind});
-    return '<div class="row" data-id="'+b.id+'"><div class="t"><b>'+esc(b.name)+(b.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+b.bpm+' BPM · '+esc(b.key)+' · '+esc(b.genre)+' · desde '+b.price_from+' €</small><div style="margin-top:6px">'+
+    return '<div class="row" data-id="'+b.id+'">'+(b.cover_path?'<img class="thumb" alt="" src="'+pub("fotos",b.cover_path)+'">':'<span class="thumb"></span>')+'<div class="t"><b>'+esc(b.name)+(b.featured?' <span class="tag on">Destacado</span>':'')+(b.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+b.bpm+' BPM · '+esc(b.key)+' · '+esc(b.genre)+' · desde '+b.price_from+' €</small><div style="margin-top:6px">'+
     ["mp3","wav","stems"].map(function(k){return'<span class="tag'+(kinds.indexOf(k)>-1?" on":"")+'">'+k.toUpperCase()+'</span>'}).join("")+'</div></div>'+
     (b.preview_path?'<audio controls preload="none" src="'+pub("previews",b.preview_path)+'"></audio>':'<span class="hint">Sin previsualización</span>')+
     '<button class="ghost sm" data-a="edit">Editar</button><button class="ghost sm" data-a="vis">'+(b.active?"Ocultar":"Mostrar")+'</button><button class="danger sm" data-a="del">Borrar</button></div>'}).join("");
@@ -233,19 +253,21 @@ $("beatList").addEventListener("click",async function(e){
   var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),b=$("beatList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!b)return;
   if(btn.dataset.a==="edit"){editB=b;$("bName").value=b.name;$("bBpm").value=b.bpm;$("bKey").value=b.key;
     var known=["Trap","Crank","Waera","Reggaeton"].indexOf(b.genre)>-1;$("bGenre").value=known?b.genre:"Otro";$("bGenreOtherW").hidden=known;$("bGenreOther").value=known?"":b.genre;
-    $("bPrice").value=b.price_from;$("bSort").value=b.sort;["mp3","wav","stems"].forEach(function(k){var f=(b.beat_files||[]).filter(function(x){return x.kind===k})[0];var el=$({mp3:"lMp3",wav:"lWav",stems:"lZip"}[k]);el.value=f&&f.url?f.url:"";el.placeholder=f&&f.file_path?"Guardado en R2 · sube otro archivo para reemplazarlo":"https://drive.google.com/…"});$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no cambias la previsualización, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
+    $("bPrice").value=b.price_from;$("bSort").value=b.sort;$("bTags").value=(b.tags||[]).join(", ");$("bFeat").checked=!!b.featured;["mp3","wav","stems"].forEach(function(k){var f=(b.beat_files||[]).filter(function(x){return x.kind===k})[0];var el=$({mp3:"lMp3",wav:"lWav",stems:"lZip"}[k]);el.value=f&&f.url?f.url:"";el.placeholder=f&&f.file_path?"Guardado en R2 · sube otro archivo para reemplazarlo":"https://drive.google.com/…"});$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no cambias la previsualización, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
   if(btn.dataset.a==="vis"){await sb.from("beats").update({active:!b.active}).eq("id",b.id);loadBeats()}
   if(btn.dataset.a==="del"){if(!confirm("¿Borrar «"+b.name+"» y todos sus archivos? No se puede deshacer"))return;
-    if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);
+    if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);if(b.cover_path)await sb.storage.from("fotos").remove([b.cover_path]);
     var r2p=(b.beat_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");loadBeats()}});
 $("fBeat").addEventListener("submit",async function(e){e.preventDefault();if(!(editB&&editB.preview_path)&&!$("bPrev").files[0]&&!confirm("Este beat no tiene previsualización: en la web aparecerá, pero no se podrá escuchar. ¿Guardarlo igualmente?"))return;var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
   try{
     var genre=$("bGenre").value==="Otro"?($("bGenreOther").value.trim()||"Otro"):$("bGenre").value;
-    var row={name:$("bName").value.trim(),bpm:parseInt($("bBpm").value,10),key:$("bKey").value,genre:genre,price_from:parseInt($("bPrice").value,10),sort:parseInt($("bSort").value,10)||0};
+    var row={name:$("bName").value.trim(),bpm:parseInt($("bBpm").value,10),key:$("bKey").value,genre:genre,price_from:parseInt($("bPrice").value,10),sort:parseInt($("bSort").value,10)||0,featured:$("bFeat").checked,tags:$("bTags").value.split(",").map(function(t){return t.trim().replace(/^#/,"").toLowerCase()}).filter(Boolean).slice(0,8)};
     var id;
     if(editB){var u=await sb.from("beats").update(row).eq("id",editB.id);if(u.error)throw u.error;id=editB.id}
     else{var i=await sb.from("beats").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
+    var cv=$("bCover").files[0];
+    if(cv){say(msg,"Subiendo la portada…");bar("bBar",30);var cp="beats/"+id+"/"+Date.now()+"."+ext(cv);await upload("fotos",cp,cv);var uc=await sb.from("beats").update({cover_path:cp}).eq("id",id);if(uc.error)throw uc.error;if(editB&&editB.cover_path)await sb.storage.from("fotos").remove([editB.cover_path])}
     var pv=$("bPrev").files[0];
     if(pv){say(msg,"Subiendo la previsualización…");bar("bBar",40);var p=id+"/"+Date.now()+"."+ext(pv);await upload("previews",p,pv);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;
       if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
@@ -296,14 +318,46 @@ $("fPre").addEventListener("submit",async function(e){e.preventDefault();var msg
   sv.disabled=false});
 
 /* ---------- PEDIDOS ---------- */
+var ST={recibido:"Recibido",en_proceso:"En proceso",entregado:"Entregado"};
+var DL={nombre:"Nombre",telefono:"Teléfono",cancion:"Canción",pistas:"Pistas",programa:"Programa",enlace:"Enlace",referencia:"Referencia",mensaje:"Detalles"};
 async function loadOrders(){
-  var r=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(200),L=$("ordList");
+  var r=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(300),L=$("ordList");
   if(r.error){L.textContent="No se pudieron cargar los pedidos";return}
-  if(!r.data.length){L.innerHTML='<p class="hint">Todavía no hay pedidos. Aparecerán aquí en cuanto alguien pague con Stripe</p>';return}
-  L.innerHTML=r.data.map(function(o){var it=(o.items||[])[0]||{},links=(it.links||[]);
+  var paid=r.data.filter(function(o){return o.status==="paid"}),pend=r.data.length-paid.length;
+  if(!paid.length){L.innerHTML='<p class="hint">Todavía no hay pedidos pagados'+(pend?' ('+pend+' pagos sin completar)':'')+'. Aparecerán aquí en cuanto alguien pague con Stripe</p>';return}
+  L.innerHTML=(pend?'<p class="hint" style="margin:0 0 6px">'+pend+' pagos se iniciaron y no se completaron (no cuentan como pedidos)</p>':'')+paid.map(function(o){var its=o.items||[],svc=its.filter(function(i){return i.kind==="service"})[0];
     var st=o.needs_manual?'<span class="tag" style="border-color:var(--bad);color:var(--bad)">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag" style="border-color:var(--bad);color:var(--bad)">Correo sin enviar</span>';
-    var lk=links.map(function(l){return l.url==="r2"?'<span>'+esc(l.label)+' (R2)</span>':l.url?'<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
-    return'<div class="row"><div class="t"><b>'+esc(it.name||"Pedido")+'</b><small>'+new Date(o.created_at).toLocaleString("es-ES")+' · '+esc(o.email)+(o.total!=null?' · '+o.total+' €':'')+'</small>'+(lk?'<div style="margin-top:6px;font-size:13px">Enlaces del cliente: '+lk+'</div>':'')+'</div>'+st+'</div>'}).join("")}
+    var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
+      return'<div style="font-size:14px;margin-top:4px">· '+esc(it.name)+(it.unit!=null&&it.unit!==it.price?' <small>('+eur(it.unit)+' con pack)</small>':'')+(lk?' <small>— '+lk+'</small>':'')+'</div>'}).join("");
+    var sv="";
+    if(svc){var det=svc.details||{};
+      sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+esc(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
+      '<div class="g3"><label>Estado<select class="sS">'+Object.keys(ST).map(function(k){return'<option value="'+k+'"'+(o.service_status===k?" selected":"")+'>'+ST[k]+'</option>'}).join("")+'</select></label><label>Enlace de entrega<input class="sU" type="url" placeholder="https://…" value="'+esc(o.delivery_url||"")+'"></label><label>Nota para el cliente<input class="sN" maxlength="300" value="'+esc(o.delivery_note||"")+'"></label></div>'+
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="sm" data-a="save">Guardar</button><button type="button" class="ghost sm" data-a="notify">Guardar y avisar al cliente</button><span class="msg sM" style="margin:0"></span></div></div>'}
+    return'<div class="row" style="align-items:flex-start"><div class="t"><b>'+(svc?"Encargo · ":"")+new Date(o.created_at).toLocaleString("es-ES")+'</b><small>'+esc(o.email||"")+(o.total!=null?" · "+eur(Number(o.total)):"")+(svc?' · <b style="display:inline">'+(ST[o.service_status]||"Recibido")+'</b>':"")+'</small>'+lines+sv+'</div>'+st+'</div>'}).join("")}
+$("ordList").addEventListener("click",async function(e){var b=e.target.closest(".svc button[data-a]");if(!b)return;var box=b.closest(".svc"),m=box.querySelector(".sM");
+  var body={order_id:box.dataset.id,service_status:box.querySelector(".sS").value,delivery_url:box.querySelector(".sU").value.trim(),delivery_note:box.querySelector(".sN").value.trim(),notify:b.dataset.a==="notify"};
+  if(body.notify&&body.service_status==="entregado"&&!body.delivery_url&&!confirm("Vas a marcarlo como entregado sin enlace de entrega. ¿Continuar?"))return;
+  m.className="msg sM";m.textContent="Guardando…";var r=await sb.functions.invoke("admin-order",{body:body});
+  if(r.error||!r.data||!r.data.ok){var t="No se pudo guardar";try{var j=await r.error.context.json();if(j.error)t=j.error}catch(x){}m.className="msg sM bad";m.textContent=t;return}
+  m.className="msg sM ok";m.textContent=body.notify?(r.data.sent?"Guardado y cliente avisado":"Guardado, pero el correo no salió"):"Guardado"});
+
+/* ---------- ESTADÍSTICAS ---------- */
+function eur(n){return(Math.round(n*100)/100).toLocaleString("es-ES",{minimumFractionDigits:0,maximumFractionDigits:2})+" €"}
+async function loadStats(){
+  var r=await sb.from("orders").select("created_at,total,items,kind").eq("status","paid").order("created_at",{ascending:true}).limit(5000),o=r.data||[];
+  var now=new Date(),m0=new Date(now.getFullYear(),now.getMonth(),1),tot=0,mon=0,cnt=o.length,top={},months=[];
+  for(var i=5;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push({k:d.getFullYear()+"-"+d.getMonth(),l:d.toLocaleDateString("es-ES",{month:"short"}),v:0})}
+  o.forEach(function(x){var t=Number(x.total)||0,d=new Date(x.created_at);tot+=t;if(d>=m0)mon+=t;var mk=months.filter(function(mm){return mm.k===d.getFullYear()+"-"+d.getMonth()})[0];if(mk)mk.v+=t;
+    (x.items||[]).forEach(function(it){var n=String(it.name||"").split(" · ")[0];top[n]=(top[n]||0)+1})});
+  $("kpis").innerHTML='<div class="kpi hl"><small>Ingresos totales</small><b>'+eur(tot)+'</b></div><div class="kpi"><small>Este mes</small><b>'+eur(mon)+'</b></div><div class="kpi"><small>Pedidos</small><b>'+cnt+'</b></div><div class="kpi"><small>Ticket medio</small><b>'+eur(cnt?tot/cnt:0)+'</b></div>';
+  var mx=Math.max.apply(null,months.map(function(m){return m.v}).concat([1]));
+  $("chart").innerHTML='<div class="bars">'+months.map(function(m){return'<div><b>'+(m.v?eur(m.v):"")+'</b><i style="height:'+Math.max(2,m.v/mx*100)+'%"></i><span>'+m.l+'</span></div>'}).join("")+'</div>';
+  var tl=Object.keys(top).sort(function(a,b){return top[b]-top[a]}).slice(0,6);
+  $("top").innerHTML=tl.length?tl.map(function(n,i){return'<div class="row" style="padding:10px 0"><div class="t"><b>'+(i+1)+". "+esc(n)+'</b></div><span class="tag on">'+top[n]+(top[n]===1?" venta":" ventas")+'</span></div>'}).join(""):'<p class="hint">Aún no hay ventas</p>';
+  var s2=await sb.from("shop_settings").select("pack2_pct,pack3_pct").eq("id",1).maybeSingle();if(s2.data){$("pk2").value=s2.data.pack2_pct;$("pk3").value=s2.data.pack3_pct}}
+$("fPack").addEventListener("submit",async function(e){e.preventDefault();var a=parseInt($("pk2").value,10)||0,b=parseInt($("pk3").value,10)||0;
+  var r=await sb.from("shop_settings").update({pack2_pct:Math.max(0,Math.min(90,a)),pack3_pct:Math.max(0,Math.min(90,b)),updated_at:new Date().toISOString()}).eq("id",1);say($("pkMsg"),r.error?"No se pudo guardar":"Guardado. El carrito ya usa estos descuentos",r.error?"bad":"ok")});
 
 boot();
 })();
