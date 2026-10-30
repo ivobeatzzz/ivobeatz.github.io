@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030153626">
+<meta name="ivo-version" content="20261030154215">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -155,6 +155,8 @@ dialog::backdrop{background:rgba(17,17,17,.6);backdrop-filter:blur(4px)}
 var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp";
 var $=function(i){return document.getElementById(i)};
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+/* solo enlaces web (nunca javascript: ni otros esquemas) */
+function su(u){return/^https?:\/\/[^\s"'<>]+$/i.test(String(u||""))?esc(u):"#"}
 function msg(id,t,c){var e=$(id);if(e){e.textContent=t||"";e.className="msg"+(c?" "+c:"")}}
 function err(m){m=String(m||"");
   if(/Invalid login/i.test(m))return"Email o contraseña incorrectos";if(/not confirmed/i.test(m))return"Confirma primero tu email: el enlace te llegó al crear la cuenta";
@@ -223,10 +225,10 @@ $("orders").addEventListener("click",async function(e){var b=e.target.closest("b
   if(r.error||!r.data){box.innerHTML='<p style="color:var(--bad)">No se han podido preparar las descargas. Inténtalo de nuevo o escribe a ivobeatzzz@gmail.com</p>';return}
   var d=r.data,multi=(d.items||[]).length>1;box.dataset.ok="1";
   var h=(d.items||[]).map(function(it){
-    if(it.kind==="service")return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<p style="margin:0">Estado: <strong>'+(SVST[d.service_status]||"Recibido")+'</strong>'+(d.service_status==="entregado"?"":". Recibirás un aviso por correo cuando esté listo")+'</p>'+(d.delivery_note?'<p style="margin:6px 0 0">'+esc(d.delivery_note)+'</p>':'')+(d.delivery_url?'<div class="bts" style="margin-top:10px"><a class="btn lime sm" href="'+esc(d.delivery_url)+'" target="_blank" rel="noopener">↓ Descargar la entrega</a></div>':'')+'</div>';
-    return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<div class="bts">'+(it.links||[]).map(function(l){return l.url?'<a class="btn lime sm" href="'+esc(l.url)+'" target="_blank" rel="noopener">↓ '+esc(l.label)+'</a>':'<span class="tag">'+esc(l.label)+': pendiente de envío</span>'}).join("")+'</div></div>'}).join("");
+    if(it.kind==="service")return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<p style="margin:0">Estado: <strong>'+(SVST[d.service_status]||"Recibido")+'</strong>'+(d.service_status==="entregado"?"":". Recibirás un aviso por correo cuando esté listo")+'</p>'+(d.delivery_note?'<p style="margin:6px 0 0">'+esc(d.delivery_note)+'</p>':'')+(d.delivery_url?'<div class="bts" style="margin-top:10px"><a class="btn lime sm" href="'+su(d.delivery_url)+'" target="_blank" rel="noopener">↓ Descargar la entrega</a></div>':'')+'</div>';
+    return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<div class="bts">'+(it.links||[]).map(function(l){return l.url?'<a class="btn lime sm" href="'+su(l.url)+'" target="_blank" rel="noopener">↓ '+esc(l.label)+'</a>':'<span class="tag">'+esc(l.label)+': pendiente de envío</span>'}).join("")+'</div></div>'}).join("");
   var anyDl=(d.items||[]).some(function(i){return i.kind!=="service"});
-  box.innerHTML=h+(d.receipt?'<div class="bts" style="margin-top:12px"><a class="btn ghost sm" href="'+esc(d.receipt)+'" target="_blank" rel="noopener">Recibo de pago</a></div>':'')+(anyDl?'<p>Los enlaces son personales y caducan en 24 horas. Vuelve aquí cuando necesites otros</p>':'')});
+  box.innerHTML=h+(d.receipt?'<div class="bts" style="margin-top:12px"><a class="btn ghost sm" href="'+su(d.receipt)+'" target="_blank" rel="noopener">Recibo de pago</a></div>':'')+(anyDl?'<p>Los enlaces son personales y caducan en 24 horas. Vuelve aquí cuando necesites otros</p>':'')});
 function license(o){var beats=(o.items||[]).filter(function(i){return i.kind==="beat"&&TERMS[i.tier]});if(!beats.length)return;
   var ref=(beats[0].ref)||String(o.stripe_session_id||"").slice(-10).toUpperCase();
   $("dlgB").innerHTML=beats.map(function(it,n){var T=TERMS[it.tier],beat=String(it.name||"").split(" · ")[0];

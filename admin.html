@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030153626">
+<meta name="ivo-version" content="20261030154215">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -247,7 +247,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
     <div class="g3"><label>BPM<input id="bBpm" type="number" min="40" max="300" required></label><label>Tonalidad<select id="bKey" required></select></label><label>Estilo<select id="bGenre"><option>Trap</option><option>Crank</option><option>Waera</option><option>Reggaeton</option><option>Drill</option><option>R&amp;B</option><option>Otro</option></select></label></div>
     <label id="bGenreOtherW" hidden>Otro estilo<input id="bGenreOther" maxlength="30"></label>
     <label>Etiquetas (separadas por comas)<input id="bTags" maxlength="120" placeholder="oscuro, melódico, drill"></label>
-    <div class="g3"><label>Precio desde (€)<input id="bPrice" type="number" min="1" value="19" required></label><label>Orden<input id="bSort" type="number" value="0"></label><label style="align-self:end;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink);font-weight:500;padding-bottom:10px"><input type="checkbox" id="bFeat"> Destacado</label></div>
+    <div class="g3"><label>Precio desde (€)<input id="bPrice" type="number" min="1" max="10000" value="19" required></label><label>Orden<input id="bSort" type="number" value="0"></label><label style="align-self:end;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink);font-weight:500;padding-bottom:10px"><input type="checkbox" id="bFeat"> Destacado</label></div>
     <label class="drop" id="dropCov"><span class="di cov" id="covPrev">🖼</span><span><b id="covName">Portada (opcional)</b><small>Imagen cuadrada, JPG o PNG</small></span><input type="file" id="bCover" accept="image/*"></label>
     <div class="sec">Archivos de venta</div>
     <p class="hint" style="margin-top:-6px">Se guardan en privado. Solo quien compra recibe un enlace de descarga personal que caduca</p>
@@ -260,7 +260,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 <dialog id="dPre" class="drawer" aria-labelledby="dPreT"><form class="dw" id="fPre">
   <div class="dw-h"><h3 id="dPreT">Nuevo preset</h3><button type="button" class="ghost icon" data-close aria-label="Cerrar">×</button></div>
   <div class="dw-b">
-    <div class="g3"><label style="grid-column:span 2">Artista<input id="pArtist" required maxlength="60" placeholder="Nombre del artista"></label><label>Precio (€)<input id="pPrice" type="number" min="1" step="0.5" value="15" required></label></div>
+    <div class="g3"><label style="grid-column:span 2">Artista<input id="pArtist" required maxlength="60" placeholder="Nombre del artista"></label><label>Precio (€)<input id="pPrice" type="number" min="1" max="1000" step="0.5" value="15" required></label></div>
     <label>Orden<input id="pSort" type="number" value="0"></label>
     <div class="sec">Archivos</div>
     <p class="hint" style="margin-top:-6px">El cliente elige su programa al comprar y recibe solo ese archivo, con un enlace personal que caduca</p>
@@ -310,13 +310,17 @@ var rel=sc[0][2]?[(sc[0][1]+3)%12,0]:[(sc[0][1]+9)%12,1];r.alt=rel;r.conf=sc[0][
 <script>
 (function(){
 var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp",SITE=location.origin;
-var sb=supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+/* la sesión de administrador se guarda solo mientras el navegador está abierto */
+var ST;try{sessionStorage.setItem("_t","1");sessionStorage.removeItem("_t");ST=sessionStorage}catch(e){ST=undefined}
+var sb=supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:true,storage:ST,storageKey:"ivo-admin-auth"}});
 var $=function(i){return document.getElementById(i)},$$=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var NOTE=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],KEYS=[];NOTE.forEach(function(k){KEYS.push(k+"m")});NOTE.forEach(function(k){KEYS.push(k)});
 $("bKey").innerHTML=KEYS.map(function(k){return"<option>"+k+"</option>"}).join("");
 var STATIC_PRESETS=["mvrk","enzocrebulto","ladiferencia2006","guxo","cero","tarchi"];
 var PERIOD=30,STATS=null;
 function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+/* solo enlaces web (nunca javascript: ni otros esquemas) */
+function su(u){return/^https?:\/\/[^\s"'<>]+$/i.test(String(u||""))?esc(u):"#"}
 function pub(b,p){return SB+"/storage/v1/object/public/"+b+"/"+p}
 function say(el,t,c){el.textContent=t||"";el.className="msg"+(c?" "+c:"")}
 function safe(n){return n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9._-]+/g,"-").replace(/^-+|-+$/g,"")||"archivo"}
@@ -511,9 +515,9 @@ function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList"
   if(!list.length){L.innerHTML='<p class="empty">'+(ORD.length?"Ningún pedido coincide":"Todavía no hay pedidos. Aparecerán aquí en cuanto alguien pague")+'</p>';return}
   L.innerHTML=list.map(function(o){var its=o.items||[],svc=its.filter(function(i){return i.kind==="service"})[0];
     var tags=(o.needs_manual?'<span class="tag bad">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag bad">Correo sin enviar</span>')+(svc?' <span class="tag '+(o.service_status==="entregado"?"on":"warn")+'">'+(ST[o.service_status]||"Recibido")+'</span>':'');
-    var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+esc(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
+    var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+su(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
       return'<div class="li"><b>'+esc(it.name)+'</b> · '+eur(it.unit!=null?it.unit:it.price)+(it.pack_pct?' (pack −'+it.pack_pct+' %)':'')+(lk?' · '+lk:'')+'</div>'}).join("");
-    var sv="";if(svc){var det=svc.details||{};sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+esc(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
+    var sv="";if(svc){var det=svc.details||{};sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+su(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
       '<div class="g3"><label>Estado<select class="sS">'+Object.keys(ST).map(function(k){return'<option value="'+k+'"'+(o.service_status===k?" selected":"")+'>'+ST[k]+'</option>'}).join("")+'</select></label><label>Enlace de entrega<input class="sU" type="url" placeholder="https://…" value="'+esc(o.delivery_url||"")+'"></label><label>Nota para el cliente<input class="sN" maxlength="300" value="'+esc(o.delivery_note||"")+'"></label></div>'+
       '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="sm" data-a="save">Guardar</button><button type="button" class="ghost sm" data-a="notify">Guardar y avisar al cliente</button><span class="msg sM"></span></div></div>'}
     return'<div class="ord"><div class="top"><div><b>'+fdate(o.created_at,1)+'</b> · '+esc(o.email||"")+' · <b>'+eur(o.total)+'</b></div><div>'+tags+'</div></div>'+lines+sv+'</div>'}).join("")}
