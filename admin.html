@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030155854">
+<meta name="ivo-version" content="20261030160750">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -145,6 +145,17 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 @media (max-width:1200px){.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:900px){.app{grid-template-columns:minmax(0,1fr)}aside{position:sticky;top:0;z-index:20;height:auto;flex-direction:row;align-items:center;padding:10px 12px;gap:10px;overflow:auto}aside .brand{padding:0;font-size:0}aside .brand i{font-size:12px}aside nav{display:flex;gap:2px}aside nav button{padding:8px 10px;font-size:13px}aside nav button span.lb{display:none}aside nav button[aria-current=page] span.lb{display:inline}aside .foot{display:none}main{padding:20px 16px 80px}.g2,.g3{grid-template-columns:minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.filerow{grid-template-columns:minmax(0,1fr)}.hide-m{display:none}}
 </style>
+<script>
+/* protección anti-bots (Cloudflare Turnstile). Se activa al poner aquí la clave pública del sitio */
+window.TS_KEY="";
+window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(undefined);
+  function load(){if(window.turnstile)return Promise.resolve();if(window.__tsLoad)return window.__tsLoad;window.__tsLoad=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";s.async=true;s.onload=function(){res()};s.onerror=function(){window.__tsLoad=null;rej(new Error("captcha"))};document.head.appendChild(s)});return window.__tsLoad}
+  var a=document.activeElement,f=a&&a.form;
+  return load().then(function(){return new Promise(function(res,rej){var host=f||document.querySelector("dialog[open]")||document.body,box=document.getElementById("ts-box");
+    if(!box){box=document.createElement("div");box.id="ts-box"}box.style.cssText="display:flex;justify-content:center;margin:10px 0";host.appendChild(box);
+    if(window.__tsid!=null){try{turnstile.remove(window.__tsid)}catch(e){}window.__tsid=null}
+    window.__tsid=turnstile.render(box,{sitekey:K,appearance:"interaction-only",language:"es",callback:function(t){res(t)},"error-callback":function(){rej(new Error("captcha"))},"expired-callback":function(){rej(new Error("captcha"))}})})}).catch(function(){return undefined})};
+</script>
 </head>
 <body>
 
@@ -344,8 +355,8 @@ async function boot(){
   try{if(localStorage.getItem("ivo_notrack")===null)localStorage.setItem("ivo_notrack","1");$("noTrack").checked=localStorage.getItem("ivo_notrack")==="1"}catch(e){}
   $("who").textContent=p.data.email;$("who2").textContent="Conectado como "+p.data.email;show("app");go(location.hash.slice(1)||"resumen")}
 $("fLogin").addEventListener("submit",async function(e){e.preventDefault();say($("lMsg"),"Entrando…");
-  var r=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lPass").value});
-  if(r.error){say($("lMsg"),/Invalid login/i.test(r.error.message)?"Email o contraseña incorrectos":/not confirmed/i.test(r.error.message)?"Confirma primero tu email":"No se pudo entrar","bad");return}boot()});
+  var r=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lPass").value,options:{captchaToken:await __captcha()}});
+  if(r.error){say($("lMsg"),/captcha/i.test(r.error.message)?"No se ha podido comprobar que no eres un robot. Inténtalo de nuevo":/Invalid login/i.test(r.error.message)?"Email o contraseña incorrectos":/not confirmed/i.test(r.error.message)?"Confirma primero tu email":"No se pudo entrar","bad");return}boot()});
 ["bOut","bOut2"].forEach(function(i){$(i).addEventListener("click",async function(){await sb.auth.signOut();show("login")})});
 
 /* ---------- navegación ---------- */
@@ -366,7 +377,7 @@ function putR2(path,file,onPct){return r2sign("put",path).then(function(url){ret
   x.onload=function(){x.status>=200&&x.status<300?res(path):rej(new Error("Error al subir «"+file.name+"» (código "+x.status+")"))};
   x.onerror=function(){rej(new Error("No se pudo subir «"+file.name+"». Revisa la conexión o la configuración CORS de R2"))};x.send(file)})})}
 async function delR2(paths){for(var i=0;i<paths.length;i++){try{var u=await r2sign("delete",paths[i]);await fetch(u,{method:"DELETE"})}catch(e){}}}
-async function upload(bucket,path,file){var r=await sb.storage.from(bucket).upload(path,file,{upsert:true,contentType:file.type||undefined,cacheControl:"3600"});if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
+async function upload(bucket,path,file){var r=await sb.storage.from(bucket).upload(path,file,{upsert:true,contentType:file.type||undefined,cacheControl:"31536000"});if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
 
 /* filas de archivo (enlace externo o subida a R2) */
 /* validación de archivos antes de subir: tipo y tamaño */

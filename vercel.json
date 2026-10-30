@@ -29,7 +29,7 @@
         },
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https://juxmlitraftqvryteexu.supabase.co; connect-src 'self' https://juxmlitraftqvryteexu.supabase.co wss://juxmlitraftqvryteexu.supabase.co https://*.r2.cloudflarestorage.com https://cdn.jsdelivr.net; frame-src https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https://juxmlitraftqvryteexu.supabase.co; connect-src 'self' https://challenges.cloudflare.com https://juxmlitraftqvryteexu.supabase.co wss://juxmlitraftqvryteexu.supabase.co https://*.r2.cloudflarestorage.com https://cdn.jsdelivr.net; frame-src https://challenges.cloudflare.com https://www.youtube-nocookie.com https://www.youtube.com https://open.spotify.com; worker-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self' mailto:; frame-ancestors 'self'; upgrade-insecure-requests"
         }
       ]
     },
@@ -75,6 +75,15 @@
         {
           "key": "Cache-Control",
           "value": "no-store"
+        }
+      ]
+    },
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
