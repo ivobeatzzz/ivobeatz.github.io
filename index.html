@@ -194,6 +194,17 @@ th{color:var(--mute);font-weight:500}
 @keyframes bty{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
 @keyframes bhl{0%,100%{background:transparent}25%{background:color-mix(in srgb,var(--lime) 30%,transparent)}}
 @media (max-width:720px){.bp{right:10px;bottom:10px;left:10px;width:auto;height:min(78dvh,620px)}}
+
+/* cuenta */
+.af{display:grid;gap:14px;margin:6px 0 0;max-width:none}
+.af label{display:grid;gap:6px;font-size:13px;font-weight:600;color:var(--mute)}
+.af .achk{display:flex;align-items:flex-start;gap:10px;font-weight:400;line-height:1.4}.af .achk input{width:auto;margin-top:3px}
+.alnk{background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;cursor:pointer;text-align:left}
+.amsg{font-size:14px;margin:0;min-height:20px;color:var(--mute)}.amsg.bad{color:#c0392b}.amsg.ok{color:#3f6b1d}
+.atabs{display:flex;gap:6px;padding:5px;border:1px solid var(--line);border-radius:999px;width:max-content;max-width:100%;margin:0 0 14px}
+.atabs button{font:inherit;font-weight:600;font-size:14px;padding:8px 18px;border-radius:999px;border:0;background:transparent;color:var(--mute);cursor:pointer}
+.atabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.aord{margin:0;padding:0;list-style:none}.aord li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 /* contacto y pie */
 form{display:grid;gap:12px;max-width:560px;margin:0 auto}
 input,textarea,select{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%;transition:border-color .2s,box-shadow .2s}
@@ -802,7 +813,7 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 </head>
 <body>
 <header class="nav"><div class="wrap"><a class="logo" href="#top">IVO Beatz</a>
-<nav id="mnav" aria-label="Principal"><a href="#beats">Beats</a><a href="#licencias">Licencias</a><a href="#servicios">Servicios</a><a href="#plugins">Plugins</a><a href="#plantillas">Plantillas</a><a href="#herramientas">Herramientas</a><a href="#sobre-mi">Sobre nosotros</a><a class="mcta" href="#contacto">Contacto</a></nav>
+<nav id="mnav" aria-label="Principal"><a href="#beats">Beats</a><a href="#licencias">Licencias</a><a href="#servicios">Servicios</a><a href="#plugins">Plugins</a><a href="#plantillas">Plantillas</a><a href="#herramientas">Herramientas</a><a href="#sobre-mi">Sobre nosotros</a><a href="#cuenta" id="accb">Cuenta</a><a class="mcta" href="#contacto">Contacto</a></nav>
 <a class="btn sm hcta" href="#contacto">Contacto</a><button class="menu" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="mnav"><span></span><span></span></button></div></header>
 
 <main id="top">
@@ -969,6 +980,7 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 </div><div class="fcopy"><span>© 2026 IVO Beatz. Todos los derechos reservados</span><div class="fleg" role="group" aria-label="Información legal"><button type="button" data-leg="aviso-legal">Aviso legal</button><button type="button" data-leg="privacidad">Privacidad</button><button type="button" data-leg="cookies">Cookies</button><button type="button" data-leg="condiciones">Licencias y devoluciones</button></div></div></div></footer>
 
 <dialog id="leg" aria-labelledby="legt"><div class="lbox leg"><button type="button" class="lx" aria-label="Cerrar">×</button><div id="legc"></div></div></dialog>
+<dialog id="acc" class="mdl" aria-labelledby="at"><div class="lbox"><button type="button" class="lx" aria-label="Cerrar">×</button><div id="abody"></div></div></dialog>
 <dialog id="lic" aria-labelledby="lt"><div class="lbox"><button type="button" class="lx" aria-label="Cerrar">×</button><div id="lc"></div></div></dialog>
 <script>
 var B=[["Noche Verde","142 BPM","Dm","Trap",19,""],["Selva","128 BPM","Am","Crank",19,""],["Capucha","150 BPM","F#m","Waera",19,""],["Playa 3AM","96 BPM","Cm","Reggaeton",19,""],["Camo","140 BPM","Gm","Crank",19,""],["Ruta","120 BPM","Em","Reggaeton",19,""]];
@@ -987,7 +999,8 @@ for(i=0;i<NB;i++){var env=0.35+0.65*Math.abs(Math.sin(i/NB*Math.PI*(1.5+(k%3)*0.
 var d=document.createElement("div");d.className="beat";
 d.innerHTML='<button class="play" aria-pressed="false" aria-label="Reproducir '+b[0]+'"><svg class="i1" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg><svg class="i2" width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg></button><div><b>'+b[0]+'</b><small>'+b[1]+' · '+b[2]+' · '+b[3]+'</small></div><div class="wave" role="slider" tabindex="0" aria-label="Posición de '+b[0]+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">'+bars+'</div><span class="price"><small>desde</small>'+b[4]+' €</span><a class="btn sm" href="#licencias">Licencia</a>';
 var w=d.querySelector(".wave");d._s={row:d,btn:d.querySelector(".play"),wave:w,bars:w.children,p:0,n:-1,on:false,a:null,src:b[5],name:b[0]};return d}
-B.forEach(function(b,k){L.appendChild(mk(b,k))});
+function paint(){L.innerHTML="";B.forEach(function(b,k){L.appendChild(mk(b,k))})}paint();
+window.__setBeats=function(list){B.length=0;list.forEach(function(b){B.push(b)});paint();if(window.__chips)window.__chips();if(window.__pickReset)window.__pickReset()};
 L.addEventListener("click",function(e){var row=e.target.closest(".beat");if(!row)return;var s=row._s;
 if(e.target.closest(".play")){s.on?pause(s):play(s);return}
 var w=e.target.closest(".wave");if(w){var q=w.getBoundingClientRect();seek(s,(e.clientX-q.left)/q.width)}});
@@ -1096,10 +1109,11 @@ var links=$$("nav a[href^='#']").filter(function(a){return !a.classList.contains
 if("IntersectionObserver" in window){var so=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){links.forEach(function(a){a.classList.remove("act")});var a=map[x.target.id];if(a)a.classList.add("act")}})},{rootMargin:"-45% 0px -50% 0px"});
 $$("section[id]").forEach(function(s){so.observe(s)})}
 /* filtros de beats */
-var ch=$("#chips"),rows=$$("#list .beat");
+function buildChips(){var ch=$("#chips"),rows=$$("#list .beat");if(ch)ch.innerHTML="";
 if(ch&&rows.length){var gs=["Todos"];B.forEach(function(b){if(gs.indexOf(b[3])<0)gs.push(b[3])});
 gs.forEach(function(g,i){var b=document.createElement("button");b.type="button";b.textContent=g;b.setAttribute("aria-pressed",i===0?"true":"false");b.addEventListener("click",function(){$$("#chips button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
-rows.forEach(function(r,k){var ok=g==="Todos"||B[k][3]===g;if(!ok&&r._s&&r._s.on)pause(r._s);r.hidden=!ok})});ch.appendChild(b)})}
+rows.forEach(function(r,k){var ok=g==="Todos"||B[k][3]===g;if(!ok&&r._s&&r._s.on)pause(r._s);r.hidden=!ok})});ch.appendChild(b)})}}
+buildChips();window.__chips=buildChips;
 /* formulario: estado */
 })();
 
@@ -1258,14 +1272,15 @@ if("IntersectionObserver" in window)new IntersectionObserver(function(es){es.for
 (function(){
 var $=function(i){return document.getElementById(i)};
 var MAIL="ivobeatzzz@gmail.com";
-/* Cuando tengas los enlaces de Payhip, pégalos aquí: "licencia-basica":"https://payhip.com/b/XXXXX" */
-var PAYHIP={};
+/* Enlaces de pago de Stripe: "licencia-basica":"https://buy.stripe.com/XXXXX" */
+var PAYHIP={};window.__PAY=PAYHIP;
 var LIC={basica:["Básica","19 €"],estandar:["Estándar","29 €"],premium:["Premium","59 €"],ilimitada:["Ilimitada","99 €"]};
 function mail(sub,body){var a=document.createElement("a");a.href="mailto:"+MAIL+"?subject="+encodeURIComponent(sub)+"&body="+encodeURIComponent(body);a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove()}
 function closeOn(dlg){dlg.addEventListener("click",function(e){var r=dlg.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dlg.close()})}
 /* ---- elegir beat ---- */
 var pk=$("pick"),pl=$("plist"),pgo=$("pgo"),lk=null,sel=null,rows=[],pre=null;
 closeOn(pk);pk.addEventListener("close",function(){if(typeof cur!=="undefined"&&cur)pause(cur)});
+window.__pickReset=function(){rows.length=0;pl.innerHTML=""};
 function build(){if(rows.length)return;B.forEach(function(b,k){var d=mk(b,k),a=d.querySelector("a.btn"),bt=document.createElement("button");bt.type="button";bt.className="btn sm sel";bt.textContent="Elegir";d.replaceChild(bt,a);pl.appendChild(d);rows.push(d)})}
 function choose(row){rows.forEach(function(r){var on=r===row;r.classList.toggle("chosen",on);r.querySelector(".sel").textContent=on?"Elegido ✓":"Elegir"});sel=row._s.name;pgo.disabled=false;pgo.textContent="Continuar con «"+sel+"»"}
 pl.addEventListener("click",function(e){var row=e.target.closest(".beat");if(!row)return;var s=row._s;
@@ -1338,6 +1353,72 @@ document.querySelectorAll("#servicios .card a.btn").forEach(function(a){var k=MA
 
 <script>
 (function(){
+var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp";
+var $=function(i){return document.getElementById(i)};
+function pubUrl(b,p){return SB+"/storage/v1/object/public/"+b+"/"+p}
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+
+/* ---- contenido en vivo: beats y presets desde la base de datos ---- */
+function rest(path){return fetch(SB+"/rest/v1/"+path,{headers:{apikey:KEY,Authorization:"Bearer "+KEY}}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
+rest("beats?select=name,bpm,key,genre,price_from,preview_path&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
+  if(!list||!list.length||!window.__setBeats)return;
+  window.__setBeats(list.map(function(b){return[b.name,b.bpm+" BPM",b.key,b.genre,b.price_from,b.preview_path?pubUrl("previews",b.preview_path):""]}))});
+rest("presets?select=id,artist,price,photo_path,stripe_link&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
+  if(!list||!list.length)return;var cta=document.querySelector("#plantillas .cta-card");if(!cta)return;
+  list.forEach(function(p){var key="plantilla-db-"+p.id.slice(0,8),d=document.createElement("div");d.className="card art";
+    var ph=p.photo_path?' style="background-image:url('+pubUrl("fotos",p.photo_path)+')"':"";
+    d.innerHTML='<div class="ph" role="img" aria-label="Foto de '+esc(p.artist)+'"'+ph+'><span>'+esc(p.artist)+'</span></div><div class="cb"><p class="am">Ableton Live y FL Studio · Requiere Waves y FabFilter · Guía incluida</p><div class="ar"><div><small>Vocal preset estilo '+esc(p.artist)+'</small><div class="big">'+esc(String(p.price).replace(/\.0+$/,""))+' €</div></div><a class="btn sm" href="#" data-checkout="'+key+'">Comprar</a></div></div>';
+    if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})});
+
+/* ---- cuentas ---- */
+var d=$("acc"),body=$("abody"),btn=$("accb"),sb=null,loading=null,prof=null;
+if(!d||!btn)return;
+function lib(){return loading||(loading=new Promise(function(res,rej){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js";
+  s.onload=function(){sb=supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});sb.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY")view("nueva")});res(sb)};s.onerror=function(){loading=null;rej()};document.head.appendChild(s)}))}
+function err(m){m=String(m||"");
+  if(/Invalid login/i.test(m))return"Email o contraseña incorrectos";if(/not confirmed/i.test(m))return"Confirma primero tu email. Te lo enviamos al crear la cuenta";
+  if(/already registered/i.test(m))return"Ya existe una cuenta con ese email";if(/rate limit|too many/i.test(m))return"Demasiados intentos. Prueba de nuevo en unos minutos";
+  if(/password/i.test(m)&&/least|weak/i.test(m))return"La contraseña debe tener al menos 8 caracteres";return"No se ha podido completar. Inténtalo de nuevo"}
+function msg(t,c){var e=$("amsg");if(e){e.textContent=t||"";e.className="amsg"+(c?" "+c:"")}}
+function shell(h){body.innerHTML=h}
+async function view(v){
+  if(!d.open)d.showModal();
+  if(v==="nueva"){shell('<h3 id="at">Nueva contraseña</h3><p class="ls">Elige una contraseña nueva para tu cuenta</p><form class="af" id="afN"><label>Contraseña nueva<input type="password" id="aNp" autocomplete="new-password" minlength="8" required></label><button class="btn" type="submit">Guardar contraseña</button><p class="amsg" id="amsg" role="status"></p></form>');
+    $("afN").addEventListener("submit",async function(e){e.preventDefault();msg("Guardando…");var r=await sb.auth.updateUser({password:$("aNp").value});if(r.error){msg(err(r.error.message),"bad");return}history.replaceState(null,"",location.pathname+location.search);view("cuenta")});return}
+  var s=(await sb.auth.getSession()).data.session;
+  if(!s)return entrar(v==="alta"?"alta":"login");
+  cuenta(s)}
+function entrar(tab,note){
+  shell('<h3 id="at">Tu cuenta</h3><p class="ls">Accede para ver tus compras y descargas</p><div class="atabs"><button type="button" data-t="login" aria-pressed="'+(tab==="login")+'">Entrar</button><button type="button" data-t="alta" aria-pressed="'+(tab==="alta")+'">Crear cuenta</button></div>'+
+  (tab==="login"?'<form class="af" id="afL"><label>Email<input type="email" id="aLe" autocomplete="username" required></label><label>Contraseña<input type="password" id="aLp" autocomplete="current-password" required></label><button class="btn" type="submit">Entrar</button><button type="button" class="alnk" id="aFor">He olvidado mi contraseña</button><p class="amsg'+(note?" ok":"")+'" id="amsg" role="status">'+(note||"")+'</p></form>':
+  '<form class="af" id="afA"><label>Nombre<input id="aAn" autocomplete="name" maxlength="60"></label><label>Email<input type="email" id="aAe" autocomplete="username" required></label><label>Contraseña (mínimo 8 caracteres)<input type="password" id="aAp" autocomplete="new-password" minlength="8" required></label><label class="achk"><input type="checkbox" id="aAc" required><span>He leído la <button type="button" class="alnk" data-leg="privacidad">política de privacidad</button></span></label><button class="btn" type="submit">Crear cuenta</button><p class="amsg" id="amsg" role="status"></p></form>'));
+  body.querySelectorAll(".atabs button").forEach(function(b){b.addEventListener("click",function(){entrar(b.dataset.t)})});
+  if(tab==="login"){$("afL").addEventListener("submit",async function(e){e.preventDefault();msg("Entrando…");var r=await sb.auth.signInWithPassword({email:$("aLe").value.trim(),password:$("aLp").value});if(r.error){msg(err(r.error.message),"bad");return}cuenta(r.data.session)});
+    $("aFor").addEventListener("click",async function(){var em=$("aLe").value.trim();if(!em){msg("Escribe tu email arriba y vuelve a pulsar","bad");return}msg("Enviando…");var r=await sb.auth.resetPasswordForEmail(em,{redirectTo:location.origin+location.pathname});msg(r.error?err(r.error.message):"Si el email existe, te hemos enviado un enlace para cambiar la contraseña",r.error?"bad":"ok")})}
+  else{$("afA").addEventListener("submit",async function(e){e.preventDefault();var pw=$("aAp").value;if(pw.length<8){msg("La contraseña debe tener al menos 8 caracteres","bad");return}msg("Creando cuenta…");
+    var r=await sb.auth.signUp({email:$("aAe").value.trim(),password:pw,options:{data:{nombre:$("aAn").value.trim()},emailRedirectTo:location.origin+location.pathname}});
+    if(r.error){msg(err(r.error.message),"bad");return}
+    if(r.data.session){cuenta(r.data.session);return}
+    entrar("login","Te hemos enviado un correo para confirmar tu cuenta. Después podrás entrar")})}}
+async function cuenta(s){
+  var u=s.user;shell('<h3 id="at">Tu cuenta</h3><p class="ls">Cargando…</p>');
+  var p=await sb.from("profiles").select("nombre,role,email").eq("id",u.id).maybeSingle();prof=p.data||{};
+  var o=await sb.from("orders").select("id,created_at,status,total,items").eq("user_id",u.id).order("created_at",{ascending:false}).limit(20);
+  var list=(o.data||[]).map(function(x){var its=(x.items||[]).map(function(i){return esc(i.name||i.title||"")}).filter(Boolean).join(", ");return'<li><b>'+new Date(x.created_at).toLocaleDateString("es-ES")+'</b>'+(its?' · '+its:'')+(x.total!=null?' · '+x.total+' €':'')+'</li>'}).join("");
+  shell('<h3 id="at">Hola, '+esc(prof.nombre||u.email.split("@")[0])+'</h3><p class="ls">'+esc(u.email)+'</p><h4>Tus compras</h4>'+(list?'<ul class="aord">'+list+'</ul>':'<p class="lnote" style="margin:0">Todavía no tienes compras. Cuando compres, aparecerán aquí</p>')+
+  '<div class="lact" style="margin-top:22px">'+(prof.role==="admin"?'<a class="btn sm" href="admin.html">Panel de administración</a>':'')+'<button type="button" class="btn sm ghost ink" id="aOut">Cerrar sesión</button></div>');
+  $("aOut").addEventListener("click",async function(){await sb.auth.signOut();entrar("login")})}
+btn.addEventListener("click",async function(e){e.preventDefault();var m=document.getElementById("mnav"),mb=document.querySelector(".menu");if(m&&mb&&mb.getAttribute("aria-expanded")==="true")mb.click();
+  try{await lib()}catch(x){alert("No se pudo cargar el acceso. Revisa tu conexión");return}view("login")});
+d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()});
+window.__openAccount=function(tab){lib().then(function(){view(tab==="alta"?"alta":"login")})};
+if(/[#&](access_token|type)=(.*)/.test(location.hash)&&/type=(recovery|signup|magiclink|invite|email)/.test(location.hash)){
+  lib().then(async function(){var rec=/type=recovery/.test(location.hash);if(rec){view("nueva");return}
+    await new Promise(function(r){setTimeout(r,600)});history.replaceState(null,"",location.pathname+location.search);view("cuenta")})}
+})();
+</script>
+<script>
+(function(){
 var $=function(i){return document.getElementById(i)},q=function(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s))};
 var fab=$("fab"),P=$("bp"),M=$("bm"),F=$("bf"),I=$("bi"),Q=$("bq");if(!fab||!P)return;
 function nz(t){return String(t).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
@@ -1383,9 +1464,10 @@ var INT=[
 if(m){var nm={basica:"Básica",estandar:"Estándar",premium:"Premium",ilimitada:"Ilimitada"}[m],c=card("licencias",nm);if(c){say("Licencia "+nm+" · "+c.p+": "+c.li.join(", "),[["Ver condiciones",function(){lic(m)}],["Comprar",function(){go("licencias")}]]);return}}
 var parts=["Básica","Estándar","Premium","Ilimitada"].map(function(x){var c=card("licencias",x);return c?x+" "+c.p:""}).filter(Boolean);
 say("Licencias de beats: "+parts.join(", ")+" y Exclusiva desde 200 €. Cambian el formato de archivos, las reproducciones y los vídeos permitidos",[["Comparar licencias",function(){go("licencias")}],["Exclusiva",function(){req("exclusiva")}]])}},
-{k:/(pago|pagar|payhip|tarjeta|paypal|como recibo|descarga|descargar|recibo|factura)/,a:function(){say("Los pagos se hacen con Payhip y, al completar el pago, recibes el enlace de descarga por correo. Ahora mismo estamos activando el pago online; mientras tanto puedes hacer tu pedido desde la web y se envía por correo",[["Elegir licencia",function(){go("licencias")}]])}},
+{k:/(pago|pagar|payhip|tarjeta|paypal|como recibo|descarga|descargar|recibo|factura)/,a:function(){say("Los pagos se hacen con Stripe y, al completar el pago, recibes el enlace de descarga por correo. Ahora mismo estamos activando el pago online; mientras tanto puedes hacer tu pedido desde la web y se envía por correo",[["Elegir licencia",function(){go("licencias")}]])}},
 {k:/(devoluc|reembols|cancelar|desisti)/,a:function(){say("Al ser contenido digital que se entrega al momento, se pierde el derecho de desistimiento una vez iniciada la descarga. Si el archivo llega defectuoso o no coincide con lo que compraste, escríbenos y lo solucionamos o devolvemos el importe",[["Ver condiciones",function(){leg("condiciones")}],["Escribirnos",function(){go("contacto")}]])}},
 {k:/(cuanto tarda|plazo|tardan|tiempo de entrega|cuando (esta|llega|entregan)|dias)/,a:function(){say("Mezcla, unos 5 días. Máster, unas 48 horas. Mezcla y máster juntos, unos 6 días. Son plazos orientativos y dependen de la carga de trabajo",[["Pedir un servicio",function(){go("servicios")}]])}},
+{k:/(cuenta|registr|iniciar sesion|login|contrasena|mis compras|mis descargas|entrar)/,a:function(){say("Con una cuenta puedes ver tus compras y tus descargas en un solo sitio",[["Entrar",function(){closeP();if(window.__openAccount)window.__openAccount("login")}],["Crear cuenta",function(){closeP();if(window.__openAccount)window.__openAccount("alta")}]])}},
 {k:/(contacto|contactar|email|correo|mail|instagram|escribir|hablar|persona|whatsapp|telefono|llamar)/,a:function(){say("Puedes escribirnos por correo o por Instagram. Respondemos normalmente en 24 a 48 horas",[["Ir al formulario",function(){go("contacto")}],["Copiar email",function(b){copyMail(b)}],["Instagram",function(){open_("https://ig.me/m/ivobeatzzz")}]])}},
 {k:/(privacidad|cookies|datos personales|aviso legal|legal|rgpd|condiciones)/,a:function(){say("Aquí tienes los textos legales",[["Aviso legal",function(){leg("aviso-legal")}],["Privacidad",function(){leg("privacidad")}],["Cookies",function(){leg("cookies")}],["Licencias y devoluciones",function(){leg("condiciones")}]])}},
 {k:/(quienes sois|quien eres|sobre (vosotros|nosotros)|experiencia|malaga|equipo)/,a:function(){say("Somos IVO Beatz, de Málaga, con más de 8 años de experiencia en producción musical y formación de Técnico de Sonido para Audiovisuales y Espectáculos",[["Sobre nosotros",function(){go("sobre-mi")}]])}},
@@ -1405,7 +1487,7 @@ window.__botOpen=function(){return !P.hidden}})();
 </script>
 <script>
 (function(){
-var LEG={"aviso-legal": ["Aviso legal", "Información del titular del sitio web", "<h4>Titular</h4><ul><li>Nombre: Iván Montero Fortes</li><li>NIF: 77796920H</li><li>Domicilio: Calle Pensamiento 54, 29640 Fuengirola (Málaga)</li><li>Correo de contacto: ivobeatzzz@gmail.com</li><li>Sitio web: ivobeatz.com</li></ul>\n<h4>Actividad</h4><p>Venta de beats con licencia, servicios de mezcla y máster, plantillas de grabación y herramientas digitales para producción musical</p>\n<h4>Propiedad intelectual</h4><p>Los beats, textos, imágenes, diseño y código de este sitio pertenecen a IVO Beatz o se utilizan con la debida autorización, y no pueden reproducirse, distribuirse ni transformarse sin permiso previo</p>\n<p>Las plantillas vocales están inspiradas en el sonido de cada artista. Los nombres y fotografías de artistas se muestran solo como referencia, y no implican afiliación, patrocinio ni aval por parte de ellos</p>\n<h4>Responsabilidad</h4><p>IVO Beatz trabaja para mantener la información actualizada y el sitio disponible, pero no garantiza la ausencia de errores ni interrupciones. No se hace responsable del contenido de los sitios externos enlazados</p>\n<h4>Legislación aplicable</h4><p>Este sitio se rige por la legislación española. Para cualquier controversia, el consumidor puede acudir a los tribunales de su domicilio"], "privacidad": ["Política de privacidad", "Cómo se tratan tus datos personales", "<h4>Responsable</h4><p>Iván Montero Fortes (NIF 77796920H), con domicilio en Calle Pensamiento 54, 29640 Fuengirola (Málaga). Contacto: ivobeatzzz@gmail.com</p>\n<h4>Datos que se tratan</h4><ul><li>Los que nos envías al escribirnos o al pedir un servicio: nombre, correo, teléfono si lo indicas, y el contenido de tu mensaje</li><li>Los datos de pago y de entrega de las compras los gestiona Payhip, que actúa como procesador de pagos. IVO Beatz no recibe ni guarda los datos de tu tarjeta</li></ul>\n<h4>Finalidad y base legal</h4><ul><li>Responder a tus consultas y gestionar tus pedidos: consentimiento y ejecución del contrato</li><li>Entregar los productos digitales que compras: ejecución del contrato</li></ul>\n<h4>Conservación</h4><p>Conservamos los datos mientras dure la relación y, después, durante los plazos legales que correspondan</p>\n<h4>Destinatarios</h4><p>No se ceden datos a terceros salvo obligación legal. Para prestar el servicio intervienen proveedores como Payhip (pagos y entrega), Google (correo electrónico) y Cloudflare (alojamiento del sitio)</p>\n<h4>Tus derechos</h4><p>Puedes solicitar el acceso, la rectificación, la supresión, la oposición, la limitación y la portabilidad de tus datos escribiendo a ivobeatzzz@gmail.com. Si consideras que tus derechos no han sido atendidos, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es)"], "cookies": ["Política de cookies", "Qué almacena este sitio en tu navegador", "<h4>Cookies propias</h4><p>Este sitio no utiliza cookies de analítica, publicidad ni seguimiento</p>\n<h4>Servicios de terceros</h4><ul><li>Google Fonts: carga la tipografía del sitio y Google recibe tu dirección IP para servirla</li><li>YouTube: el vídeo solo se carga cuando pulsas reproducir, y a partir de ese momento YouTube puede instalar sus propias cookies</li><li>Payhip: al comprar, accedes a su página de pago, que tiene su propia política de cookies</li></ul>\n<h4>Cómo gestionarlas</h4><p>Puedes borrar o bloquear las cookies desde los ajustes de tu navegador. Si activamos herramientas de analítica en el futuro, te lo indicaremos aquí y pediremos tu consentimiento"], "condiciones": ["Licencias y devoluciones", "Condiciones de compra de productos digitales y servicios", "<h4>Licencias de beats</h4><p>Cada beat se vende con la licencia que elijas. Los usos permitidos, el número de reproducciones y las condiciones de crédito de cada una se detallan en su ficha, en la sección Licencias, y quedan aceptados al completar la compra</p>\n<h4>Entrega</h4><p>Los productos digitales se entregan de forma inmediata tras el pago, con un enlace de descarga enviado a tu correo</p>\n<h4>Devoluciones</h4><p>Al tratarse de contenido digital que se entrega al momento y con tu consentimiento, pierdes el derecho de desistimiento una vez iniciada la descarga. Si el archivo llega defectuoso o no coincide con lo que compraste, escríbenos a ivobeatzzz@gmail.com y lo solucionamos o devolvemos el importe</p>\n<h4>Mezcla y máster</h4><p>La mezcla y la mezcla y máster incluyen 1 ronda de revisiones, y la plantilla vocal personalizada 2 rondas de ajustes. Si necesitas más ajustes, te lo indicaremos antes de empezar. El plazo de entrega es orientativo y depende de la carga de trabajo</p>\n<h4>Beats exclusivos</h4><p>Cuando se vende una licencia exclusiva, el beat se retira de la tienda y no se vuelve a vender"]},d=document.getElementById("leg"),c=document.getElementById("legc");
+var LEG={"aviso-legal": ["Aviso legal", "Información del titular del sitio web", "<h4>Titular</h4><ul><li>Nombre: Iván Montero Fortes</li><li>NIF: 77796920H</li><li>Domicilio: Calle Pensamiento 54, 29640 Fuengirola (Málaga)</li><li>Correo de contacto: ivobeatzzz@gmail.com</li><li>Sitio web: ivobeatz.com</li></ul>\n<h4>Actividad</h4><p>Venta de beats con licencia, servicios de mezcla y máster, plantillas de grabación y herramientas digitales para producción musical</p>\n<h4>Propiedad intelectual</h4><p>Los beats, textos, imágenes, diseño y código de este sitio pertenecen a IVO Beatz o se utilizan con la debida autorización, y no pueden reproducirse, distribuirse ni transformarse sin permiso previo</p>\n<p>Las plantillas vocales están inspiradas en el sonido de cada artista. Los nombres y fotografías de artistas se muestran solo como referencia, y no implican afiliación, patrocinio ni aval por parte de ellos</p>\n<h4>Responsabilidad</h4><p>IVO Beatz trabaja para mantener la información actualizada y el sitio disponible, pero no garantiza la ausencia de errores ni interrupciones. No se hace responsable del contenido de los sitios externos enlazados</p>\n<h4>Legislación aplicable</h4><p>Este sitio se rige por la legislación española. Para cualquier controversia, el consumidor puede acudir a los tribunales de su domicilio"], "privacidad": ["Política de privacidad", "Cómo se tratan tus datos personales", "<h4>Responsable</h4><p>Iván Montero Fortes (NIF 77796920H), con domicilio en Calle Pensamiento 54, 29640 Fuengirola (Málaga). Contacto: ivobeatzzz@gmail.com</p>\n<h4>Datos que se tratan</h4><ul><li>Los que nos envías al escribirnos o al pedir un servicio: nombre, correo, teléfono si lo indicas, y el contenido de tu mensaje</li><li>Los datos de pago de las compras los gestiona Stripe, que actúa como procesador de pagos. IVO Beatz no recibe ni guarda los datos de tu tarjeta</li><li>Si creas una cuenta: nombre, correo electrónico, contraseña (almacenada de forma cifrada) y el historial de tus compras</li></ul>\n<h4>Finalidad y base legal</h4><ul><li>Responder a tus consultas y gestionar tus pedidos: consentimiento y ejecución del contrato</li><li>Entregar los productos digitales que compras: ejecución del contrato</li></ul>\n<h4>Conservación</h4><p>Conservamos los datos mientras dure la relación y, después, durante los plazos legales que correspondan</p>\n<h4>Destinatarios</h4><p>No se ceden datos a terceros salvo obligación legal. Para prestar el servicio intervienen proveedores como Stripe (pagos), Supabase (cuentas, base de datos y almacenamiento de archivos, en servidores de la Unión Europea), Google (correo electrónico) y Cloudflare (alojamiento del sitio)</p>\n<h4>Tus derechos</h4><p>Puedes solicitar el acceso, la rectificación, la supresión, la oposición, la limitación y la portabilidad de tus datos escribiendo a ivobeatzzz@gmail.com. Si consideras que tus derechos no han sido atendidos, puedes reclamar ante la Agencia Española de Protección de Datos (aepd.es)"], "cookies": ["Política de cookies", "Qué almacena este sitio en tu navegador", "<h4>Cookies propias</h4><p>Este sitio no utiliza cookies de analítica, publicidad ni seguimiento</p>\n<h4>Servicios de terceros</h4><ul><li>Google Fonts: carga la tipografía del sitio y Google recibe tu dirección IP para servirla</li><li>YouTube: el vídeo solo se carga cuando pulsas reproducir, y a partir de ese momento YouTube puede instalar sus propias cookies</li><li>Stripe: al comprar, accedes a su página de pago, que tiene su propia política de cookies</li><li>Supabase: si inicias sesión, guarda en tu navegador los datos técnicos necesarios para mantener tu sesión abierta</li></ul>\n<h4>Cómo gestionarlas</h4><p>Puedes borrar o bloquear las cookies desde los ajustes de tu navegador. Si activamos herramientas de analítica en el futuro, te lo indicaremos aquí y pediremos tu consentimiento"], "condiciones": ["Licencias y devoluciones", "Condiciones de compra de productos digitales y servicios", "<h4>Licencias de beats</h4><p>Cada beat se vende con la licencia que elijas. Los usos permitidos, el número de reproducciones y las condiciones de crédito de cada una se detallan en su ficha, en la sección Licencias, y quedan aceptados al completar la compra</p>\n<h4>Entrega</h4><p>Los productos digitales se entregan de forma inmediata tras el pago, con un enlace de descarga enviado a tu correo</p>\n<h4>Devoluciones</h4><p>Al tratarse de contenido digital que se entrega al momento y con tu consentimiento, pierdes el derecho de desistimiento una vez iniciada la descarga. Si el archivo llega defectuoso o no coincide con lo que compraste, escríbenos a ivobeatzzz@gmail.com y lo solucionamos o devolvemos el importe</p>\n<h4>Mezcla y máster</h4><p>La mezcla y la mezcla y máster incluyen 1 ronda de revisiones, y la plantilla vocal personalizada 2 rondas de ajustes. Si necesitas más ajustes, te lo indicaremos antes de empezar. El plazo de entrega es orientativo y depende de la carga de trabajo</p>\n<h4>Beats exclusivos</h4><p>Cuando se vende una licencia exclusiva, el beat se retira de la tienda y no se vuelve a vender"]},d=document.getElementById("leg"),c=document.getElementById("legc");
 if(!d||!c)return;
 function esc(t){return t}
 function open(k,push){var o=LEG[k];if(!o)return;c.innerHTML='<h3 id="legt">'+o[0]+'</h3><p class="ls">'+o[1]+'</p>'+o[2]+'</p>';d.querySelector(".lbox").scrollTop=0;if(!d.open)d.showModal();try{if(push)history.replaceState(null,"","#"+k)}catch(e){}}

@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel IVO Beatz</title>
+<link rel="icon" href="favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#111;--mute:#6b6b66;--line:#e4e4df;--lime:#b9d86c;--dark:#0e0f0d;--bad:#c0392b;--ok:#3f6b1d}
+@media (prefers-color-scheme:dark){:root{--bg:#0d0d0d;--panel:#161616;--ink:#f0f0ec;--mute:#9a9a94;--line:#2a2a27;--lime:#a9ba78;--dark:#1d1f1a}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font:15px/1.5 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px 80px}
+header{display:flex;align-items:center;gap:14px;padding:20px 0;flex-wrap:wrap}
+header h1{font-size:22px;margin:0;letter-spacing:-.02em}
+header .sp{flex:1}
+header small{color:var(--mute)}
+button,.btn{font:inherit;font-weight:600;font-size:14px;padding:10px 18px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--bg);cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s,opacity .2s}
+button:hover,.btn:hover{transform:translateY(-1px)}
+button.ghost,.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button.sm{padding:6px 12px;font-size:13px}
+button.danger{background:transparent;color:var(--bad);border-color:var(--bad)}
+button:disabled{opacity:.4;pointer-events:none}
+.tabs{display:flex;gap:6px;padding:5px;border:1px solid var(--line);border-radius:999px;background:var(--panel);width:max-content;max-width:100%;overflow:auto;margin-bottom:22px}
+.tabs button{background:transparent;color:var(--mute);border:0;padding:8px 18px}
+.tabs button[aria-selected=true]{background:var(--ink);color:var(--bg)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px;margin-bottom:16px}
+h2{font-size:18px;margin:0 0 14px}
+label{display:grid;gap:6px;font-size:12px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+input,select{font:inherit;font-size:15px;text-transform:none;letter-spacing:0;font-weight:400;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:11px 13px;width:100%}
+input:focus,select:focus{outline:2px solid var(--lime);outline-offset:0}
+input[type=file]{padding:9px}
+input[type=checkbox]{width:auto}
+.g{display:grid;gap:14px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:720px){.g,.g3{grid-template-columns:minmax(0,1fr)}}
+.row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.row:last-child{border:0}
+.row .t{flex:1;min-width:180px}
+.row .t b{display:block}
+.row .t small{color:var(--mute)}
+.tag{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);margin-right:4px}
+.tag.on{background:var(--lime);border-color:var(--lime);color:#17240a}
+audio{height:34px;max-width:230px}
+.msg{font-size:14px;margin:10px 0 0;min-height:20px}
+.msg.bad{color:var(--bad)}.msg.ok{color:var(--ok)}
+.hint{color:var(--mute);font-size:13px;margin:8px 0 0}
+.thumb{width:48px;height:48px;border-radius:12px;object-fit:cover;background:var(--bg)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mute);padding:8px 6px;border-bottom:1px solid var(--line)}
+td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
+.login{max-width:420px;margin:12vh auto 0}
+[hidden]{display:none!important}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .2s}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div id="vLogin" class="login" hidden>
+  <div class="card">
+    <h1 style="margin:0 0 4px;font-size:24px">Panel IVO Beatz</h1>
+    <p class="hint" style="margin:0 0 18px">Acceso solo para administradores</p>
+    <form id="fLogin" style="display:grid;gap:14px">
+      <label>Email<input type="email" id="lEmail" autocomplete="username" required></label>
+      <label>Contraseña<input type="password" id="lPass" autocomplete="current-password" required></label>
+      <button type="submit">Entrar</button>
+      <p class="msg" id="lMsg" role="status"></p>
+    </form>
+  </div>
+</div>
+
+<div id="vApp" hidden>
+  <header>
+    <h1>Panel IVO Beatz</h1><span class="sp"></span>
+    <small id="who"></small>
+    <a class="btn ghost sm" href="/" target="_blank" rel="noopener">Ver web</a>
+    <button class="ghost sm" id="bOut" type="button">Salir</button>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button type="button" data-v="beats" aria-selected="true">Beats</button>
+    <button type="button" data-v="presets" aria-selected="false">Presets</button>
+    <button type="button" data-v="orders" aria-selected="false">Pedidos</button>
+  </div>
+
+  <!-- BEATS -->
+  <section id="tBeats">
+    <div class="card">
+      <h2 id="beatTitle">Nuevo beat</h2>
+      <form id="fBeat" style="display:grid;gap:14px">
+        <div class="g3">
+          <label>Nombre<input id="bName" required maxlength="60"></label>
+          <label>BPM<input id="bBpm" type="number" min="40" max="300" required></label>
+          <label>Tonalidad<select id="bKey" required></select></label>
+        </div>
+        <div class="g3">
+          <label>Estilo<select id="bGenre"><option>Trap</option><option>Crank</option><option>Waera</option><option>Reggaeton</option><option>Otro</option></select></label>
+          <label>Precio desde (€)<input id="bPrice" type="number" min="1" value="19" required></label>
+          <label>Orden<input id="bSort" type="number" value="0"></label>
+        </div>
+        <label id="bGenreOtherW" hidden>Otro estilo<input id="bGenreOther" maxlength="30"></label>
+        <label>Previsualización (MP3, 30 a 60 s, con marca de voz)<input id="bPrev" type="file" accept="audio/mpeg,audio/mp3,.mp3"></label>
+        <div class="g3">
+          <label>Archivo MP3 de venta<input id="fMp3" type="file" accept=".mp3,audio/mpeg"></label>
+          <label>Archivo WAV de venta<input id="fWav" type="file" accept=".wav,audio/wav,audio/x-wav"></label>
+          <label>Stems (ZIP)<input id="fZip" type="file" accept=".zip,application/zip"></label>
+        </div>
+        <p class="hint">La previsualización es pública. Los archivos de venta quedan privados y solo se entregan tras el pago. Límite por archivo: 50 MB en el plan gratuito de Supabase</p>
+        <div class="bar" id="bBar" hidden><i></i></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="submit" id="bSave">Guardar beat</button>
+          <button type="button" class="ghost" id="bCancel" hidden>Cancelar edición</button>
+        </div>
+        <p class="msg" id="bMsg" role="status"></p>
+      </form>
+    </div>
+    <div class="card"><h2>Tus beats</h2><div id="beatList"></div></div>
+  </section>
+
+  <!-- PRESETS -->
+  <section id="tPresets" hidden>
+    <div class="card">
+      <h2 id="preTitle">Nuevo preset</h2>
+      <form id="fPre" style="display:grid;gap:14px">
+        <div class="g3">
+          <label>Artista<input id="pArtist" required maxlength="60"></label>
+          <label>Precio (€)<input id="pPrice" type="number" min="1" step="0.5" value="15" required></label>
+          <label>Orden<input id="pSort" type="number" value="0"></label>
+        </div>
+        <label>Enlace de pago de Stripe (opcional)<input id="pLink" type="url" placeholder="https://buy.stripe.com/…"></label>
+        <div class="g">
+          <label>Foto de referencia<input id="pPhoto" type="file" accept="image/*"></label>
+          <label>Archivo del preset (privado)<input id="pFile" type="file"></label>
+        </div>
+        <div class="bar" id="pBar" hidden><i></i></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button type="submit" id="pSave">Guardar preset</button>
+          <button type="button" class="ghost" id="pCancel" hidden>Cancelar edición</button>
+        </div>
+        <p class="msg" id="pMsg" role="status"></p>
+      </form>
+    </div>
+    <div class="card"><h2>Tus presets</h2><div id="preList"></div></div>
+  </section>
+
+  <!-- PEDIDOS -->
+  <section id="tOrders" hidden>
+    <div class="card"><h2>Pedidos</h2><div id="ordList"></div></div>
+  </section>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+(function(){
+var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp";
+var sb=supabase.createClient(SB,KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+var $=function(i){return document.getElementById(i)};
+var KEYS=["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"],ks=[];
+KEYS.forEach(function(k){ks.push(k+"m")});KEYS.forEach(function(k){ks.push(k)});
+$("bKey").innerHTML=ks.map(function(k){return"<option>"+k+"</option>"}).join("");
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+function pub(b,p){return SB+"/storage/v1/object/public/"+b+"/"+p}
+function say(el,t,c){el.textContent=t||"";el.className="msg"+(c?" "+c:"")}
+function safe(n){return n.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9._-]+/g,"-").replace(/^-+|-+$/g,"")||"archivo"}
+function ext(f){var m=/\.([a-z0-9]+)$/i.exec(f.name);return m?m[1].toLowerCase():"bin"}
+
+/* ---------- sesión ---------- */
+function show(v){$("vLogin").hidden=v!=="login";$("vApp").hidden=v!=="app"}
+async function boot(){
+  var r=await sb.auth.getSession(),s=r.data.session;
+  if(!s){show("login");return}
+  var p=await sb.from("profiles").select("role,email").eq("id",s.user.id).maybeSingle();
+  if(!p.data||p.data.role!=="admin"){await sb.auth.signOut();show("login");say($("lMsg"),"Esta cuenta no tiene permisos de administrador","bad");return}
+  $("who").textContent=p.data.email;show("app");loadBeats();
+}
+$("fLogin").addEventListener("submit",async function(e){e.preventDefault();say($("lMsg"),"Entrando…");
+  var r=await sb.auth.signInWithPassword({email:$("lEmail").value.trim(),password:$("lPass").value});
+  if(r.error){say($("lMsg"),r.error.message==="Invalid login credentials"?"Email o contraseña incorrectos":r.error.message==="Email not confirmed"?"Confirma primero tu email":"No se pudo entrar","bad");return}
+  say($("lMsg"),"");boot()});
+$("bOut").addEventListener("click",async function(){await sb.auth.signOut();show("login")});
+
+/* ---------- pestañas ---------- */
+document.querySelectorAll(".tabs button").forEach(function(b){b.addEventListener("click",function(){
+  document.querySelectorAll(".tabs button").forEach(function(x){x.setAttribute("aria-selected",x===b?"true":"false")});
+  $("tBeats").hidden=b.dataset.v!=="beats";$("tPresets").hidden=b.dataset.v!=="presets";$("tOrders").hidden=b.dataset.v!=="orders";
+  if(b.dataset.v==="beats")loadBeats();if(b.dataset.v==="presets")loadPre();if(b.dataset.v==="orders")loadOrders()})});
+
+function bar(id,pct){var b=$(id);b.hidden=pct==null;if(pct!=null)b.firstChild.style.width=pct+"%"}
+async function upload(bucket,path,file,onDone){
+  var r=await sb.storage.from(bucket).upload(path,file,{upsert:true,contentType:file.type||undefined,cacheControl:"3600"});
+  if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
+
+/* ---------- BEATS ---------- */
+var editB=null;
+$("bGenre").addEventListener("change",function(){$("bGenreOtherW").hidden=$("bGenre").value!=="Otro"});
+function resetBeat(){editB=null;$("fBeat").reset();$("bPrice").value=19;$("bSort").value=0;$("beatTitle").textContent="Nuevo beat";$("bCancel").hidden=true;$("bGenreOtherW").hidden=true;bar("bBar",null)}
+$("bCancel").addEventListener("click",function(){resetBeat();say($("bMsg"),"")});
+async function loadBeats(){
+  var r=await sb.from("beats").select("*, beat_files(kind)").order("sort").order("created_at");
+  var L=$("beatList");if(r.error){L.textContent="No se pudieron cargar los beats";return}
+  if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún beat. Mientras no haya ninguno, la web muestra beats de ejemplo</p>';return}
+  L.innerHTML=r.data.map(function(b){var kinds=(b.beat_files||[]).map(function(f){return f.kind});
+    return '<div class="row" data-id="'+b.id+'"><div class="t"><b>'+esc(b.name)+(b.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+b.bpm+' BPM · '+esc(b.key)+' · '+esc(b.genre)+' · desde '+b.price_from+' €</small><div style="margin-top:6px">'+
+    ["mp3","wav","stems"].map(function(k){return'<span class="tag'+(kinds.indexOf(k)>-1?" on":"")+'">'+k.toUpperCase()+'</span>'}).join("")+'</div></div>'+
+    (b.preview_path?'<audio controls preload="none" src="'+pub("previews",b.preview_path)+'"></audio>':'<span class="hint">Sin previsualización</span>')+
+    '<button class="ghost sm" data-a="edit">Editar</button><button class="ghost sm" data-a="vis">'+(b.active?"Ocultar":"Mostrar")+'</button><button class="danger sm" data-a="del">Borrar</button></div>'}).join("");
+  L._d=r.data}
+$("beatList").addEventListener("click",async function(e){
+  var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),b=$("beatList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!b)return;
+  if(btn.dataset.a==="edit"){editB=b;$("bName").value=b.name;$("bBpm").value=b.bpm;$("bKey").value=b.key;
+    var known=["Trap","Crank","Waera","Reggaeton"].indexOf(b.genre)>-1;$("bGenre").value=known?b.genre:"Otro";$("bGenreOtherW").hidden=known;$("bGenreOther").value=known?"":b.genre;
+    $("bPrice").value=b.price_from;$("bSort").value=b.sort;$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no eliges archivos nuevos, se mantienen los actuales");window.scrollTo({top:0,behavior:"smooth"})}
+  if(btn.dataset.a==="vis"){await sb.from("beats").update({active:!b.active}).eq("id",b.id);loadBeats()}
+  if(btn.dataset.a==="del"){if(!confirm("¿Borrar «"+b.name+"» y todos sus archivos? No se puede deshacer"))return;
+    var fs=await sb.from("beat_files").select("file_path").eq("beat_id",b.id);
+    if(fs.data&&fs.data.length)await sb.storage.from("archivos").remove(fs.data.map(function(f){return f.file_path}));
+    if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);
+    var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");loadBeats()}});
+$("fBeat").addEventListener("submit",async function(e){e.preventDefault();var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
+  try{
+    var genre=$("bGenre").value==="Otro"?($("bGenreOther").value.trim()||"Otro"):$("bGenre").value;
+    var row={name:$("bName").value.trim(),bpm:parseInt($("bBpm").value,10),key:$("bKey").value,genre:genre,price_from:parseInt($("bPrice").value,10),sort:parseInt($("bSort").value,10)||0};
+    var id;
+    if(editB){var u=await sb.from("beats").update(row).eq("id",editB.id);if(u.error)throw u.error;id=editB.id}
+    else{var i=await sb.from("beats").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
+    var files=[["prev",$("bPrev").files[0]],["mp3",$("fMp3").files[0]],["wav",$("fWav").files[0]],["stems",$("fZip").files[0]]].filter(function(x){return x[1]}),n=0;
+    for(var k=0;k<files.length;k++){var t=files[k][0],f=files[k][1];say(msg,"Subiendo "+f.name+"…");bar("bBar",10+Math.round(80*k/files.length));
+      if(t==="prev"){var p=id+"/"+Date.now()+"."+ext(f);await upload("previews",p,f);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;
+        if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
+      else{var p2=id+"/"+t+"-"+safe(f.name);await upload("archivos",p2,f);var fr=await sb.from("beat_files").upsert({beat_id:id,kind:t,file_path:p2},{onConflict:"beat_id,kind"});if(fr.error)throw fr.error}}
+    bar("bBar",100);say(msg,"Beat guardado","ok");setTimeout(function(){bar("bBar",null)},800);resetBeat();loadBeats();say(msg,"Beat guardado","ok")
+  }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
+  sv.disabled=false});
+
+/* ---------- PRESETS ---------- */
+var editP=null;
+function resetPre(){editP=null;$("fPre").reset();$("pPrice").value=15;$("pSort").value=0;$("preTitle").textContent="Nuevo preset";$("pCancel").hidden=true;bar("pBar",null)}
+$("pCancel").addEventListener("click",function(){resetPre();say($("pMsg"),"")});
+async function loadPre(){
+  var r=await sb.from("presets").select("*").order("sort").order("created_at"),L=$("preList");
+  if(r.error){L.textContent="No se pudieron cargar los presets";return}
+  if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún preset. Mientras no haya ninguno, la web muestra los de ejemplo</p>';return}
+  L.innerHTML=r.data.map(function(p){return'<div class="row" data-id="'+p.id+'">'+(p.photo_path?'<img class="thumb" alt="" src="'+pub("fotos",p.photo_path)+'">':'<span class="thumb"></span>')+
+    '<div class="t"><b>'+esc(p.artist)+(p.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+p.price+' € · '+(p.file_path?"archivo subido":"sin archivo")+(p.stripe_link?" · enlace de pago":"")+'</small></div>'+
+    '<button class="ghost sm" data-a="edit">Editar</button><button class="ghost sm" data-a="vis">'+(p.active?"Ocultar":"Mostrar")+'</button><button class="danger sm" data-a="del">Borrar</button></div>'}).join("");
+  L._d=r.data}
+$("preList").addEventListener("click",async function(e){
+  var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),p=$("preList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!p)return;
+  if(btn.dataset.a==="edit"){editP=p;$("pArtist").value=p.artist;$("pPrice").value=p.price;$("pSort").value=p.sort;$("pLink").value=p.stripe_link||"";$("preTitle").textContent="Editar «"+p.artist+"»";$("pCancel").hidden=false;say($("pMsg"),"Si no eliges archivos nuevos, se mantienen los actuales");window.scrollTo({top:0,behavior:"smooth"})}
+  if(btn.dataset.a==="vis"){await sb.from("presets").update({active:!p.active}).eq("id",p.id);loadPre()}
+  if(btn.dataset.a==="del"){if(!confirm("¿Borrar el preset de «"+p.artist+"»?"))return;
+    if(p.photo_path)await sb.storage.from("fotos").remove([p.photo_path]);if(p.file_path)await sb.storage.from("archivos").remove([p.file_path]);
+    await sb.from("presets").delete().eq("id",p.id);loadPre()}});
+$("fPre").addEventListener("submit",async function(e){e.preventDefault();var msg=$("pMsg"),sv=$("pSave");sv.disabled=true;say(msg,"Guardando…");bar("pBar",5);
+  try{
+    var row={artist:$("pArtist").value.trim(),price:parseFloat($("pPrice").value),sort:parseInt($("pSort").value,10)||0,stripe_link:$("pLink").value.trim()||null},id;
+    if(editP){var u=await sb.from("presets").update(row).eq("id",editP.id);if(u.error)throw u.error;id=editP.id}
+    else{var i=await sb.from("presets").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
+    var ph=$("pPhoto").files[0],fl=$("pFile").files[0];
+    if(ph){say(msg,"Subiendo la foto…");bar("pBar",35);var p1=id+"/"+Date.now()+"."+ext(ph);await upload("fotos",p1,ph);var a=await sb.from("presets").update({photo_path:p1}).eq("id",id);if(a.error)throw a.error;if(editP&&editP.photo_path)await sb.storage.from("fotos").remove([editP.photo_path])}
+    if(fl){say(msg,"Subiendo el archivo…");bar("pBar",65);var p2=id+"/"+safe(fl.name);await upload("archivos",p2,fl);var b=await sb.from("presets").update({file_path:p2}).eq("id",id);if(b.error)throw b.error}
+    bar("pBar",100);resetPre();loadPre();say(msg,"Preset guardado","ok")
+  }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("pBar",null)}
+  sv.disabled=false});
+
+/* ---------- PEDIDOS ---------- */
+async function loadOrders(){
+  var r=await sb.from("orders").select("*").order("created_at",{ascending:false}).limit(200),L=$("ordList");
+  if(r.error){L.textContent="No se pudieron cargar los pedidos";return}
+  if(!r.data.length){L.innerHTML='<p class="hint">Todavía no hay pedidos. Aparecerán aquí cuando conectemos los pagos de Stripe</p>';return}
+  L.innerHTML='<div style="overflow:auto"><table><tr><th>Fecha</th><th>Email</th><th>Estado</th><th>Total</th></tr>'+r.data.map(function(o){return'<tr><td>'+new Date(o.created_at).toLocaleString("es-ES")+'</td><td>'+esc(o.email)+'</td><td>'+esc(o.status)+'</td><td>'+(o.total!=null?o.total+" €":"")+'</td></tr>'}).join("")+'</table></div>'}
+
+boot();
+})();
+</script>
+</body>
+</html>
