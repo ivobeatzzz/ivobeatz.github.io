@@ -17,7 +17,7 @@ async function rest(path) {
 }
 async function presetPhoto(slug) {
   try {
-    const r = await fetch(`${SITE}/assets/og-presets.json`);
+    const r = await fetch(`${SITE}/og-presets.json`);
     if (!r.ok) return null;
     const m = await r.json();
     return m[slug] ? SITE + m[slug] : null;
