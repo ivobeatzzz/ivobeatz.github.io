@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030132103" data-auto="1">
+<meta name="ivo-version" content="20261030141208" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <meta name="description" content="IVO Beatz: beats con licencia, mezcla y máster profesional, plantillas vocales de artistas, plugins y herramientas gratuitas.">
@@ -917,6 +917,17 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 .tu .tbt{margin:22px 0 0}.tu .tbt .btn{margin:0;padding:12px 30px}#herramientas .tu .tn{color:var(--ink)}
 @media (max-width:1080px){body header.nav .wrap{grid-template-columns:auto 1fr auto}}
 @media (max-width:960px){body header.nav .wrap{grid-template-columns:1fr auto auto}}
+.card.feat{position:relative;background:linear-gradient(180deg,color-mix(in srgb,var(--lime2) 20%,var(--panel)) 0,var(--panel) 150px);color:var(--ink);border:1.5px solid var(--lime);box-shadow:0 26px 50px -32px color-mix(in srgb,var(--camo) 85%,transparent)}
+.card.feat ul,.card.feat .fr{color:var(--mute)}
+.card.feat .btn{background:var(--ink);color:var(--bg)}
+.card.feat .btn::before{background:var(--camo)}
+.card.feat .btn:hover{color:var(--on-camo)}
+.card.feat:hover{border-color:var(--lime)}
+.card .pop{position:absolute;top:0;left:24px;transform:translateY(-50%);display:inline-flex;align-items:center;gap:7px;padding:5px 12px 5px 10px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;line-height:1.2;white-space:nowrap;box-shadow:0 6px 16px -8px rgba(17,17,17,.5)}
+.card .pop::before{content:"";width:7px;height:7px;border-radius:50%;background:#A9BA78;box-shadow:0 0 0 3px color-mix(in srgb,#A9BA78 30%,transparent)}
+.card .save{margin:-8px 0 14px;font-size:13px;font-weight:600;color:var(--lime)}
+.bs-pop{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:10.5px;font-style:normal;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
+@media (max-width:720px){.grid.car{padding-top:18px}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"IVO Beatz","url":"https://ivobeatz.com/","email":"ivobeatzzz@gmail.com","sameAs":["https://www.youtube.com/@ivobeatzzz","https://instagram.com/ivobeatzzz","https://www.tiktok.com/@ivobeatzzz","https://open.spotify.com/intl-es/artist/75YbDFh4gq9tN0mADZPQvH"]}</script>
 </head>
@@ -946,7 +957,7 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 <div class="grid five car">
 <div class="card"><h3>Básica</h3><div class="big">19 €</div><ul><li>MP3</li><li>10.000 reproducciones</li><li>1 vídeo musical</li><li>Uso no exclusivo</li></ul><button type="button" class="lnk" data-lic="basica">Ver condiciones</button><a class="btn sm" href="#" data-checkout="licencia-basica">Comprar</a></div>
 <div class="card"><h3>Estándar</h3><div class="big">29 €</div><ul><li>MP3 + WAV</li><li>50.000 reproducciones</li><li>1 vídeo musical</li><li>Uso no exclusivo</li></ul><button type="button" class="lnk" data-lic="estandar">Ver condiciones</button><a class="btn sm" href="#" data-checkout="licencia-estandar">Comprar</a></div>
-<div class="card feat"><h3>Premium</h3><div class="big">59 €</div><ul><li>WAV + stems</li><li>250.000 reproducciones</li><li>2 vídeos musicales</li><li>Uso no exclusivo</li></ul><button type="button" class="lnk" data-lic="premium">Ver condiciones</button><a class="btn sm" href="#" data-checkout="licencia-premium">Comprar</a></div>
+<div class="card feat"><span class="pop">Más popular</span><h3>Premium</h3><div class="big">59 €</div><ul><li>WAV + stems</li><li>250.000 reproducciones</li><li>2 vídeos musicales</li><li>Uso no exclusivo</li></ul><button type="button" class="lnk" data-lic="premium">Ver condiciones</button><a class="btn sm" href="#" data-checkout="licencia-premium">Comprar</a></div>
 <div class="card"><h3>Ilimitada</h3><div class="big">99 €</div><ul><li>WAV + stems</li><li>Reproducciones ilimitadas</li><li>Vídeos ilimitados</li><li>Uso no exclusivo</li></ul><button type="button" class="lnk" data-lic="ilimitada">Ver condiciones</button><a class="btn sm" href="#" data-checkout="licencia-ilimitada">Comprar</a></div>
 <div class="card"><h3>Exclusiva</h3><div class="big"><span class="fr">desde</span> 200 €</div><ul><li>WAV + stems</li><li>Derechos exclusivos</li><li>Se retira de la tienda</li><li>Precio negociable según el artista</li></ul><button type="button" class="lnk" data-lic="exclusiva">Ver condiciones</button><a class="btn sm" href="#contacto" data-svc="Licencia exclusiva" data-open="exclusiva">Negociar</a></div>
 </div><p class="cardhint">Desliza para ver más</p></section>
@@ -956,8 +967,8 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 <div class="grid svc car">
 <div class="card"><h3>Mezcla</h3><div class="big"><span class="fr">desde</span> 30 €</div><ul><li>Equilibrio, espacio y voces limpias</li><li>Hasta 20 pistas</li><li>1 ronda de revisiones</li><li>Entrega en unos 5 días</li></ul><a class="btn sm" href="#contacto">Pedir mezcla</a></div>
 <div class="card"><h3>Máster</h3><div class="big"><span class="fr">desde</span> 25 €</div><ul><li>Volumen y tono final</li><li>Versiones para streaming y club</li><li>Entrega en unas 48 horas</li></ul><a class="btn sm" href="#contacto">Pedir máster</a></div>
-<div class="card"><h3>Mezcla y máster</h3><div class="big"><span class="fr">desde</span> 45 €</div><ul><li>Mezcla y máster en un solo pedido</li><li>Hasta 20 pistas, 1 ronda de revisiones</li><li>Mismo oído de principio a fin</li><li>Entrega en unos 6 días</li></ul><a class="btn sm" href="#contacto">Pedir mezcla y máster</a></div>
-<div class="card"><h3>Plantilla vocal personalizada</h3><div class="big"><span class="fr">desde</span> 49 €</div><ul><li>Cadena de voz hecha a medida de tu voz</li><li>Para Ableton Live o FL Studio</li><li>Lista para abrir y grabar</li><li>2 rondas de ajustes</li></ul><a class="btn sm" href="#contacto" data-svc="Plantilla vocal personalizada">Encargar plantilla</a></div>
+<div class="card feat"><span class="pop">Más pedido</span><h3>Mezcla y máster</h3><div class="big"><span class="fr">desde</span> 45 €</div><p class="save">Ahorras 10 € frente a pedirlos por separado</p><ul><li>Mezcla y máster en un solo pedido</li><li>Hasta 20 pistas, 1 ronda de revisiones</li><li>Mismo oído de principio a fin</li><li>Entrega en unos 6 días</li></ul><a class="btn sm" href="#contacto">Pedir mezcla y máster</a></div>
+<div class="card feat"><span class="pop">Destacado</span><h3>Plantilla vocal personalizada</h3><div class="big"><span class="fr">desde</span> 49 €</div><ul><li>Cadena de voz hecha a medida de tu voz</li><li>Para Ableton Live o FL Studio</li><li>Lista para abrir y grabar</li><li>2 rondas de ajustes</li></ul><a class="btn sm" href="#contacto" data-svc="Plantilla vocal personalizada">Encargar plantilla</a></div>
 <div class="card"><h3>Beat personalizado</h3><div class="big"><span class="fr">desde</span> 150 €</div><ul><li>Producido desde cero para ti</li><li>Licencia exclusiva incluida</li><li>Revisiones hasta que te encaje</li></ul><a class="btn sm" href="#contacto">Encargar beat</a></div>
 </div><p class="cardhint">Desliza para ver más</p>
 <ol class="steps" aria-label="Cómo trabajo"><li><b>Me envías tus pistas</b><span>Exportadas en WAV, ordenadas y a la misma duración</span></li><li><b>Primera versión</b><span>Te envío la mezcla para que la escuches con calma</span></li><li><b>Ajustes</b><span>Corrijo lo que haga falta dentro de las rondas incluidas</span></li><li><b>Entrega final</b><span>Archivos listos para publicar</span></li></ol></section>
@@ -1430,7 +1441,7 @@ function openSheet(k){var b=B[k];if(!b)return;if(window.__track&&b[6])window.__t
   var rel=B.map(function(x,i){return[x,i]}).filter(function(x){return x[1]!==k&&x[0][3]===b[3]}).slice(0,3);
   if(rel.length<3)rel=rel.concat(B.map(function(x,i){return[x,i]}).filter(function(x){return x[1]!==k&&x[0][3]!==b[3]}).slice(0,3-rel.length));
   $("bsB").innerHTML='<div class="bs-top"><button type="button" class="bs-cov'+(b[7]?"":" nocov")+'" id="bsPlay" style="'+(b[7]?"background-image:url("+hx(b[7])+")":"")+'" aria-label="Reproducir '+hx(b[0])+'"'+(b[5]||!real?"":" disabled")+'><span>'+(b[7]?"":hx((b[0]||"").slice(0,1)))+'</span><i class="bs-pi"></i></button><div class="bs-h"><div class="bs-badges">'+badges(b)+'</div><h3 id="bsT">'+hx(b[0])+'</h3><p class="bs-m">'+[b[1],b[2],b[3]].map(hx).join(" · ")+'</p>'+((b[8]||[]).length?'<p class="bs-tags">'+b[8].map(function(t){return"<span>#"+hx(t)+"</span>"}).join("")+'</p>':"")+'<div class="bs-acts"><button type="button" class="btn ghost ink sm" id="bsShare">Compartir</button></div></div></div>'+
-  (real?'<h4>Elige tu licencia</h4><div class="bs-lics" role="radiogroup">'+LICS.map(function(l){return'<label class="bs-lic'+(l[0]===tier?" on":"")+'"><input type="radio" name="bsl" value="'+l[0]+'"'+(l[0]===tier?" checked":"")+'><span class="bs-ln"><b>'+l[1]+'</b><small>'+l[3]+'</small></span><span class="bs-lp">'+l[2]+' €</span></label>'}).join("")+'</div>'+
+  (real?'<h4>Elige tu licencia</h4><div class="bs-lics" role="radiogroup">'+LICS.map(function(l){return'<label class="bs-lic'+(l[0]===tier?" on":"")+'"><input type="radio" name="bsl" value="'+l[0]+'"'+(l[0]===tier?" checked":"")+'><span class="bs-ln"><b>'+l[1]+(l[0]==="premium"?'<em class="bs-pop">Más popular</em>':'')+'</b><small>'+l[3]+'</small></span><span class="bs-lp">'+l[2]+' €</span></label>'}).join("")+'</div>'+
   '<p class="bs-more"><button type="button" class="lnk" id="bsCond">Ver condiciones de la licencia</button> · <button type="button" class="lnk" data-open="exclusiva">¿Lo quieres en exclusiva?</button></p>'+
   '<div class="bs-buy"><button type="button" class="btn" id="bsAdd">Añadir al carrito</button><button type="button" class="btn ghost ink" id="bsNow">Comprar ahora</button></div><p class="lnote" id="bsN" role="status"></p>':'<p class="lnote">Beat de ejemplo. Escríbeme si te interesa algo con este estilo</p>')+
   (rel.length?'<h4>También te puede gustar</h4><div class="bs-rel">'+rel.map(function(x){return'<button type="button" data-k="'+x[1]+'"><b>'+hx(x[0][0])+'</b><small>'+hx(x[0][1])+' · '+hx(x[0][3])+'</small></button>'}).join("")+'</div>':"");
