@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030171837" data-auto="1">
+<meta name="ivo-version" content="20261030172725" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
@@ -929,6 +929,12 @@ input,select,textarea,button{font-family:inherit}select{font-size:inherit;height
 .card .save{margin:-8px 0 14px;font-size:13px;font-weight:600;color:var(--lime)}
 .bs-pop{display:inline-block;margin-left:8px;padding:2px 8px;border-radius:999px;background:var(--ink);color:var(--bg);font-size:10.5px;font-style:normal;font-weight:700;letter-spacing:.04em;text-transform:uppercase;vertical-align:2px}
 @media (max-width:720px){.grid.car{padding-top:18px}}
+/* títulos: sin letras pegadas (Safari junta algunos pares como «rt») */
+h2{letter-spacing:-.005em;font-kerning:normal;font-feature-settings:"kern" 1}
+/* sin desplazamiento lateral en móviles */
+html,body{overflow-x:clip}
+/* carrito a pantalla completa en el móvil, sin rendijas por los lados */
+@media (max-width:600px){dialog.cartd{inset:0;margin:0;width:100%;max-width:100%}dialog.cartd .drawer{border-left:0}dialog.cartd::backdrop{background:var(--bg);backdrop-filter:none}}
 @supports (background-image:image-set(url(x.avif) type("image/avif"))){:root{--camoimg:image-set(url("/assets/ca603aca5f40f63e.avif") type("image/avif"),url("/assets/ca603aca5f40f63e.jpg") type("image/jpeg"))}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"IVO Beatz","url":"https://ivobeatz.com/","email":"ivobeatzzz@gmail.com","sameAs":["https://www.youtube.com/@ivobeatzzz","https://instagram.com/ivobeatzzz","https://www.tiktok.com/@ivobeatzzz","https://open.spotify.com/intl-es/artist/75YbDFh4gq9tN0mADZPQvH"]}</script>
