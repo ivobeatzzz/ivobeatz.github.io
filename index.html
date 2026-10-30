@@ -205,6 +205,7 @@ th{color:var(--mute);font-weight:500}
 .atabs button{font:inherit;font-weight:600;font-size:14px;padding:8px 18px;border-radius:999px;border:0;background:transparent;color:var(--mute);cursor:pointer}
 .atabs button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
 .aord{margin:0;padding:0;list-style:none}.aord li{padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
+.dls{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
 /* contacto y pie */
 form{display:grid;gap:12px;max-width:560px;margin:0 auto}
 input,textarea,select{font:inherit;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);width:100%;transition:border-color .2s,box-shadow .2s}
@@ -1419,10 +1420,21 @@ async function cuenta(s){
 btn.addEventListener("click",async function(e){e.preventDefault();var m=document.getElementById("mnav"),mb=document.querySelector(".menu");if(m&&mb&&mb.getAttribute("aria-expanded")==="true")mb.click();
   try{await lib()}catch(x){alert("No se pudo cargar el acceso. Revisa tu conexión");return}view("login")});
 d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()});
-(function(){var q=new URLSearchParams(location.search),c=q.get("compra");if(!c)return;
+(function(){var q=new URLSearchParams(location.search),c=q.get("compra"),sid=q.get("s");if(!c)return;
   try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
   if(!d.showModal)return;d.showModal();
-  body.innerHTML=c==="ok"?'<h3 id="at">¡Gracias por tu compra!</h3><p class="ls">El pago se ha completado</p><p>En unos minutos recibirás un correo con tu licencia y los enlaces de descarga. Revisa también la carpeta de spam o promociones</p><p class="lnote">Si en una hora no te ha llegado, escríbenos a ivobeatzzz@gmail.com con el email que usaste al pagar</p><div class="lact"><button type="button" class="btn sm" onclick="this.closest(\'dialog\').close()">Entendido</button></div>':'<h3 id="at">Pago cancelado</h3><p class="ls">No se ha realizado ningún cargo</p><p>Puedes volver a intentarlo cuando quieras</p><div class="lact"><button type="button" class="btn sm" onclick="this.closest(\'dialog\').close()">Volver a la tienda</button></div>'})();
+  var close='<div class="lact" style="margin-top:20px"><button type="button" class="btn sm ghost ink" onclick="this.closest(\'dialog\').close()">Cerrar</button></div>';
+  if(c!=="ok"){body.innerHTML='<h3 id="at">Pago cancelado</h3><p class="ls">No se ha realizado ningún cargo</p><p>Puedes volver a intentarlo cuando quieras</p>'+close;return}
+  var mailNote='<p class="lnote">También te llegará un correo con tu licencia y estos enlaces. Si no lo ves, revisa spam o promociones, o escríbenos a ivobeatzzz@gmail.com</p>';
+  body.innerHTML='<h3 id="at">¡Gracias por tu compra!</h3><p class="ls">El pago se ha completado</p><p id="dlz">Preparando tus descargas…</p>'+mailNote+close;
+  if(!sid){$("dlz").textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga";return}
+  var tries=0;(function go(){fetch(SB+"/functions/v1/get-downloads",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify({session_id:sid})})
+   .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
+   .then(function(x){var z=$("dlz");if(!z)return;
+     if(!x.ok){if(x.status===402&&tries++<5){setTimeout(go,2000);return}z.textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga";return}
+     var h='<b>'+esc(x.j.title)+'</b></p><div class="dls">'+(x.j.links||[]).map(function(l){return l.url?'<a class="btn sm" href="'+esc(l.url)+'" target="_blank" rel="noopener" download>Descargar '+esc(l.label)+'</a>':'<span class="lnote" style="margin:0">'+esc(l.label)+': te lo enviaremos por correo en breve</span>'}).join("")+'</div><p class="lnote" style="margin-top:12px">Los enlaces de descarga son personales y caducan en 24 horas. Descarga tus archivos ahora';
+     z.innerHTML=h})
+   .catch(function(){var z=$("dlz");if(z)z.textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga"})})()})();
 window.__openAccount=function(tab){lib().then(function(){view(tab==="alta"?"alta":"login")})};
 if(/[#&](access_token|type)=(.*)/.test(location.hash)&&/type=(recovery|signup|magiclink|invite|email)/.test(location.hash)){
   lib().then(async function(){var rec=/type=recovery/.test(location.hash);if(rec){view("nueva");return}
