@@ -260,7 +260,7 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
         if(old&&old.file_path)await delR2([old.file_path])}
       else if(old&&old.url){await sb.from("beat_files").delete().eq("beat_id",id).eq("kind",kind)}}
     bar("bBar",100);say(msg,"Beat guardado","ok");setTimeout(function(){bar("bBar",null)},800);resetBeat();loadBeats();say(msg,"Beat guardado","ok")
-  }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
+  }catch(err){say(msg,(err.message||"No se pudo guardar")+" · Origen de esta página: "+location.origin,"bad");bar("bBar",null);loadBeats()}
   sv.disabled=false});
 
 /* ---------- PRESETS ---------- */
