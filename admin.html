@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030162631">
+<meta name="ivo-version" content="20261030162953">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -383,7 +383,7 @@ function codeWire(factorId,onOk){var i=$("mCode");i.addEventListener("input",fun
     var r=await sb.auth.mfa.challengeAndVerify({factorId:factorId,code:i.value});b.disabled=false;
     if(r.error){say($("mMsg"),mfaErr(r.error.message),"bad");i.select();return}onOk()})}
 function mfaVerify(factorId){
-  $("mfaBody").innerHTML='<h2>Verificación en dos pasos</h2><p class="sub">Abre tu app de autenticación y escribe el código de IVO Beatz</p>'+codeForm("Entrar");
+  $("mfaBody").innerHTML='<h2>Verificación en dos pasos</h2><p class="sub">Escribe el código de IVO Beatz que te muestra la app Contraseñas (o tu app de códigos). En Safari puede aparecer solo encima del teclado</p>'+codeForm("Entrar");
   codeWire(factorId,function(){boot()})}
 async function mfaEnroll(all,email){
   $("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="sub">Preparando…</p>';
@@ -392,10 +392,10 @@ async function mfaEnroll(all,email){
   if(r.error||!r.data){$("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="msg bad">'+esc(mfaErr(r.error&&r.error.message))+'</p><div class="row"><button type="button" class="ghost sm" id="mOut2">Cerrar sesión</button></div>';$("mOut2").onclick=async function(){await sb.auth.signOut();show("login")};return}
   var t=r.data.totp||{},qr=String(t.qr_code||"");if(qr&&qr.indexOf("data:")!==0)qr="data:image/svg+xml;utf8,"+encodeURIComponent(qr);
   $("mfaBody").innerHTML='<h2>Activa la verificación en dos pasos</h2><p class="sub">A partir de ahora, además de tu contraseña, el panel te pedirá un código que cambia cada 30 segundos. Así nadie puede entrar aunque consiga tu contraseña</p>'+
-   '<ol><li>Instala en tu móvil <b>Google Authenticator</b>, <b>Microsoft Authenticator</b> o <b>1Password</b></li>'+
-   '<li>En la app, pulsa «Añadir» y escanea este código<div class="qr"><img id="mQr" alt="Código QR para la app de autenticación"></div><div class="secret"><span class="hint">¿No puedes escanearlo? Escribe esta clave:</span><code id="mSec"></code><button type="button" class="ghost sm" id="mCopy">Copiar</button></div></li>'+
-   '<li>Escribe el código de 6 dígitos que aparece en la app</li></ol>'+codeForm("Activar y entrar");
-  $("mQr").src=qr;$("mSec").textContent=t.secret||"";$("mCopy").onclick=function(){copy(t.secret||"",this)};
+   '<ol><li>Usa la app <b>Contraseñas</b> de tu iPhone o Mac (ya viene instalada), o <b>Google Authenticator</b> si lo prefieres</li>'+
+   '<li><b>Si estás en el iPhone o el Mac:</b> pulsa este botón y elige Contraseñas<div class="row" style="margin:8px 0 4px"><a class="btn sm" id="mApp" href="#">Añadir a Contraseñas</a></div><span class="hint">Si estás en un ordenador y quieres usar el móvil, escanea este código con la cámara del iPhone</span><div class="qr"><img id="mQr" alt="Código QR para la app de autenticación"></div><div class="secret"><span class="hint">¿No puedes escanearlo? Escribe esta clave:</span><code id="mSec"></code><button type="button" class="ghost sm" id="mCopy">Copiar</button></div></li>'+
+   '<li>Escribe aquí el código de 6 dígitos que te muestra Contraseñas (o la app que uses). En Safari puede aparecer solo encima del teclado</li></ol>'+codeForm("Activar y entrar");
+  $("mQr").src=qr;var ap=$("mApp"),uri=String(t.uri||"");if(/^otpauth:\/\//.test(uri))ap.href=uri;else ap.parentNode.hidden=true;$("mSec").textContent=t.secret||"";$("mCopy").onclick=function(){copy(t.secret||"",this)};
   codeWire(r.data.id,function(){toast("Verificación en dos pasos activada");boot()})}
 async function mfaStatus(){var b=$("mfaInfo");if(!b)return;var f=(await sb.auth.mfa.listFactors()).data||{},ok=(f.totp||[]).filter(function(x){return x.status==="verified"});
   b.innerHTML=ok.length?'<span class="tag on">Activada</span> <span class="hint" style="display:inline">desde el '+fdate(ok[0].created_at)+'</span>':'<span class="tag warn">Sin activar</span>'}
