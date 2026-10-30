@@ -1295,16 +1295,18 @@ $("pnote").textContent="";sel=null;pgo.disabled=true;pgo.textContent="Elige un b
 rows.forEach(function(r){r.classList.remove("chosen");r.querySelector(".sel").textContent="Elegir"});
 if(pre){var m=rows.filter(function(r){return r._s.name===pre})[0];if(m)choose(m)}
 if(!pk.open)pk.showModal();pk.querySelector(".lbox").scrollTop=0}
-pgo.addEventListener("click",function(){if(!sel)return;var c=LIC[lk],u=PAYHIP["licencia-"+lk];
+pgo.addEventListener("click",async function(){if(!sel)return;var c=LIC[lk],u=PAYHIP["licencia-"+lk],bb=B.filter(function(x){return x[0]===sel})[0];
+if(bb&&bb[6]&&window.__checkout){$("pnote").textContent="Abriendo el pago seguro…";var okc=await window.__checkout({type:"beat",beat_id:bb[6],tier:lk},pgo);if(okc)return;$("pnote").textContent="";pgo.textContent="Continuar con «"+sel+"»"}
 if(u){window.open(u+(u.indexOf("?")<0?"?":"&")+"beat="+encodeURIComponent(sel),"_blank","noopener");$("pnote").textContent="Te hemos abierto el pago de la licencia "+c[0]+" para «"+sel+"».";return}
 mail("Licencia "+c[0]+" · "+sel,"Hola, equipo de IVO Beatz, quiero la licencia "+c[0]+" ("+c[1]+") del beat «"+sel+"».\n\nMi nombre:\n");
-$("pnote").textContent="El pago online se activa en breve. Mientras tanto se abre tu app de correo con tu pedido (licencia "+c[0]+", beat «"+sel+"») para enviármelo"});
+$("pnote").textContent="El pago online se activa en breve. Mientras tanto se abre tu app de correo con tu pedido (licencia "+c[0]+", beat «"+sel+"») para enviárnoslo"});
 L.addEventListener("click",function(e){var a=e.target.closest("a.btn");if(a&&a.closest(".beat"))pre=a.closest(".beat")._s.name});
 document.addEventListener("click",function(e){var b=e.target.closest('[data-checkout^="licencia-"]');if(!b)return;e.preventDefault();var ld=$("lic");if(ld&&ld.open)ld.close();openPick(b.getAttribute("data-checkout").replace("licencia-",""))});
 /* ---- plantillas vocales ---- */
 document.addEventListener("click",function(e){var b=e.target.closest('[data-checkout^="plantilla-"]');if(!b)return;e.preventDefault();var key=b.getAttribute("data-checkout"),card=b.closest(".card"),nm=card.querySelector(".ph span").textContent.trim(),u=PAYHIP[key];
-if(u){window.open(u,"_blank","noopener");return}
-openReq(key,{t:"Vocal preset estilo "+nm,p:"15 €",s:"Vocal preset estilo "+nm,nosong:true,daw:true,time:"Entrega digital tras el pago · Guía incluida",ask:["Plantilla para Ableton Live y FL Studio","Necesitas tener Waves y FabFilter instalados","Diseñada para acercar tu sonido al de "+nm]})});
+var fb=function(){if(u){window.open(u,"_blank","noopener");return}
+openReq(key,{t:"Vocal preset estilo "+nm,p:"15 €",s:"Vocal preset estilo "+nm,nosong:true,daw:true,time:"Entrega digital tras el pago · Guía incluida",ask:["Plantilla para Ableton Live y FL Studio","Necesitas tener Waves y FabFilter instalados","Diseñada para acercar tu sonido al de "+nm]})};
+var pid=b.getAttribute("data-preset-id");if(window.__checkout){window.__checkout(pid?{type:"preset",preset_id:pid}:{type:"preset",slug:key.replace("plantilla-","")},b).then(function(ok){if(!ok)fb()})}else fb()});
 /* ---- pedir servicio ---- */
 var RQ=$("req"),rb=$("rbody");closeOn(RQ);
 var SV={
@@ -1360,16 +1362,22 @@ function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(c){retur
 
 /* ---- contenido en vivo: beats y presets desde la base de datos ---- */
 function rest(path){return fetch(SB+"/rest/v1/"+path,{headers:{apikey:KEY,Authorization:"Bearer "+KEY}}).then(function(r){return r.ok?r.json():[]}).catch(function(){return[]})}
-rest("beats?select=name,bpm,key,genre,price_from,preview_path&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
+rest("beats?select=id,name,bpm,key,genre,price_from,preview_path&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
   if(!list||!list.length||!window.__setBeats)return;
-  window.__setBeats(list.map(function(b){return[b.name,b.bpm+" BPM",b.key,b.genre,b.price_from,b.preview_path?pubUrl("previews",b.preview_path):""]}))});
+  window.__setBeats(list.map(function(b){return[b.name,b.bpm+" BPM",b.key,b.genre,b.price_from,b.preview_path?pubUrl("previews",b.preview_path):"",b.id]}))});
 rest("presets?select=id,artist,price,photo_path,stripe_link&active=eq.true&order=sort.asc,created_at.asc").then(function(list){
   if(!list||!list.length)return;var cta=document.querySelector("#plantillas .cta-card");if(!cta)return;
   list.forEach(function(p){var key="plantilla-db-"+p.id.slice(0,8),d=document.createElement("div");d.className="card art";
     var ph=p.photo_path?' style="background-image:url('+pubUrl("fotos",p.photo_path)+')"':"";
-    d.innerHTML='<div class="ph" role="img" aria-label="Foto de '+esc(p.artist)+'"'+ph+'><span>'+esc(p.artist)+'</span></div><div class="cb"><p class="am">Ableton Live y FL Studio · Requiere Waves y FabFilter · Guía incluida</p><div class="ar"><div><small>Vocal preset estilo '+esc(p.artist)+'</small><div class="big">'+esc(String(p.price).replace(/\.0+$/,""))+' €</div></div><a class="btn sm" href="#" data-checkout="'+key+'">Comprar</a></div></div>';
+    d.innerHTML='<div class="ph" role="img" aria-label="Foto de '+esc(p.artist)+'"'+ph+'><span>'+esc(p.artist)+'</span></div><div class="cb"><p class="am">Ableton Live y FL Studio · Requiere Waves y FabFilter · Guía incluida</p><div class="ar"><div><small>Vocal preset estilo '+esc(p.artist)+'</small><div class="big">'+esc(String(p.price).replace(/\.0+$/,""))+' €</div></div><a class="btn sm" href="#" data-checkout="'+key+'" data-preset-id="'+p.id+'">Comprar</a></div></div>';
     if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})});
 
+/* ---- pago con Stripe ---- */
+window.__checkout=function(body,btn){var t=btn?btn.textContent:"";if(btn){btn.disabled=true;btn.textContent="Abriendo el pago…"}
+  var restore=function(){if(btn){btn.disabled=false;btn.textContent=t}return false};
+  return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify(body)})
+  .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j}})})
+  .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}return restore()}).catch(restore)};
 /* ---- cuentas ---- */
 var d=$("acc"),body=$("abody"),btn=$("accb"),sb=null,loading=null,prof=null;
 if(!d||!btn)return;
@@ -1411,6 +1419,10 @@ async function cuenta(s){
 btn.addEventListener("click",async function(e){e.preventDefault();var m=document.getElementById("mnav"),mb=document.querySelector(".menu");if(m&&mb&&mb.getAttribute("aria-expanded")==="true")mb.click();
   try{await lib()}catch(x){alert("No se pudo cargar el acceso. Revisa tu conexión");return}view("login")});
 d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close()});
+(function(){var q=new URLSearchParams(location.search),c=q.get("compra");if(!c)return;
+  try{history.replaceState(null,"",location.pathname+location.hash)}catch(e){}
+  if(!d.showModal)return;d.showModal();
+  body.innerHTML=c==="ok"?'<h3 id="at">¡Gracias por tu compra!</h3><p class="ls">El pago se ha completado</p><p>En unos minutos recibirás un correo con tu licencia y los enlaces de descarga. Revisa también la carpeta de spam o promociones</p><p class="lnote">Si en una hora no te ha llegado, escríbenos a ivobeatzzz@gmail.com con el email que usaste al pagar</p><div class="lact"><button type="button" class="btn sm" onclick="this.closest(\'dialog\').close()">Entendido</button></div>':'<h3 id="at">Pago cancelado</h3><p class="ls">No se ha realizado ningún cargo</p><p>Puedes volver a intentarlo cuando quieras</p><div class="lact"><button type="button" class="btn sm" onclick="this.closest(\'dialog\').close()">Volver a la tienda</button></div>'})();
 window.__openAccount=function(tab){lib().then(function(){view(tab==="alta"?"alta":"login")})};
 if(/[#&](access_token|type)=(.*)/.test(location.hash)&&/type=(recovery|signup|magiclink|invite|email)/.test(location.hash)){
   lib().then(async function(){var rec=/type=recovery/.test(location.hash);if(rec){view("nueva");return}
