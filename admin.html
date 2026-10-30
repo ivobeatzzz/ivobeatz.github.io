@@ -107,11 +107,11 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
         <label id="bGenreOtherW" hidden>Otro estilo<input id="bGenreOther" maxlength="30"></label>
         <label>Previsualización (MP3, 30 a 60 s, con marca de voz)<input id="bPrev" type="file" accept="audio/mpeg,audio/mp3,.mp3"></label>
         <div class="g3">
-          <label>Archivo MP3 de venta<input id="fMp3" type="file" accept=".mp3,audio/mpeg"></label>
-          <label>Archivo WAV de venta<input id="fWav" type="file" accept=".wav,audio/wav,audio/x-wav"></label>
-          <label>Stems (ZIP)<input id="fZip" type="file" accept=".zip,application/zip"></label>
+          <label>Enlace de descarga: MP3<input id="lMp3" type="url" placeholder="https://drive.google.com/…"></label>
+          <label>Enlace de descarga: WAV<input id="lWav" type="url" placeholder="https://drive.google.com/…"></label>
+          <label>Enlace de descarga: stems<input id="lZip" type="url" placeholder="https://drive.google.com/…"></label>
         </div>
-        <p class="hint">La previsualización es pública. Los archivos de venta (WAV, MP3, stems) se guardan en privado en Cloudflare R2, sin límite práctico de tamaño por archivo, y solo se entregan tras el pago</p>
+        <p class="hint">Solo la previsualización se guarda en la web. Los archivos completos los tienes tú en Drive, Dropbox o similar, y aquí pegas su enlace: se enviará por correo al cliente solo cuando compre (MP3 en Básica, MP3 y WAV en Estándar, WAV y stems en el resto)</p>
         <div class="bar" id="bBar" hidden><i></i></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
           <button type="submit" id="bSave">Guardar beat</button>
@@ -136,7 +136,7 @@ td{padding:10px 6px;border-bottom:1px solid var(--line);vertical-align:top}
         <label>Enlace de pago de Stripe (opcional)<input id="pLink" type="url" placeholder="https://buy.stripe.com/…"></label>
         <div class="g">
           <label>Foto de referencia<input id="pPhoto" type="file" accept="image/*"></label>
-          <label>Archivo del preset (privado)<input id="pFile" type="file"></label>
+          <label>Enlace de descarga del preset<input id="pFile" type="url" placeholder="https://drive.google.com/…"></label>
         </div>
         <div class="bar" id="pBar" hidden><i></i></div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -198,19 +198,6 @@ async function upload(bucket,path,file,onDone){
   if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
 
 
-/* ---------- archivos grandes: Cloudflare R2 ---------- */
-async function r2sign(action,path){
-  var r=await sb.functions.invoke("r2-sign",{body:{action:action,path:path}});
-  if(r.error||!r.data||!r.data.url){var m="";try{var j=await r.error.context.json();m=j.error}catch(x){}
-    throw new Error(m==="R2 no configurado"?"El almacenamiento de archivos grandes (R2) aún no está configurado":"No se pudo preparar la subida"+(m?": "+m:""))}
-  return r.data.url}
-function putR2(path,file,onPct){return r2sign("put",path).then(function(url){return new Promise(function(res,rej){
-  var x=new XMLHttpRequest();x.open("PUT",url);
-  x.upload.onprogress=function(e){if(e.lengthComputable&&onPct)onPct(e.loaded/e.total)};
-  x.onload=function(){x.status>=200&&x.status<300?res(path):rej(new Error("Error al subir «"+file.name+"» (código "+x.status+"). Revisa la configuración CORS de R2"))};
-  x.onerror=function(){rej(new Error("No se pudo subir «"+file.name+"». Revisa la configuración CORS de R2"))};
-  x.send(file)})})}
-async function delR2(paths){for(var i=0;i<paths.length;i++){try{var u=await r2sign("delete",paths[i]);await fetch(u,{method:"DELETE"})}catch(e){}}}
 function mb(n){return(n/1048576).toFixed(0)+" MB"}
 
 /* ---------- BEATS ---------- */
@@ -219,7 +206,7 @@ $("bGenre").addEventListener("change",function(){$("bGenreOtherW").hidden=$("bGe
 function resetBeat(){editB=null;$("fBeat").reset();$("bPrice").value=19;$("bSort").value=0;$("beatTitle").textContent="Nuevo beat";$("bCancel").hidden=true;$("bGenreOtherW").hidden=true;bar("bBar",null)}
 $("bCancel").addEventListener("click",function(){resetBeat();say($("bMsg"),"")});
 async function loadBeats(){
-  var r=await sb.from("beats").select("*, beat_files(kind)").order("sort").order("created_at");
+  var r=await sb.from("beats").select("*, beat_files(kind,url)").order("sort").order("created_at");
   var L=$("beatList");if(r.error){L.textContent="No se pudieron cargar los beats";return}
   if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún beat. Mientras no haya ninguno, la web muestra beats de ejemplo</p>';return}
   L.innerHTML=r.data.map(function(b){var kinds=(b.beat_files||[]).map(function(f){return f.kind});
@@ -232,11 +219,9 @@ $("beatList").addEventListener("click",async function(e){
   var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),b=$("beatList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!b)return;
   if(btn.dataset.a==="edit"){editB=b;$("bName").value=b.name;$("bBpm").value=b.bpm;$("bKey").value=b.key;
     var known=["Trap","Crank","Waera","Reggaeton"].indexOf(b.genre)>-1;$("bGenre").value=known?b.genre:"Otro";$("bGenreOtherW").hidden=known;$("bGenreOther").value=known?"":b.genre;
-    $("bPrice").value=b.price_from;$("bSort").value=b.sort;$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no eliges archivos nuevos, se mantienen los actuales");window.scrollTo({top:0,behavior:"smooth"})}
+    $("bPrice").value=b.price_from;$("bSort").value=b.sort;["mp3","wav","stems"].forEach(function(k){var f=(b.beat_files||[]).filter(function(x){return x.kind===k})[0];$({mp3:"lMp3",wav:"lWav",stems:"lZip"}[k]).value=f&&f.url?f.url:""});$("beatTitle").textContent="Editar «"+b.name+"»";$("bCancel").hidden=false;say($("bMsg"),"Si no cambias la previsualización, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
   if(btn.dataset.a==="vis"){await sb.from("beats").update({active:!b.active}).eq("id",b.id);loadBeats()}
   if(btn.dataset.a==="del"){if(!confirm("¿Borrar «"+b.name+"» y todos sus archivos? No se puede deshacer"))return;
-    var fs=await sb.from("beat_files").select("file_path").eq("beat_id",b.id);
-    if(fs.data&&fs.data.length)await delR2(fs.data.map(function(f){return f.file_path}));
     if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");loadBeats()}});
 $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var msg=$("bMsg"),sv=$("bSave");sv.disabled=true;say(msg,"Guardando…");bar("bBar",5);
@@ -246,11 +231,13 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
     var id;
     if(editB){var u=await sb.from("beats").update(row).eq("id",editB.id);if(u.error)throw u.error;id=editB.id}
     else{var i=await sb.from("beats").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
-    var files=[["prev",$("bPrev").files[0]],["mp3",$("fMp3").files[0]],["wav",$("fWav").files[0]],["stems",$("fZip").files[0]]].filter(function(x){return x[1]}),n=0;
-    for(var k=0;k<files.length;k++){var t=files[k][0],f=files[k][1];say(msg,"Subiendo "+f.name+"…");bar("bBar",10+Math.round(80*k/files.length));
-      if(t==="prev"){var p=id+"/"+Date.now()+"."+ext(f);await upload("previews",p,f);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;
-        if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
-      else{var p2=id+"/"+t+"-"+safe(f.name);var base=10+80*k/files.length,span=80/files.length;await putR2(p2,f,function(q){bar("bBar",Math.round(base+span*q));say(msg,"Subiendo "+f.name+" ("+mb(f.size)+") · "+Math.round(q*100)+"%")});var fr=await sb.from("beat_files").upsert({beat_id:id,kind:t,file_path:p2},{onConflict:"beat_id,kind"});if(fr.error)throw fr.error}}
+    var pv=$("bPrev").files[0];
+    if(pv){say(msg,"Subiendo la previsualización…");bar("bBar",40);var p=id+"/"+Date.now()+"."+ext(pv);await upload("previews",p,pv);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;
+      if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
+    var L3=[["mp3","lMp3"],["wav","lWav"],["stems","lZip"]];bar("bBar",75);
+    for(var k=0;k<L3.length;k++){var v=$(L3[k][1]).value.trim();
+      if(v){if(!/^https:\/\//i.test(v))throw new Error("Los enlaces de descarga deben empezar por https://");var fr=await sb.from("beat_files").upsert({beat_id:id,kind:L3[k][0],url:v,file_path:null},{onConflict:"beat_id,kind"});if(fr.error)throw fr.error}
+      else{await sb.from("beat_files").delete().eq("beat_id",id).eq("kind",L3[k][0])}}
     bar("bBar",100);say(msg,"Beat guardado","ok");setTimeout(function(){bar("bBar",null)},800);resetBeat();loadBeats();say(msg,"Beat guardado","ok")
   }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
   sv.disabled=false});
@@ -264,24 +251,25 @@ async function loadPre(){
   if(r.error){L.textContent="No se pudieron cargar los presets";return}
   if(!r.data.length){L.innerHTML='<p class="hint">Aún no has subido ningún preset. Mientras no haya ninguno, la web muestra los de ejemplo</p>';return}
   L.innerHTML=r.data.map(function(p){return'<div class="row" data-id="'+p.id+'">'+(p.photo_path?'<img class="thumb" alt="" src="'+pub("fotos",p.photo_path)+'">':'<span class="thumb"></span>')+
-    '<div class="t"><b>'+esc(p.artist)+(p.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+p.price+' € · '+(p.file_path?"archivo subido":"sin archivo")+(p.stripe_link?" · enlace de pago":"")+'</small></div>'+
+    '<div class="t"><b>'+esc(p.artist)+(p.active?"":' <span class="tag">Oculto</span>')+'</b><small>'+p.price+' € · '+(p.download_url?"enlace de descarga":"sin enlace de descarga")+(p.stripe_link?" · enlace de pago":"")+'</small></div>'+
     '<button class="ghost sm" data-a="edit">Editar</button><button class="ghost sm" data-a="vis">'+(p.active?"Ocultar":"Mostrar")+'</button><button class="danger sm" data-a="del">Borrar</button></div>'}).join("");
   L._d=r.data}
 $("preList").addEventListener("click",async function(e){
   var btn=e.target.closest("button[data-a]");if(!btn)return;var row=btn.closest(".row"),p=$("preList")._d.filter(function(x){return x.id===row.dataset.id})[0];if(!p)return;
-  if(btn.dataset.a==="edit"){editP=p;$("pArtist").value=p.artist;$("pPrice").value=p.price;$("pSort").value=p.sort;$("pLink").value=p.stripe_link||"";$("preTitle").textContent="Editar «"+p.artist+"»";$("pCancel").hidden=false;say($("pMsg"),"Si no eliges archivos nuevos, se mantienen los actuales");window.scrollTo({top:0,behavior:"smooth"})}
+  if(btn.dataset.a==="edit"){editP=p;$("pArtist").value=p.artist;$("pPrice").value=p.price;$("pSort").value=p.sort;$("pLink").value=p.stripe_link||"";$("pFile").value=p.download_url||"";$("preTitle").textContent="Editar «"+p.artist+"»";$("pCancel").hidden=false;say($("pMsg"),"Si no cambias la foto, se mantiene la actual");window.scrollTo({top:0,behavior:"smooth"})}
   if(btn.dataset.a==="vis"){await sb.from("presets").update({active:!p.active}).eq("id",p.id);loadPre()}
   if(btn.dataset.a==="del"){if(!confirm("¿Borrar el preset de «"+p.artist+"»?"))return;
-    if(p.photo_path)await sb.storage.from("fotos").remove([p.photo_path]);if(p.file_path)await delR2([p.file_path]);
+    if(p.photo_path)await sb.storage.from("fotos").remove([p.photo_path]);
     await sb.from("presets").delete().eq("id",p.id);loadPre()}});
 $("fPre").addEventListener("submit",async function(e){e.preventDefault();var msg=$("pMsg"),sv=$("pSave");sv.disabled=true;say(msg,"Guardando…");bar("pBar",5);
   try{
     var row={artist:$("pArtist").value.trim(),price:parseFloat($("pPrice").value),sort:parseInt($("pSort").value,10)||0,stripe_link:$("pLink").value.trim()||null},id;
     if(editP){var u=await sb.from("presets").update(row).eq("id",editP.id);if(u.error)throw u.error;id=editP.id}
     else{var i=await sb.from("presets").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
-    var ph=$("pPhoto").files[0],fl=$("pFile").files[0];
-    if(ph){say(msg,"Subiendo la foto…");bar("pBar",35);var p1=id+"/"+Date.now()+"."+ext(ph);await upload("fotos",p1,ph);var a=await sb.from("presets").update({photo_path:p1}).eq("id",id);if(a.error)throw a.error;if(editP&&editP.photo_path)await sb.storage.from("fotos").remove([editP.photo_path])}
-    if(fl){say(msg,"Subiendo el archivo…");bar("pBar",65);var p2=id+"/"+safe(fl.name);await putR2(p2,fl,function(q){bar("pBar",Math.round(65+30*q));say(msg,"Subiendo el archivo ("+mb(fl.size)+") · "+Math.round(q*100)+"%")});var b=await sb.from("presets").update({file_path:p2}).eq("id",id);if(b.error)throw b.error}
+    var ph=$("pPhoto").files[0],dl=$("pFile").value.trim();
+    if(dl&&!/^https:\/\//i.test(dl))throw new Error("El enlace de descarga debe empezar por https://");
+    var u2=await sb.from("presets").update({download_url:dl||null}).eq("id",id);if(u2.error)throw u2.error;
+    if(ph){say(msg,"Subiendo la foto…");bar("pBar",55);var p1=id+"/"+Date.now()+"."+ext(ph);await upload("fotos",p1,ph);var a=await sb.from("presets").update({photo_path:p1}).eq("id",id);if(a.error)throw a.error;if(editP&&editP.photo_path)await sb.storage.from("fotos").remove([editP.photo_path])}
     bar("pBar",100);resetPre();loadPre();say(msg,"Preset guardado","ok")
   }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("pBar",null)}
   sv.disabled=false});
