@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030141208">
+<meta name="ivo-version" content="20261030152555">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -121,12 +121,19 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
 .drop input{display:none}
 .detect{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:color-mix(in srgb,var(--lime) 18%,var(--panel));font-size:14px}
 .detect b{font-size:16px}
-.filerow{display:grid;grid-template-columns:110px 1fr auto;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-.filerow b{font-size:14px}.filerow small{display:block;color:var(--mute);font-size:12px}
-.filerow .fr-in{display:grid;gap:6px}
-.filerow input[type=url]{font-size:13.5px;padding:8px 10px}
+.filerow{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;padding:12px 14px;border:1.5px dashed color-mix(in srgb,var(--ink) 18%,var(--line));border-radius:14px;background:var(--panel);transition:border-color .2s,background .2s}
+.filerow.on,.filerow:hover{border-color:var(--lime)}.filerow.on{background:color-mix(in srgb,var(--lime) 8%,var(--panel))}
+.filerow.has{border-style:solid;border-color:var(--line)}
+.filerow .fi{width:44px;height:44px;border-radius:12px;background:var(--soft);display:grid;place-items:center;font-size:11px;font-weight:800;letter-spacing:.02em;color:var(--mute)}
+.filerow.has .fi{background:color-mix(in srgb,var(--lime) 30%,transparent);color:var(--ink)}
+.filerow b{font-size:14px}.filerow small{display:block;color:var(--mute);font-size:12.5px}
+.filerow .fst{margin-top:5px;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.filerow .fst.ok{color:var(--ok)}.filerow .fst.new{color:var(--ink);font-weight:600}.filerow .fst.warn{color:var(--warn)}.filerow .fst.rm{color:var(--bad)}
+.filerow .fa{display:flex;gap:6px;align-items:center}
 .filerow .up{position:relative;overflow:hidden}
 .filerow .up input{position:absolute;inset:0;opacity:0;cursor:pointer}
+#bFiles,#pFiles{display:grid;gap:10px}
+@media (max-width:900px){.filerow{grid-template-columns:44px minmax(0,1fr)}.filerow .fa{grid-column:1/-1}}
 .bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;flex:1;min-width:120px}.bar i{display:block;height:100%;width:0;background:var(--lime);transition:width .2s}
 .copyok{color:var(--ok)!important;border-color:var(--ok)!important}
 .toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.25s;z-index:90}.toast.on{opacity:1;transform:translate(-50%,0)}
@@ -243,7 +250,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
     <div class="g3"><label>Precio desde (€)<input id="bPrice" type="number" min="1" value="19" required></label><label>Orden<input id="bSort" type="number" value="0"></label><label style="align-self:end;display:flex;gap:8px;align-items:center;font-size:14px;color:var(--ink);font-weight:500;padding-bottom:10px"><input type="checkbox" id="bFeat"> Destacado</label></div>
     <label class="drop" id="dropCov"><span class="di cov" id="covPrev">🖼</span><span><b id="covName">Portada (opcional)</b><small>Imagen cuadrada, JPG o PNG</small></span><input type="file" id="bCover" accept="image/*"></label>
     <div class="sec">Archivos de venta</div>
-    <p class="hint" style="margin-top:-6px">Para cada uno: pega un enlace (Drive, Dropbox) o sube el archivo a R2 para que el enlace del cliente caduque</p>
+    <p class="hint" style="margin-top:-6px">Se guardan en privado. Solo quien compra recibe un enlace de descarga personal que caduca</p>
     <div id="bFiles"></div>
   </div>
   <div class="dw-f"><button type="submit" id="bSave">Guardar beat</button><button type="button" class="ghost" data-close>Cancelar</button><div class="bar" id="bBar" hidden><i></i></div><p class="msg" id="bMsg" role="status" style="flex-basis:100%"></p></div>
@@ -256,7 +263,7 @@ dialog.drawer::backdrop{background:rgba(10,10,10,.45);backdrop-filter:blur(2px)}
     <div class="g3"><label style="grid-column:span 2">Artista<input id="pArtist" required maxlength="60" placeholder="Nombre del artista"></label><label>Precio (€)<input id="pPrice" type="number" min="1" step="0.5" value="15" required></label></div>
     <label>Orden<input id="pSort" type="number" value="0"></label>
     <div class="sec">Archivos</div>
-    <p class="hint" style="margin-top:-6px">El cliente elige su programa al comprar y recibe solo ese archivo</p>
+    <p class="hint" style="margin-top:-6px">El cliente elige su programa al comprar y recibe solo ese archivo, con un enlace personal que caduca</p>
     <div id="pFiles"></div>
   </div>
   <div class="dw-f"><button type="submit" id="pSave">Guardar preset</button><button type="button" class="ghost" data-close>Cancelar</button><div class="bar" id="pBar" hidden><i></i></div><p class="msg" id="pMsg" role="status" style="flex-basis:100%"></p></div>
@@ -358,10 +365,17 @@ async function delR2(paths){for(var i=0;i<paths.length;i++){try{var u=await r2si
 async function upload(bucket,path,file){var r=await sb.storage.from(bucket).upload(path,file,{upsert:true,contentType:file.type||undefined,cacheControl:"3600"});if(r.error)throw new Error("Error al subir «"+file.name+"»: "+r.error.message);return path}
 
 /* filas de archivo (enlace externo o subida a R2) */
+function fname(p){return String(p||"").split("/").pop().replace(/^(mp3|wav|stems|fl|ableton)-/,"")}
 function fileRows(box,defs,existing){box.innerHTML=defs.map(function(d){var f=(existing||[]).filter(function(x){return x.kind===d.k})[0];
-  var st=f?(f.file_path?'<span class="tag on">En R2 · caduca</span>':'<span class="tag on">Enlace externo</span>'):'<span class="tag">Sin archivo</span>';
-  return'<div class="filerow" data-k="'+d.k+'"><div><b>'+d.l+'</b><small>'+d.h+'</small><div style="margin-top:6px" class="fst">'+st+'</div></div><div class="fr-in"><input type="url" placeholder="https://drive.google.com/…" value="'+esc(f&&f.url||"")+'"><small class="fsel" style="color:var(--mute)"></small></div><span class="btn ghost sm up">Subir a R2<input type="file" accept="'+d.a+'"></span></div>'}).join("");
-  $$(".filerow",box).forEach(function(r){var i=r.querySelector("input[type=file]");i.addEventListener("change",function(){var f=i.files[0];r.querySelector(".fsel").textContent=f?"Se subirá: "+f.name+" ("+mb(f.size)+")":"";if(f)r.querySelector("input[type=url]").value=""})})}
+  var st=f?(f.file_path?'<div class="fst ok">✓ Subido · '+esc(fname(f.file_path))+'</div>':'<div class="fst warn">Enlace antiguo · sube el archivo para reemplazarlo</div>'):'<div class="fst">Sin archivo · arrástralo aquí o elígelo</div>';
+  return'<div class="filerow'+(f?" has":"")+'" data-k="'+d.k+'"><span class="fi">'+d.i+'</span><div style="min-width:0"><b>'+d.l+'</b><small>'+d.h+'</small>'+st+'</div><div class="fa"><span class="btn ghost sm up">'+(f?"Cambiar":"Elegir archivo")+'<input type="file" accept="'+d.a+'"></span>'+(f?'<button type="button" class="danger sm" data-rm>Quitar</button>':'')+'</div></div>'}).join("");
+  $$(".filerow",box).forEach(function(r){var i=r.querySelector("input[type=file]"),st=r.querySelector(".fst"),orig=st.outerHTML;
+    function pick(){var f=i.files[0];delete r.dataset.rm;if(f){st.className="fst new";st.textContent="Se subirá al guardar · "+f.name+" ("+mb(f.size)+")"}}
+    i.addEventListener("change",pick);
+    ["dragenter","dragover"].forEach(function(n){r.addEventListener(n,function(e){e.preventDefault();r.classList.add("on")})});["dragleave","drop"].forEach(function(n){r.addEventListener(n,function(e){e.preventDefault();r.classList.remove("on")})});
+    r.addEventListener("drop",function(e){var f=e.dataTransfer&&e.dataTransfer.files;if(f&&f.length){try{i.files=f}catch(er){}pick()}});
+    var rm=r.querySelector("[data-rm]");if(rm)rm.addEventListener("click",function(){if(r.dataset.rm){delete r.dataset.rm;rm.textContent="Quitar";st.outerHTML=orig;st=r.querySelector(".fst");return}
+      r.dataset.rm="1";i.value="";rm.textContent="Deshacer";st.className="fst rm";st.textContent="Se quitará al guardar"})})}
 
 /* ---------- RESUMEN ---------- */
 $$("#period button").forEach(function(b){b.addEventListener("click",function(){$$("#period button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});PERIOD=+b.dataset.d;loadResumen()})});
@@ -416,7 +430,7 @@ $("beatTbl").addEventListener("click",async function(e){var btn=e.target.closest
     if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);if(b.cover_path)await sb.storage.from("fotos").remove([b.cover_path]);
     var r2p=(b.beat_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");else toast("Beat borrado");loadBeats()}});
-var BDEF=[{k:"mp3",l:"MP3",h:"Licencia Básica y Estándar",a:".mp3,audio/mpeg"},{k:"wav",l:"WAV",h:"Estándar, Premium e Ilimitada",a:".wav,audio/wav,audio/x-wav"},{k:"stems",l:"Stems",h:"ZIP · Premium e Ilimitada",a:".zip,application/zip"}];
+var BDEF=[{k:"mp3",i:"MP3",l:"MP3",h:"Licencias Básica y Estándar",a:".mp3,audio/mpeg"},{k:"wav",i:"WAV",l:"WAV",h:"Licencias Estándar, Premium e Ilimitada",a:".wav,audio/wav,audio/x-wav"},{k:"stems",i:"ZIP",l:"Stems",h:"ZIP · Licencias Premium e Ilimitada",a:".zip,application/zip"}];
 function openBeat(b){editB=b||null;$("fBeat").reset();$("dBeatT").textContent=b?"Editar «"+b.name+"»":"Nuevo beat";$("detect").hidden=true;bar("bBar",null);say($("bMsg"),"");
   $("pvName").textContent=b&&b.preview_path?"Previsualización guardada · arrastra otra para cambiarla":"Arrastra aquí el MP3 de previsualización";
   $("covName").textContent=b&&b.cover_path?"Portada guardada · elige otra para cambiarla":"Portada (opcional)";var cp=$("covPrev");cp.style.backgroundImage=b&&b.cover_path?"url("+pub("fotos",b.cover_path)+")":"";cp.textContent=b&&b.cover_path?"":"🖼";
@@ -452,12 +466,11 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
   }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
   sv.disabled=false});
 async function saveFiles(table,fk,id,box,existing,prefix,barId,msg,start){var rows=$$(".filerow",box),n=rows.length;
-  for(var k=0;k<n;k++){var r=rows[k],kind=r.dataset.k,v=r.querySelector("input[type=url]").value.trim(),fl=r.querySelector("input[type=file]").files[0],old=(existing||[]).filter(function(x){return x.kind===kind})[0];
+  for(var k=0;k<n;k++){var r=rows[k],kind=r.dataset.k,fl=r.querySelector("input[type=file]").files[0],old=(existing||[]).filter(function(x){return x.kind===kind})[0];
     var base=start+(95-start)*k/n,span=(95-start)/n,row={};row[fk]=id;row.kind=kind;
     if(fl){var pth=prefix+kind+"-"+safe(fl.name);await putR2(pth,fl,function(q){bar(barId,Math.round(base+span*q));say(msg,"Subiendo "+fl.name+" ("+mb(fl.size)+") · "+Math.round(q*100)+"%")});
       row.file_path=pth;row.url=null;var a=await sb.from(table).upsert(row,{onConflict:fk+",kind"});if(a.error)throw a.error;if(old&&old.file_path&&old.file_path!==pth)await delR2([old.file_path])}
-    else if(v){if(!/^https:\/\//i.test(v))throw new Error("Los enlaces deben empezar por https://");row.url=v;row.file_path=null;var b2=await sb.from(table).upsert(row,{onConflict:fk+",kind"});if(b2.error)throw b2.error;if(old&&old.file_path)await delR2([old.file_path])}
-    else if(old&&old.url&&!old.file_path){await sb.from(table).delete().eq(fk,id).eq("kind",kind)}}}
+    else if(r.dataset.rm&&old){if(old.file_path)await delR2([old.file_path]);var d=await sb.from(table).delete().eq(fk,id).eq("kind",kind);if(d.error)throw d.error}}}
 
 /* ---------- PRESETS ---------- */
 var PRES=[],editP=null;
@@ -476,7 +489,7 @@ $("preTbl").addEventListener("click",async function(e){var btn=e.target.closest(
   if(btn.dataset.a==="del"){if(STATIC_PRESETS.indexOf(p.slug)>-1&&!confirm("Este preset tiene su tarjeta fija en la web. Si lo borras, su botón de compra dejará de funcionar hasta que lo quite de la web. ¿Seguir?"))return;
     if(!confirm("¿Borrar el preset de «"+p.artist+"» y sus archivos?"))return;var r2p=(p.preset_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     await sb.from("presets").delete().eq("id",p.id);toast("Preset borrado");loadPre()}});
-var PDEF=[{k:"fl",l:"FL Studio",h:"Plantilla .flp (o ZIP con todo)",a:".flp,.zip"},{k:"ableton",l:"Ableton Live",h:"Proyecto .als (o ZIP con todo)",a:".als,.zip,.alp"}];
+var PDEF=[{k:"fl",i:"FL",l:"FL Studio",h:"Plantilla .flp o ZIP con todo",a:".flp,.zip"},{k:"ableton",i:"ALS",l:"Ableton Live",h:"Proyecto .als o ZIP con todo",a:".als,.zip,.alp"}];
 function openPre(p){editP=p||null;$("fPre").reset();$("dPreT").textContent=p?"Editar «"+p.artist+"»":"Nuevo preset";bar("pBar",null);say($("pMsg"),"");
   if(p){$("pArtist").value=p.artist;$("pPrice").value=p.price;$("pSort").value=p.sort}else{$("pPrice").value=15;$("pSort").value=0}
   fileRows($("pFiles"),PDEF,p&&p.preset_files);$("dPre").showModal()}
