@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261031190424" data-auto="1">
+<meta name="ivo-version" content="20261031201553" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
@@ -1829,7 +1829,7 @@ d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundin
   var tries=0;(function go(){fetch(SB+"/functions/v1/get-downloads",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify({session_id:sid})})
    .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
    .then(function(x){var z=$("dlz");if(!z)return;
-     if(!x.ok){if(x.status===409){z.textContent="Estoy revisando tu pedido y te enviaré las descargas por correo en breve";return}if(x.status===402&&tries++<5){setTimeout(go,2000);return}z.textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga";return}
+     if(!x.ok){if(x.status===409){z.textContent="Estoy revisando tu pedido y te enviaré las descargas por correo en breve";return}if(x.status===410&&x.j&&x.j.error==="anulado"){z.textContent="Este pedido se ha devuelto o tiene una reclamación del pago abierta, así que sus descargas no están disponibles. Si crees que es un error, escribe a ivobeatzzz@gmail.com";return}if(x.status===402&&tries++<5){setTimeout(go,2000);return}z.textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga";return}
      var h=(x.j.items||[]).map(function(it){return'<div class="dli"><b>'+esc(it.name)+'</b>'+(it.kind==="service"?'<p class="lnote" style="margin:4px 0 0">Pedido recibido. Plazo aproximado: '+esc(it.time||"")+'. Recibirás un aviso por correo y lo verás en tu cuenta</p>':'<div class="dls">'+(it.links||[]).map(function(l){return l.url?'<a class="btn sm" href="'+esc(l.url)+'" target="_blank" rel="noopener" download>Descargar '+esc(l.label)+'</a>':'<span class="lnote" style="margin:0">'+esc(l.label)+': te llegará por correo en breve</span>'}).join("")+'</div>')+'</div>'}).join("")+((x.j.items||[]).some(function(i){return i.kind!=="service"})?'<p class="lnote" style="margin-top:12px">Los enlaces caducan en 24 horas. Puedes generar otros cuando quieras desde <a href="cuenta.html">tu cuenta</a></p>':'')+((x.j.items||[]).some(function(i){return i.kind==="beat"})?'<div class="dli"><b>Tu licencia oficial en PDF</b><p class="lnote" style="margin:4px 0 8px">A tu nombre, con tu nombre artístico y un código para comprobarla. Es la que puedes enviar a tu distribuidora</p><div class="dls"><a class="btn sm" href="cuenta.html#licencias">Crear mi licencia en PDF</a></div></div>':'');
      z.innerHTML=h})
    .catch(function(){var z=$("dlz");if(z)z.textContent="En unos minutos recibirás un correo con tu licencia y los enlaces de descarga"})})()})();

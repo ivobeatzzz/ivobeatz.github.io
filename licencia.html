@@ -85,7 +85,7 @@ function show(j,status){
   if(status===429){r.innerHTML='<div class="card no"><div class="st"><i>!</i><div><b>Demasiadas consultas seguidas</b><span>Prueba de nuevo en unos minutos. Too many requests, try again later</span></div></div></div>';return}
   var ok=j.valid===true;
   var head=ok?'<div class="st"><i>✓</i><div><b>Licencia válida y en vigor</b><span>Valid license, in force</span></div></div>':
-    '<div class="st"><i>×</i><div><b>Esta licencia ya no está en vigor</b><span>'+(j.reason==="revoked"?"Ha sido anulada. This license has been revoked":"La compra se ha anulado o devuelto. The purchase was cancelled or refunded")+'</span></div></div>';
+    '<div class="st"><i>×</i><div><b>Esta licencia ya no está en vigor</b><span>'+(j.reason==="revoked"?"Ha sido anulada. This license has been revoked":j.reason==="disputed"?"En pausa por una reclamación del pago. On hold because of a payment dispute":"La compra se ha anulado o devuelto. The purchase was cancelled or refunded")+'</span></div></div>';
   r.innerHTML='<div class="card '+(ok?"ok":"no")+'">'+head+'<dl>'+
     row("Código","Code",esc(j.code))+row("Beat","Beat","«"+esc(j.beat)+"»")+row("Licencia","License",esc(j.tier)+" (no exclusiva) <small style=\"font-weight:400;color:var(--mute)\">"+esc(j.tier_en)+", non-exclusive</small>")+
     row("Artista","Artist",esc(j.artist))+row("Titular","Licensee",esc(j.holder))+row("Productor","Producer","IVO Beatz")+

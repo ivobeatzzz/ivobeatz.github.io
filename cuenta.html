@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261031190424">
+<meta name="ivo-version" content="20261031201553">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -225,7 +225,7 @@ function fmtDate(d){return new Date(d).toLocaleDateString("es-ES",{day:"numeric"
 function euro(n){return n==null?"":Number(n).toFixed(2).replace(".",",")+" €"}
 var SVST={recibido:"Recibido",en_proceso:"En proceso",entregado:"Entregado"};
 async function loadOrders(){
-  var r=await sb.from("orders").select("id,created_at,total,status,kind,items,stripe_session_id,service_status,delivery_url,delivery_note").eq("status","paid").order("created_at",{ascending:false});
+  var r=await sb.from("orders").select("id,created_at,total,status,kind,items,stripe_session_id,service_status,delivery_url,delivery_note,refund_state").eq("status","paid").order("created_at",{ascending:false});
   ORDERS=r.data||[];var L=$("orders"),all=[];ORDERS.forEach(function(o){(o.items||[]).forEach(function(i){all.push(i)})});
   $("sN").textContent=ORDERS.length;$("sL").textContent=all.filter(function(i){return i.kind==="beat"}).length;$("sP").textContent=all.filter(function(i){return i.kind==="preset"}).length;
   if(!ORDERS.length){L.innerHTML='<div class="empty"><b>Aún no tienes compras</b>Cuando compres un beat, un preset o un servicio, aparecerá aquí para que lo descargues o sigas su estado<div style="margin-top:18px"><a class="btn" href="/#beats">Ver beats</a></div></div>';return}
@@ -233,13 +233,15 @@ async function loadOrders(){
     var title=its.length===1?it.name:"Pedido de "+its.length+" artículos",ic=svc?ICON.svc:it.kind==="beat"?ICON.beat:ICON.preset;
     var tag=svc?'<span class="tag'+(o.service_status==="entregado"?" on":"")+'">'+(SVST[o.service_status]||"Recibido")+'</span>':its.length===1&&beats.length&&TERMS[it.tier]?'<span class="tag on">'+TERMS[it.tier].n+'</span>':"";
     var sub=its.length>1?'<div class="its">'+its.map(function(i){return"<span>"+esc(i.name)+"</span>"}).join("")+'</div>':"";
-    return '<div class="ord" data-id="'+o.id+'"><div class="row"><span class="ic">'+ic+'</span><div class="t"><b>'+esc(title)+tag+'</b><small>'+fmtDate(o.created_at)+' · '+euro(o.total)+(ref?' · pedido '+esc(ref):'')+'</small>'+sub+'</div><div class="acts"><button class="btn sm" data-a="dl">'+(svc?"Ver estado":"Descargar")+'</button>'+(beats.length?'<button class="btn ghost sm" data-a="lic">'+(beats.length>1?"Licencias (PDF)":"Licencia (PDF)")+'</button>':'')+'</div></div><div class="dl"></div></div>'}).join("")}
+    var off=o.refund_state==="refunded"||o.refund_state==="disputed";if(off)tag='<span class="tag">'+(o.refund_state==="refunded"?"Devuelto":"Reclamación abierta")+'</span>';
+    return '<div class="ord" data-id="'+o.id+'"><div class="row"><span class="ic">'+ic+'</span><div class="t"><b>'+esc(title)+tag+'</b><small>'+fmtDate(o.created_at)+' · '+euro(o.total)+(ref?' · pedido '+esc(ref):'')+'</small>'+sub+'</div><div class="acts">'+(off?'':'<button class="btn sm" data-a="dl">'+(svc?"Ver estado":"Descargar")+'</button>'+(beats.length?'<button class="btn ghost sm" data-a="lic">'+(beats.length>1?"Licencias (PDF)":"Licencia (PDF)")+'</button>':''))+'</div></div>'+(off?'<p class="sub" style="margin:10px 0 0;font-size:13px">'+(o.refund_state==="refunded"?"Este pedido se ha devuelto: sus descargas y licencias ya no están disponibles":"Hay una reclamación del pago abierta con tu banco. Las descargas y licencias quedan en pausa hasta que se resuelva")+'</p>':'')+'<div class="dl"></div></div>'}).join("")}
 $("orders").addEventListener("click",async function(e){var b=e.target.closest("button[data-a]");if(!b)return;var card=b.closest(".ord"),o=ORDERS.filter(function(x){return x.id===card.dataset.id})[0];if(!o)return;
   if(b.dataset.a==="lic"){license(o);return}
   var box=card.querySelector(".dl");if(box.classList.contains("open")&&box.dataset.ok){box.classList.remove("open");return}
   box.classList.add("open");box.innerHTML='<span class="spin"></span> Preparando…';
   var r=await sb.functions.invoke("my-downloads",{body:{order_id:o.id}});
   if(r.error&&r.error.context&&r.error.context.status===409){box.innerHTML='<p>Estoy revisando este pedido. Te enviaré las descargas por correo en breve</p>';return}
+  if(r.error&&r.error.context&&r.error.context.status===410){box.innerHTML='<p>Este pedido se ha devuelto o tiene una reclamación del pago abierta, así que sus descargas no están disponibles</p>';return}
   if(r.error||!r.data){box.innerHTML='<p style="color:var(--bad)">No se han podido preparar las descargas. Inténtalo de nuevo o escribe a ivobeatzzz@gmail.com</p>';return}
   var d=r.data,multi=(d.items||[]).length>1;box.dataset.ok="1";
   var h=(d.items||[]).map(function(it){
