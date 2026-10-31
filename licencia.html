@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Comprobar licencia · IVO Beatz</title>
+<meta name="description" content="Comprueba si una licencia de beat de IVO Beatz es auténtica y está en vigor. Verify an IVO Beatz beat license.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2E3720">
+<link rel="icon" href="favicon.ico">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f7f7f5;--panel:#fff;--ink:#111;--mute:#5f5f5b;--line:#e2e2dd;--camo:#2E3720;--lime:#6F7F45;--lime2:#A9BA78;--ok:#3f6b1d;--okbg:#eef3df;--bad:#b3261e;--badbg:#fbeceb}
+@media (prefers-color-scheme:dark){:root{--bg:#0e0f0d;--panel:#171815;--ink:#f0f0ec;--mute:#a0a09a;--line:#2b2c28;--ok:#b9d86c;--okbg:#1f2716;--bad:#f19a92;--badbg:#2d1715}}
+*{box-sizing:border-box}
+html{background:var(--bg)}
+body{margin:0;font:16px/1.55 Archivo,system-ui,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+header{background:var(--camo);color:#f5f5f2}
+.wrap{max-width:720px;margin:0 auto;padding:0 20px}
+.top{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{font-weight:800;font-stretch:115%;font-size:19px;text-decoration:none;letter-spacing:-.01em}
+.top a.back{font-size:14px;font-weight:600;opacity:.85;text-decoration:none}
+.top a.back:hover{opacity:1;text-decoration:underline}
+.wrap.hero{padding:40px 20px 46px}
+h1{font-weight:800;font-stretch:112%;font-size:clamp(30px,6vw,44px);line-height:1.04;letter-spacing:-.025em;margin:0}
+.hero p{margin:12px 0 0;color:#dfe4d2;max-width:56ch}
+.hero p small{display:block;color:var(--lime2);margin-top:4px;font-size:14px}
+main.wrap{padding:32px 20px 80px}
+form{display:flex;gap:10px;flex-wrap:wrap}
+label{display:block;font-size:14px;font-weight:600;color:var(--mute);margin-bottom:8px}
+input{flex:1 1 260px;font:inherit;font-size:18px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:13px 16px;min-width:0}
+input::placeholder{letter-spacing:.02em;text-transform:none;font-weight:400;color:var(--mute)}
+input:focus{outline:none;border-color:var(--lime);box-shadow:0 0 0 3px color-mix(in srgb,var(--lime) 30%,transparent)}
+button{font:inherit;font-weight:700;font-size:15px;padding:13px 24px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+button:focus-visible,a:focus-visible{outline:3px solid var(--lime);outline-offset:2px}
+button:disabled{opacity:.5}
+.res{margin-top:28px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:22px;overflow:hidden}
+.st{display:flex;gap:14px;align-items:center;padding:20px 24px}
+.st i{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:19px}
+.st b{display:block;font-size:20px;letter-spacing:-.01em;line-height:1.2}
+.st span{display:block;font-size:14px;color:var(--mute)}
+.ok .st{background:var(--okbg)}.ok .st i{background:var(--ok);color:var(--okbg)}
+.no .st{background:var(--badbg)}.no .st i{background:var(--bad);color:var(--badbg)}
+dl{margin:0;padding:8px 24px 18px;display:grid;grid-template-columns:minmax(120px,38%) 1fr;gap:0}
+dt,dd{margin:0;padding:11px 0;border-bottom:1px solid var(--line);font-size:15px}
+dt{color:var(--mute)}dt small{display:block;font-size:12px;opacity:.85}
+dd{font-weight:600}
+dl>:nth-last-child(-n+2){border-bottom:0}
+.note{font-size:13.5px;color:var(--mute);margin:18px 0 0}
+.empty{padding:22px 24px;color:var(--mute)}
+[hidden]{display:none!important}
+@media (max-width:520px){dl{grid-template-columns:1fr}dt{border-bottom:0;padding-bottom:0}button{flex:1 1 100%}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap top"><a class="logo" href="/">IVO Beatz</a><a class="back" href="/">Ir a la tienda</a></div>
+  <div class="wrap hero">
+    <h1>Comprobar una licencia</h1>
+    <p>Introduce el código que aparece en la licencia en PDF para ver si es auténtica y está en vigor.<small>Verify an IVO Beatz beat license: enter the code printed on the PDF.</small></p>
+  </div>
+</header>
+<main class="wrap">
+  <form id="f" autocomplete="off">
+    <div style="flex:1 1 100%"><label for="c">Código de la licencia <span style="font-weight:400">(License code)</span></label></div>
+    <input id="c" name="c" maxlength="20" placeholder="Por ejemplo IVO-7KQ2-M9XD" spellcheck="false" autocapitalize="characters" required>
+    <button type="submit" id="b">Comprobar</button>
+  </form>
+  <div class="res" id="r" aria-live="polite"></div>
+  <p class="note">Si tienes dudas sobre una licencia, escribe a <a href="mailto:ivobeatzzz@gmail.com">ivobeatzzz@gmail.com</a>. Questions about a license? Email ivobeatzzz@gmail.com.</p>
+</main>
+<script>
+(function(){
+var SB="https://juxmlitraftqvryteexu.supabase.co",KEY="sb_publishable_q_49snDGE7abEhFbj-DY9Q_wXx0WZpp";
+var f=document.getElementById("f"),c=document.getElementById("c"),r=document.getElementById("r"),b=document.getElementById("b");
+function esc(t){return String(t==null?"":t).replace(/[&<>"']/g,function(x){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[x]})}
+function fmtEn(iso){try{return new Date(iso).toLocaleDateString("en-US",{timeZone:"Europe/Madrid",year:"numeric",month:"long",day:"numeric"})}catch(e){return""}}
+function row(k,en,v){return"<dt>"+k+"<small>"+en+"</small></dt><dd>"+v+"</dd>"}
+function show(j,status){
+  if(status===404||!j||!j.found){r.innerHTML='<div class="card no"><div class="st"><i>?</i><div><b>No hay ninguna licencia con ese código</b><span>Revisa que esté bien escrito. No license found with this code</span></div></div></div>';return}
+  if(status===429){r.innerHTML='<div class="card no"><div class="st"><i>!</i><div><b>Demasiadas consultas seguidas</b><span>Prueba de nuevo en unos minutos. Too many requests, try again later</span></div></div></div>';return}
+  var ok=j.valid===true;
+  var head=ok?'<div class="st"><i>✓</i><div><b>Licencia válida y en vigor</b><span>Valid license, in force</span></div></div>':
+    '<div class="st"><i>×</i><div><b>Esta licencia ya no está en vigor</b><span>'+(j.reason==="revoked"?"Ha sido anulada. This license has been revoked":"La compra se ha anulado o devuelto. The purchase was cancelled or refunded")+'</span></div></div>';
+  r.innerHTML='<div class="card '+(ok?"ok":"no")+'">'+head+'<dl>'+
+    row("Código","Code",esc(j.code))+row("Beat","Beat","«"+esc(j.beat)+"»")+row("Licencia","License",esc(j.tier)+" (no exclusiva) <small style=\"font-weight:400;color:var(--mute)\">"+esc(j.tier_en)+", non-exclusive</small>")+
+    row("Artista","Artist",esc(j.artist))+row("Titular","Licensee",esc(j.holder))+row("Productor","Producer","IVO Beatz (Iván Montero Fortes)")+
+    row("Fecha de compra","Purchase date",esc(j.purchased_es)+' <small style="font-weight:400;color:var(--mute)">'+esc(fmtEn(j.purchased))+'</small>')+row("Emitida","Issued",esc(j.issued_es)+' <small style="font-weight:400;color:var(--mute)">'+esc(fmtEn(j.issued))+'</small>')+
+    '</dl></div>'}
+function check(code){code=String(code||"").trim();if(!code)return;b.disabled=true;r.innerHTML='<p class="empty">Comprobando…</p>';
+  fetch(SB+"/functions/v1/license",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY},body:JSON.stringify({action:"verify",code:code})})
+   .then(function(x){return x.json().catch(function(){return null}).then(function(j){show(j,x.status)})})
+   .catch(function(){r.innerHTML='<p class="empty">No se ha podido comprobar ahora. Inténtalo de nuevo en un momento</p>'})
+   .then(function(){b.disabled=false})}
+f.addEventListener("submit",function(e){e.preventDefault();var v=c.value.toUpperCase().replace(/\s+/g,"");c.value=v;try{history.replaceState(null,"","?c="+encodeURIComponent(v))}catch(x){}check(v)});
+var q=new URLSearchParams(location.search).get("c");if(q){c.value=q.toUpperCase();check(q)}else c.focus();
+})();
+</script>
+</body>
+</html>

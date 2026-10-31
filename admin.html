@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261031000745">
+<meta name="ivo-version" content="20261031004407">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -567,7 +567,15 @@ $("fPre").addEventListener("submit",async function(e){e.preventDefault();var msg
 
 /* ---------- PEDIDOS ---------- */
 var ORD=[],OF="all",ST={recibido:"Recibido",en_proceso:"En proceso",entregado:"Entregado"},DL={nombre:"Nombre",telefono:"Teléfono",cancion:"Canción",pistas:"Pistas",programa:"Programa",enlace:"Enlace",referencia:"Referencia",mensaje:"Detalles"};
-async function loadOrders(){var r=await sb.from("orders").select("*").eq("status","paid").order("created_at",{ascending:false}).limit(500);ORD=r.data||[];renderOrders();pendingSvc()}
+var ALIC={};
+async function loadOrders(){var r=await sb.from("orders").select("*").eq("status","paid").order("created_at",{ascending:false}).limit(500);ORD=r.data||[];
+  var lr=await sb.from("licenses").select("code,order_id,item_idx,legal_name,artist_name,status,issued_at").limit(2000);ALIC={};(lr.data||[]).forEach(function(l){ALIC[l.order_id+":"+l.item_idx]=l});renderOrders();pendingSvc()}
+/* licencia en PDF de cada beat: ver, descargar, corregir el titular o anularla */
+function licLine(o,it,idx){if(it.kind!=="beat")return"";var l=ALIC[o.id+":"+idx];
+  if(!l)return'<div class="li" style="color:var(--mute);font-size:13px;padding-left:14px">Licencia en PDF: el cliente aún no la ha creado</div>';
+  return'<div class="li" style="font-size:13px;padding-left:14px">Licencia <b>'+esc(l.code)+'</b> a nombre de <b>'+esc(l.legal_name)+'</b> ('+esc(l.artist_name)+')'+(l.status!=="valid"?' <span class="tag bad">Anulada</span>':'')+
+    ' · <button type="button" class="ghost sm" data-lic="pdf" data-code="'+esc(l.code)+'">PDF</button> <button type="button" class="ghost sm" data-lic="fix" data-code="'+esc(l.code)+'">Corregir titular</button> <button type="button" class="ghost sm" data-lic="'+(l.status==="valid"?"off":"on")+'" data-code="'+esc(l.code)+'">'+(l.status==="valid"?"Anular":"Reactivar")+'</button> <span class="msg licM"></span></div>'}
+function licByCode(c){var f=null;Object.keys(ALIC).forEach(function(k){if(ALIC[k].code===c)f=ALIC[k]});return f}
 function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList");
   var list=ORD.filter(function(o){var its=o.items||[];if(q&&(o.email+" "+its.map(function(i){return i.name}).join(" ")).toLowerCase().indexOf(q)<0)return false;
     if(OF==="svc")return its.some(function(i){return i.kind==="service"})&&o.service_status!=="entregado";if(OF==="miss")return o.needs_manual;return true});
@@ -575,7 +583,7 @@ function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList"
   L.innerHTML=list.map(function(o){var its=o.items||[],svc=its.filter(function(i){return i.kind==="service"})[0];
     var tags=(o.review_reason?'<span class="tag bad">Retenido: revisar</span> ':'')+(o.needs_manual&&!o.review_reason?'<span class="tag bad">Faltan archivos</span>':o.email_sent?'<span class="tag on">Correo enviado</span>':'<span class="tag bad">Correo sin enviar</span>')+(svc?' <span class="tag '+(o.service_status==="entregado"?"on":"warn")+'">'+(ST[o.service_status]||"Recibido")+'</span>':'');
     var lines=its.map(function(it){var lk=(it.links||[]).map(function(l){return l.url==="r2"?esc(l.label)+" (R2)":l.url?'<a href="'+su(l.url)+'" target="_blank" rel="noopener">'+esc(l.label)+'</a>':'<span style="color:var(--bad)">'+esc(l.label)+': sin archivo</span>'}).join(" · ");
-      return'<div class="li"><b>'+esc(it.name)+'</b> · '+(it.free?'<b style="color:var(--ok)">Gratis</b> (oferta '+((it.free_every||4)-1)+'+1)':eur(it.unit!=null?it.unit:it.price)+(it.reward_pct?' (regalo de primera compra −'+it.reward_pct+' %)':it.pack_pct?' (pack −'+it.pack_pct+' %)':''))+(lk?' · '+lk:'')+'</div>'}).join("");
+      return'<div class="li"><b>'+esc(it.name)+'</b> · '+(it.free?'<b style="color:var(--ok)">Gratis</b> (oferta '+((it.free_every||4)-1)+'+1)':eur(it.unit!=null?it.unit:it.price)+(it.reward_pct?' (regalo de primera compra −'+it.reward_pct+' %)':it.pack_pct?' (pack −'+it.pack_pct+' %)':''))+(lk?' · '+lk:'')+'</div>'+licLine(o,it,its.indexOf(it))}).join("");
     if(o.review_reason)lines='<div class="li" style="color:var(--bad)"><b style="color:var(--bad)">Retenido sin entregar:</b> '+esc(o.review_reason)+'. Compruébalo en Stripe antes de enviar nada</div><div class="li"><button type="button" class="ghost sm" data-rel="'+o.id+'">Ya lo he revisado: liberar pedido</button> <span class="msg relM"></span></div>'+lines;
     var sv="";if(svc){var det=svc.details||{};sv='<div class="svc" data-id="'+o.id+'"><table>'+Object.keys(det).filter(function(k){return det[k]}).map(function(k){var v=det[k];return'<tr><td>'+esc(DL[k]||k)+'</td><td>'+(/^https?:\/\//.test(v)?'<a href="'+su(v)+'" target="_blank" rel="noopener">'+esc(v)+'</a>':esc(v))+'</td></tr>'}).join("")+'</table>'+
       '<div class="g3"><label>Estado<select class="sS">'+Object.keys(ST).map(function(k){return'<option value="'+k+'"'+(o.service_status===k?" selected":"")+'>'+ST[k]+'</option>'}).join("")+'</select></label><label>Enlace de entrega<input class="sU" type="url" placeholder="https://…" value="'+esc(o.delivery_url||"")+'"></label><label>Nota para el cliente<input class="sN" maxlength="300" value="'+esc(o.delivery_note||"")+'"></label></div>'+
@@ -583,7 +591,19 @@ function renderOrders(){var q=$("qOrd").value.trim().toLowerCase(),L=$("ordList"
     return'<div class="ord"><div class="top"><div><b>'+fdate(o.created_at,1)+'</b> · '+esc(o.email||"")+' · <b>'+eur(o.total)+'</b></div><div>'+tags+'</div></div>'+lines+sv+'</div>'}).join("")}
 $("qOrd").addEventListener("input",renderOrders);
 $$("#fOrd button").forEach(function(b){b.addEventListener("click",function(){$$("#fOrd button").forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});OF=b.dataset.f;renderOrders()})});
-$("ordList").addEventListener("click",async function(e){var rb=e.target.closest("button[data-rel]");
+$("ordList").addEventListener("click",async function(e){var lb=e.target.closest("button[data-lic]");
+  if(lb){var l=licByCode(lb.dataset.code),lm=lb.parentNode.querySelector(".licM");if(!l)return;lm.className="msg licM";
+    if(lb.dataset.lic==="pdf"){lm.textContent="Preparando…";try{var ss=(await sb.auth.getSession()).data.session;var pr=await fetch(SB+"/functions/v1/license",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+ss.access_token,apikey:KEY},body:JSON.stringify({action:"pdf",code:l.code})});
+      if(!pr.ok)throw new Error(pr.status===410?"Está anulada o el pedido no está pagado":"No se pudo generar");var u=URL.createObjectURL(await pr.blob()),a=document.createElement("a");a.href=u;a.download="Licencia "+l.code+" - "+l.artist_name+".pdf";document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},60000);lm.textContent=""}catch(x){lm.className="msg licM bad";lm.textContent=x.message}return}
+    var patch;
+    if(lb.dataset.lic==="fix"){var n1=prompt("Nombre y apellidos del titular",l.legal_name);if(n1==null)return;var n2=prompt("Nombre artístico",l.artist_name);if(n2==null)return;n1=n1.replace(/\s+/g," ").trim();n2=n2.replace(/\s+/g," ").trim();
+      if(n1.length<4||n1.indexOf(" ")<0||n1.length>80||!n2||n2.length>60){lm.className="msg licM bad";lm.textContent="Datos no válidos";return}patch={legal_name:n1,artist_name:n2}}
+    else{if(lb.dataset.lic==="off"&&!confirm("¿Anular esta licencia? La verificación pública dirá que ya no está en vigor y el cliente no podrá descargar el PDF"))return;patch={status:lb.dataset.lic==="off"?"revoked":"valid",revoked_reason:lb.dataset.lic==="off"?"Anulada desde el panel":null}}
+    patch.updated_at=new Date().toISOString();lm.textContent="Guardando…";
+    var ur=await sb.from("licenses").update(patch).eq("code",l.code).select("code");
+    if(ur.error||!ur.data||!ur.data.length){lm.className="msg licM bad";lm.textContent="No se pudo guardar";return}
+    Object.assign(l,patch);renderOrders();return}
+  var rb=e.target.closest("button[data-rel]");
   if(rb){if(!confirm("¿Has comprobado en Stripe que el cobro es correcto? Al liberarlo, el cliente podrá descargarlo desde su cuenta"))return;var rm=rb.parentNode.querySelector(".relM");rm.className="msg relM";rm.textContent="Liberando…";
     var rr=await sb.from("orders").update({review_reason:null,needs_manual:false,updated_at:new Date().toISOString()}).eq("id",rb.dataset.rel).select("id");
     if(rr.error||!rr.data||!rr.data.length){rm.className="msg relM bad";rm.textContent="No se pudo liberar";return}

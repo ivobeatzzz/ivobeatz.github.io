@@ -86,9 +86,31 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/licencia.html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/fonts/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=2592000"
+        }
+      ]
     }
   ],
   "rewrites": [
+    {
+      "source": "/licencia",
+      "destination": "/licencia.html"
+    },
     {
       "source": "/beat/:slug",
       "destination": "/api/share?t=b&slug=:slug"

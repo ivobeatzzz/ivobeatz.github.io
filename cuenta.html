@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261031000745">
+<meta name="ivo-version" content="20261031004407">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -77,6 +77,7 @@ form{display:grid;gap:14px}
 .tag{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:999px;border:1px solid var(--line);margin-left:6px;vertical-align:2px}
 .tag.on{background:var(--lime);border-color:var(--lime);color:#17240a}
 .its{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.its span{font-size:12px;padding:3px 9px;border-radius:999px;background:var(--bg);border:1px solid var(--line)}
+.licx{margin:12px 0 4px;padding:16px 18px;border-radius:16px;background:var(--panel);border:1px solid var(--line);display:grid;gap:10px}.lich b{display:block;font-size:15px}.lich span{display:block;font-size:13.5px;color:var(--mute);line-height:1.45;margin-top:2px}.licx .bts{display:flex;gap:8px;flex-wrap:wrap}.licf{gap:10px}.licx .chk{font-size:13px}
 .dgrp{padding:8px 0}.dgrp b{display:block;font-size:14px;margin-bottom:6px}
 .dl{margin-top:14px;padding-top:14px;border-top:1px solid var(--line);display:none}
 .dl.open{display:block;animation:in .3s var(--ease)}
@@ -232,7 +233,7 @@ async function loadOrders(){
     var title=its.length===1?it.name:"Pedido de "+its.length+" artículos",ic=svc?ICON.svc:it.kind==="beat"?ICON.beat:ICON.preset;
     var tag=svc?'<span class="tag'+(o.service_status==="entregado"?" on":"")+'">'+(SVST[o.service_status]||"Recibido")+'</span>':its.length===1&&beats.length&&TERMS[it.tier]?'<span class="tag on">'+TERMS[it.tier].n+'</span>':"";
     var sub=its.length>1?'<div class="its">'+its.map(function(i){return"<span>"+esc(i.name)+"</span>"}).join("")+'</div>':"";
-    return '<div class="ord" data-id="'+o.id+'"><div class="row"><span class="ic">'+ic+'</span><div class="t"><b>'+esc(title)+tag+'</b><small>'+fmtDate(o.created_at)+' · '+euro(o.total)+(ref?' · pedido '+esc(ref):'')+'</small>'+sub+'</div><div class="acts"><button class="btn sm" data-a="dl">'+(svc?"Ver estado":"Descargar")+'</button>'+(beats.length?'<button class="btn ghost sm" data-a="lic">'+(beats.length>1?"Ver licencias":"Ver licencia")+'</button>':'')+'</div></div><div class="dl"></div></div>'}).join("")}
+    return '<div class="ord" data-id="'+o.id+'"><div class="row"><span class="ic">'+ic+'</span><div class="t"><b>'+esc(title)+tag+'</b><small>'+fmtDate(o.created_at)+' · '+euro(o.total)+(ref?' · pedido '+esc(ref):'')+'</small>'+sub+'</div><div class="acts"><button class="btn sm" data-a="dl">'+(svc?"Ver estado":"Descargar")+'</button>'+(beats.length?'<button class="btn ghost sm" data-a="lic">'+(beats.length>1?"Licencias (PDF)":"Licencia (PDF)")+'</button>':'')+'</div></div><div class="dl"></div></div>'}).join("")}
 $("orders").addEventListener("click",async function(e){var b=e.target.closest("button[data-a]");if(!b)return;var card=b.closest(".ord"),o=ORDERS.filter(function(x){return x.id===card.dataset.id})[0];if(!o)return;
   if(b.dataset.a==="lic"){license(o);return}
   var box=card.querySelector(".dl");if(box.classList.contains("open")&&box.dataset.ok){box.classList.remove("open");return}
@@ -246,12 +247,45 @@ $("orders").addEventListener("click",async function(e){var b=e.target.closest("b
     return'<div class="dgrp">'+(multi?'<b>'+esc(it.name)+'</b>':'')+'<div class="bts">'+(it.links||[]).map(function(l){return l.url?'<a class="btn lime sm" href="'+su(l.url)+'" target="_blank" rel="noopener">↓ '+esc(l.label)+'</a>':'<span class="tag">'+esc(l.label)+': pendiente de envío</span>'}).join("")+'</div></div>'}).join("");
   var anyDl=(d.items||[]).some(function(i){return i.kind!=="service"});
   box.innerHTML=h+(d.receipt?'<div class="bts" style="margin-top:12px"><a class="btn ghost sm" href="'+su(d.receipt)+'" target="_blank" rel="noopener">Recibo de pago</a></div>':'')+(anyDl?'<p>Los enlaces son personales y caducan en 24 horas. Vuelve aquí cuando necesites otros</p>':'')});
-function license(o){var beats=(o.items||[]).filter(function(i){return i.kind==="beat"&&TERMS[i.tier]});if(!beats.length)return;
-  var ref=(beats[0].ref)||String(o.stripe_session_id||"").slice(-10).toUpperCase();
-  $("dlgB").innerHTML=beats.map(function(it,n){var T=TERMS[it.tier],beat=String(it.name||"").split(" · ")[0];
-    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p><table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz (Iván Montero Fortes, NIF 77796920H)</td></tr><tr><td>Licenciatario</td><td>'+esc(it.buyer||PROF.nombre||SESSION.user.email)+'</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+(it.free?'Gratis (oferta '+((it.free_every||4)-1)+'+1)':euro(it.unit!=null?it.unit:it.price))+'</td></tr></table>'+
-    '<h4>Qué recibes</h4><ul>'+T.got.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué puedes hacer</h4><ul>'+T.may.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué tienes que poner</h4><ul>'+MUST.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué no puedes hacer</h4><ul>'+T.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'}).join("")+
-  '<div style="display:flex;gap:10px;margin-top:22px;flex-wrap:wrap"><button class="btn sm" type="button" onclick="window.print()">Imprimir o guardar en PDF</button></div>';
+/* licencias en PDF: el cliente pone su nombre y su nombre artístico una vez y se genera el documento oficial */
+var LICS={};
+async function loadLics(){var r=await sb.from("licenses").select("code,order_id,item_idx,legal_name,artist_name,status,issued_at").order("issued_at",{ascending:false});LICS={};(r.data||[]).forEach(function(l){LICS[l.order_id+":"+l.item_idx]=l});return r.data||[]}
+function lastNames(){var best=null;Object.keys(LICS).forEach(function(k){var l=LICS[k];if(!best||l.issued_at>best.issued_at)best=l});return best}
+var LERR={legal_name:"Escribe tu nombre y apellidos, solo con letras del alfabeto latino",artist_name:"Escribe tu nombre artístico con letras, números o signos simples (sin enlaces)",accept:"Marca la casilla para confirmar los datos",revision:"Estoy revisando este pedido. Podrás crear la licencia en cuanto termine",pedido:"Este pedido no está disponible",rate:"Demasiados intentos. Prueba de nuevo en unos minutos",login:"Tu sesión ha caducado. Vuelve a entrar"};
+async function licCall(body){var s=(await sb.auth.getSession()).data.session;if(!s)throw{code:"login"};
+  var r=await fetch(SB+"/functions/v1/license",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+s.access_token,apikey:KEY},body:JSON.stringify(body)});
+  if(!r.ok){var j={};try{j=await r.json()}catch(e){}throw{code:r.status===429?"rate":(j.error||"x"),status:r.status}}return r}
+function licFile(l,it){var T=TERMS[it.tier]||{n:""};return("Licencia "+T.n+" - "+String(it.name||"").split(" · ")[0]+" - "+l.artist_name+" - IVO Beatz.pdf").replace(/[\\/:*?"<>|]+/g," ")}
+async function licPdf(l,it,btn,out){var t=btn.innerHTML;btn.disabled=true;btn.innerHTML='<span class="spin"></span> Preparando el PDF…';out.textContent="";out.className="msg";
+  try{var r=await licCall({action:"pdf",code:l.code});var blob=await r.blob();var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=licFile(l,it);document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},60000);out.textContent="Descargada. Guárdala junto a tu canción";out.className="msg ok"}
+  catch(e){out.textContent=e.status===410?"Esta licencia está anulada. Escríbeme a ivobeatzzz@gmail.com si crees que es un error":LERR[e.code]||"No se ha podido generar el PDF. Inténtalo de nuevo en un momento";out.className="msg bad"}
+  btn.disabled=false;btn.innerHTML=t}
+function licBlock(o,it,idx){var l=LICS[o.id+":"+idx],k=o.id+"-"+idx;
+  if(l&&l.status!=="valid")return'<div class="licx"><p class="msg bad" style="margin:0">Esta licencia está anulada</p></div>';
+  if(l)return'<div class="licx"><div class="lich"><b>Licencia oficial en PDF</b><span>A nombre de <strong>'+esc(l.legal_name)+'</strong> ('+esc(l.artist_name)+') · código '+esc(l.code)+'</span></div><div class="bts"><button type="button" class="btn lime sm" data-pdf="'+esc(l.code)+'" data-k="'+k+'">↓ Descargar licencia (PDF)</button><a class="btn ghost sm" href="/licencia?c='+encodeURIComponent(l.code)+'" target="_blank" rel="noopener">Comprobar</a></div><p class="msg" id="lm-'+k+'" role="status"></p></div>';
+  var pv=lastNames()||{},nm=pv.legal_name||"",ar=pv.artist_name||"";
+  return'<div class="licx"><div class="lich"><b>Licencia oficial en PDF</b><span>Pon tus datos tal como quieres que salgan en la licencia. Es el documento que puedes enviar a tu distribuidora (DistroKid, Spotify for Artists, etc.) si te piden comprobar los derechos</span></div>'+
+    '<form class="licf" data-o="'+o.id+'" data-i="'+idx+'" data-k="'+k+'" novalidate><div class="g2" style="margin-top:4px;gap:12px"><label>Nombre y apellidos<input name="legal" maxlength="80" autocomplete="name" value="'+esc(nm)+'" placeholder="Ej.: Ana López García" required></label><label>Nombre artístico<input name="artist" maxlength="60" value="'+esc(ar)+'" placeholder="Con el que publicas" required></label></div>'+
+    '<label class="chk"><input type="checkbox" name="ok" required><span>Confirmo que los datos son correctos. Saldrán en la licencia y después no se pueden cambiar desde aquí</span></label><div class="bts"><button class="btn lime sm" type="submit">Crear y descargar licencia (PDF)</button></div><p class="msg" id="lm-'+k+'" role="status"></p></form></div>'}
+async function license(o){var beats=[];(o.items||[]).forEach(function(i,idx){if(i.kind==="beat"&&TERMS[i.tier])beats.push([i,idx])});if(!beats.length)return;
+  await loadLics();
+  var ref=(beats[0][0].ref)||String(o.stripe_session_id||"").slice(-10).toUpperCase();
+  $("dlgB").innerHTML=beats.map(function(p,n){var it=p[0],T=TERMS[it.tier],beat=String(it.name||"").split(" · ")[0];
+    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p>'+licBlock(o,it,p[1])+'<table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz (Iván Montero Fortes, NIF 77796920H)</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+(it.free?'Gratis (oferta '+((it.free_every||4)-1)+'+1)':euro(it.unit!=null?it.unit:it.price))+'</td></tr></table>'+
+    '<h4>Qué recibes</h4><ul>'+T.got.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué puedes hacer</h4><ul>'+T.may.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué tienes que poner</h4><ul>'+MUST.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué no puedes hacer</h4><ul>'+T.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'}).join("");
+  var find=function(k){var q=k.split("-"),idx=Number(q.pop());return[(o.items||[])[idx],idx]};
+  $("dlgB").onclick=function(e){var b=e.target.closest("[data-pdf]");if(!b)return;var k=b.dataset.k,p=find(k),l=LICS[o.id+":"+p[1]];if(l)licPdf(l,p[0],b,$("lm-"+k))};
+  $("dlgB").querySelectorAll(".licf").forEach(function(f){f.addEventListener("submit",async function(e){e.preventDefault();var k=f.dataset.k,m=$("lm-"+k),idx=Number(f.dataset.i),it=o.items[idx],btn=f.querySelector("button[type=submit]");
+    var lg=f.legal.value.replace(/\s+/g," ").trim(),ar=f.artist.value.replace(/\s+/g," ").trim();
+    if(lg.length<4||lg.indexOf(" ")<0){m.textContent="Escribe tu nombre y al menos un apellido";m.className="msg bad";f.legal.focus();return}
+    if(!ar){m.textContent="Escribe tu nombre artístico";m.className="msg bad";f.artist.focus();return}
+    if(!f.ok.checked){m.textContent=LERR.accept;m.className="msg bad";return}
+    btn.disabled=true;m.textContent="Creando tu licencia…";m.className="msg";
+    try{var r=await licCall({action:"issue",order_id:o.id,idx:idx,legal_name:lg,artist_name:ar,accept:true});var j=await r.json();
+      await loadLics();var l=LICS[o.id+":"+idx];if(!l)throw{code:"x"};var wrapEl=f.closest(".licx");wrapEl.outerHTML=licBlock(o,it,idx);
+      $("dlgB").querySelectorAll(".licf").forEach(function(g){if(!g.legal.value.trim())g.legal.value=l.legal_name;if(!g.artist.value.trim())g.artist.value=l.artist_name});
+      var nb=$("dlgB").querySelector('[data-k="'+k+'"][data-pdf]');if(nb)licPdf(l,it,nb,$("lm-"+k));if(j.existed){var mm=$("lm-"+k);if(mm){mm.textContent="Esta licencia ya estaba creada a nombre de "+l.legal_name;mm.className="msg"}}}
+    catch(x){btn.disabled=false;m.textContent=LERR[x.code]||"No se ha podido crear la licencia. Inténtalo de nuevo";m.className="msg bad"}})});
   $("dlg").showModal()}
 $("dlg").addEventListener("click",function(e){if(e.target===$("dlg")||e.target.closest(".x"))$("dlg").close()});
 
@@ -273,7 +307,7 @@ async function boot(){
   $("dName").value=PROF.nombre||"";$("dMail").value=s.user.email;window.__userEmail=s.user.email;$("hAdmin").hidden=PROF.role!=="admin";
   $("delAcc").href="mailto:ivobeatzzz@gmail.com?subject="+encodeURIComponent("Eliminar mi cuenta")+"&body="+encodeURIComponent("Hola, quiero eliminar mi cuenta de IVO Beatz asociada a "+s.user.email);
   $("vban").hidden=!!s.user.email_confirmed_at;
-  view("app");loadOrders();loadReward()}
+  view("app");loadOrders().then(function(){if(/licencias/.test(location.hash)){var o=ORDERS.filter(function(x){return(x.items||[]).some(function(i){return i.kind==="beat"})})[0];if(o)license(o)}});loadReward()}
 /* regalo de primera compra: −50 % en una licencia Básica durante 24 horas */
 var rwTimer=null;
 async function loadReward(){var box=$("rwc");if(!box)return;clearInterval(rwTimer);box.hidden=true;
