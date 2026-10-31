@@ -27,7 +27,7 @@ async function presetPhoto(slug) {
 module.exports = async function handler(req, res) {
   const type = req.query.t === "p" ? "p" : "b";
   const slug = String(req.query.slug || "").toLowerCase().replace(/[^a-z0-9-]/g, "").slice(0, 80);
-  let title = "IVO Beatz · Beats, mezcla y máster";
+  let title = "IVO Beatz";
   let desc = "Beats con licencia, mezcla y máster, plantillas vocales y herramientas.";
   let img = `${SITE}/og-image.jpg`, imgW = 1200, imgH = 630, ogType = "website";
   let target = `${SITE}/`;
