@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261031181747">
+<meta name="ivo-version" content="20261031184155">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
@@ -271,7 +271,7 @@ async function license(o){var beats=[];(o.items||[]).forEach(function(i,idx){if(
   await loadLics();
   var ref=(beats[0][0].ref)||String(o.stripe_session_id||"").slice(-10).toUpperCase();
   $("dlgB").innerHTML=beats.map(function(p,n){var it=p[0],T=TERMS[it.tier],beat=String(it.name||"").split(" · ")[0];
-    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p>'+licBlock(o,it,p[1])+'<table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz (Iván Montero Fortes, NIF 77796920H)</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+(it.free?'Gratis (oferta '+((it.free_every||4)-1)+'+1)':euro(it.unit!=null?it.unit:it.price))+'</td></tr></table>'+
+    return(n?'<hr style="border:0;border-top:1px solid var(--line);margin:28px 0">':'')+'<h3>Licencia '+T.n+'</h3><p class="sub" style="margin:0 0 6px">'+esc(beat)+'</p>'+licBlock(o,it,p[1])+'<table><tr><td>Beat</td><td>'+esc(beat)+'</td></tr><tr><td>Licencia</td><td>'+T.n+' (no exclusiva)</td></tr><tr><td>Licenciante</td><td>IVO Beatz</td></tr><tr><td>Fecha</td><td>'+fmtDate(o.created_at)+'</td></tr><tr><td>Pedido</td><td>'+esc(ref)+'</td></tr><tr><td>Importe</td><td>'+(it.free?'Gratis (oferta '+((it.free_every||4)-1)+'+1)':euro(it.unit!=null?it.unit:it.price))+'</td></tr></table>'+
     '<h4>Qué recibes</h4><ul>'+T.got.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué puedes hacer</h4><ul>'+T.may.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué tienes que poner</h4><ul>'+MUST.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul><h4>Qué no puedes hacer</h4><ul>'+T.no.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'}).join("");
   var find=function(k){var q=k.split("-"),idx=Number(q.pop());return[(o.items||[])[idx],idx]};
   $("dlgB").onclick=function(e){var b=e.target.closest("[data-pdf]");if(!b)return;var k=b.dataset.k,p=find(k),l=LICS[o.id+":"+p[1]];if(l)licPdf(l,p[0],b,$("lm-"+k))};

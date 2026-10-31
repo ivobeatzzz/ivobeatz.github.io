@@ -88,7 +88,7 @@ function show(j,status){
     '<div class="st"><i>×</i><div><b>Esta licencia ya no está en vigor</b><span>'+(j.reason==="revoked"?"Ha sido anulada. This license has been revoked":"La compra se ha anulado o devuelto. The purchase was cancelled or refunded")+'</span></div></div>';
   r.innerHTML='<div class="card '+(ok?"ok":"no")+'">'+head+'<dl>'+
     row("Código","Code",esc(j.code))+row("Beat","Beat","«"+esc(j.beat)+"»")+row("Licencia","License",esc(j.tier)+" (no exclusiva) <small style=\"font-weight:400;color:var(--mute)\">"+esc(j.tier_en)+", non-exclusive</small>")+
-    row("Artista","Artist",esc(j.artist))+row("Titular","Licensee",esc(j.holder))+row("Productor","Producer","IVO Beatz (Iván Montero Fortes)")+
+    row("Artista","Artist",esc(j.artist))+row("Titular","Licensee",esc(j.holder))+row("Productor","Producer","IVO Beatz")+
     row("Fecha de compra","Purchase date",esc(j.purchased_es)+' <small style="font-weight:400;color:var(--mute)">'+esc(fmtEn(j.purchased))+'</small>')+row("Emitida","Issued",esc(j.issued_es)+' <small style="font-weight:400;color:var(--mute)">'+esc(fmtEn(j.issued))+'</small>')+
     '</dl></div>'}
 function check(code){code=String(code||"").trim();if(!code)return;b.disabled=true;r.innerHTML='<p class="empty">Comprobando…</p>';
