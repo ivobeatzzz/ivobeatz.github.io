@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261030214846" data-auto="1">
+<meta name="ivo-version" content="20261031000745" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IVO Beatz · Beats, mezcla y máster</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
@@ -326,6 +326,12 @@ html:has(#rwbar:not([hidden])){scroll-padding-top:150px}
 #rwd .rw-card{margin:0;padding:36px 30px 30px;border-radius:0}
 #rwd .rw-h{font-size:36px;margin:6px 0 12px}
 .c-rw{color:var(--lime);font-weight:700}
+html.rw-on #list .beat .price::after{content:var(--rw-price);display:block;font-size:11.5px;font-weight:700;color:var(--lime);margin-top:2px;white-space:nowrap}
+@keyframes rwflash{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--lime2) 70%,transparent)}100%{box-shadow:0 0 0 18px transparent}}
+.rw-flash{animation:rwflash 1.2s ease-out 2;border-radius:14px}
+.toast.rw-t{border-radius:16px;width:max-content;max-width:calc(100% - 32px);text-align:center}
+@media (max-width:720px){.toast.rw-t{bottom:96px}}
+@media (prefers-reduced-motion:reduce){.rw-flash{animation:none}}
 .bs-old{color:var(--mute);font-weight:400;font-size:.8em;margin-right:4px}
 .bs-rw{display:block;font-size:12px;font-weight:700;color:var(--lime);margin-top:2px}
 @media (max-width:720px){.rwbar{font-size:13px}header.nav .rwbar .wrap{gap:8px;min-height:40px}.rwbar .rw-l{display:none}.rwbar .rw-s{display:inline}.rw-sep{display:none}.rw-txt{gap:0 8px}.rw-go{padding:7px 12px}}
@@ -1832,7 +1838,9 @@ function rwFmt(ms){var t=Math.floor(ms/1000),h=Math.floor(t/3600),m=Math.floor(t
 function rwTick(){var l=rwLeft();document.querySelectorAll("[data-rw-t]").forEach(function(e){e.textContent=rwFmt(l)});
   if(!l){var had=!!RW;RW=null;clearInterval(rwT);rwT=null;rwBar();if(had){document.querySelectorAll(".rw-card").forEach(function(c){c.innerHTML='<span class="rw-h">El regalo ha caducado</span><p>Han pasado las 24 horas</p>'});document.dispatchEvent(new Event("ivo:reward"))}}}
 window.__rewardTick=rwTick;
-function rwBar(){var b=$("rwbar");if(!b)return;var hide=false;try{hide=!!RW&&sessionStorage.getItem("ivo_rw_x")===String(RW.exp)}catch(e){}b.hidden=!(rwLeft()>0)||hide}
+function rwMark(){var on=rwLeft()>0,h=document.documentElement;h.classList.toggle("rw-on",on);
+  if(on){var bp=19;/* precio de la licencia Básica, el mismo que cobra el servidor */h.style.setProperty("--rw-price",'"'+(Math.round(bp*(100-RW.pct))/100).toFixed(2).replace(".",",").replace(",00","")+' € con tu regalo"')}}
+function rwBar(){rwMark();var b=$("rwbar");if(!b)return;var hide=false;try{hide=!!RW&&sessionStorage.getItem("ivo_rw_x")===String(RW.exp)}catch(e){}b.hidden=!(rwLeft()>0)||hide}
 /* el último pago con el regalo tiene que empezar 31 minutos antes de las 24 horas (así termina dentro de ellas): la cuenta atrás llega a cero en ese momento */
 function rwSet(row){var exp=row&&!row.used_at&&row.expires_at?Date.parse(row.expires_at)-31*60e3:0;
   RW=exp>Date.now()?{pct:Number(row.pct)||50,exp:exp}:null;clearInterval(rwT);rwT=null;
@@ -1845,7 +1853,13 @@ function rwMarkSeen(){try{if(RW)localStorage.setItem("ivo_rw_seen",String(RW.exp
 function rwCard(){return'<div class="rw-card" role="status"><span class="rw-k">Un regalo por tu primera compra</span><span class="rw-h">−'+RW.pct+' % en tu próximo beat</span><p>Solo con licencia Básica. El descuento se aplica solo en el carrito mientras tengas la sesión iniciada</p><p class="rw-c">Caduca en <b data-rw-t>'+rwFmt(rwLeft())+'</b></p><button type="button" class="btn sm" data-rw-go>Elegir beat</button></div>'}
 function rwPopup(){if(!RW||rwSeen())return;var w=$("rwd");if(!w||!w.showModal||document.querySelector("dialog[open]"))return;
   $("rwdb").innerHTML=rwCard();rwMarkSeen();w.showModal()}
-document.addEventListener("click",function(e){var g=e.target.closest("[data-rw-go]");if(g){document.querySelectorAll("dialog[open]").forEach(function(x){x.close()});var t=document.getElementById("beats");if(t)t.scrollIntoView({behavior:"smooth"});return}
+function rwGo(){document.querySelectorAll("dialog[open]").forEach(function(x){x.close()});var mb=document.querySelector(".menu[aria-expanded=true]");if(mb)mb.click();
+  var t=document.getElementById("list")||document.getElementById("beats");if(!t)return;
+  var hd=document.querySelector("header.nav"),off=(hd?hd.getBoundingClientRect().height:80)+16;
+  try{window.scrollTo({top:Math.max(0,t.getBoundingClientRect().top+window.pageYOffset-off),behavior:"smooth"})}catch(x){window.scrollTo(0,t.getBoundingClientRect().top+window.pageYOffset-off)}
+  t.classList.remove("rw-flash");void t.offsetWidth;t.classList.add("rw-flash");
+  var ts=document.getElementById("toast");if(ts&&RW){ts.textContent="Elige un beat con licencia Básica: te sale a mitad de precio";ts.classList.add("on","rw-t");clearTimeout(rwGo.t);rwGo.t=setTimeout(function(){ts.classList.remove("on","rw-t")},4500)}}
+document.addEventListener("click",function(e){var g=e.target.closest("[data-rw-go]");if(g){e.preventDefault();rwGo();return}
   if(e.target.closest("#rwx")){try{if(RW)sessionStorage.setItem("ivo_rw_x",String(RW.exp))}catch(x){}rwBar()}});
 (function(){var w=$("rwd");if(w)w.addEventListener("click",function(e){var r=w.querySelector(".lbox").getBoundingClientRect();if(e.target.closest(".lx")||e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)w.close()})})();
 document.addEventListener("visibilitychange",function(){if(!document.hidden&&RW)rwTick()});
