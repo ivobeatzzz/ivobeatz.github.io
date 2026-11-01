@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261101110259">
+<meta name="ivo-version" content="20261101111035">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -642,8 +642,9 @@ async function protectPreview(input,onp){await tagSettings();await loadLame();
   var g=oc.createGain();g.gain.value=1;g.connect(oc.destination);
   var a=oc.createBufferSource();a.buffer=src;a.connect(g);a.start(0);var n=0;
   if(tag){var tg=oc.createGain();tg.gain.value=0.9;tg.connect(oc.destination);var D=0.6,step=Math.max(TAG.every,tag.duration+1);
+    // el tag suena en el segundo 30, 60, 90… (si el audio es más corto, una vez a la mitad)
     // mientras suena el tag, el beat baja un poco (unos 4 dB) para que la voz se entienda sin saturar
-    for(var t=Math.min(1.5,src.duration/4);t<src.duration-0.5;t+=step){var b=oc.createBufferSource();b.buffer=tag;b.connect(tg);b.start(t);
+    for(var t=src.duration>TAG.every+1?TAG.every:src.duration/2;t<src.duration-0.5;t+=step){var b=oc.createBufferSource();b.buffer=tag;b.connect(tg);b.start(t);
       var e=Math.min(src.duration,t+tag.duration);g.gain.setValueAtTime(1,Math.max(0,t-0.12));g.gain.linearRampToValueAtTime(D,t);g.gain.setValueAtTime(D,e);g.gain.linearRampToValueAtTime(1,e+0.25);n++}}
   var out=await oc.startRendering(),c0=out.getChannelData(0),c1=out.getChannelData(1),pk=0;
   for(var j=0;j<c0.length;j++){var v=Math.abs(c0[j]);if(v>pk)pk=v;v=Math.abs(c1[j]);if(v>pk)pk=v}
