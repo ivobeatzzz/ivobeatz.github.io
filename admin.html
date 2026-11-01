@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261101105236">
+<meta name="ivo-version" content="20261101110259">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Panel · IVO Beatz</title>
@@ -251,8 +251,8 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
       <div class="g2">
         <div class="card"><h2>Ofertas de beats</h2><p class="hint" style="margin-bottom:14px">Se aplican solas en el carrito. El beat que sale gratis es siempre el más barato. Cuando hay beat gratis, no se suma el descuento por pack</p>
           <form id="fPack" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><label class="ck" style="display:flex;gap:10px;align-items:flex-start"><input type="checkbox" id="pkGift" style="width:auto;margin-top:3px"><span><b>Regalo de primera compra</b><br><span class="hint" style="margin:0">−50 % en una licencia Básica durante 24 horas. Uno por persona: se comprueban cuenta, email, tarjeta, navegador y conexión</span></span></label><label>Beat gratis<select id="pkFree"><option value="0">Desactivado</option><option value="2">Compra 1 y llévate otro gratis</option><option value="3">Compra 2 y el 3.º gratis</option><option value="4">Compra 3 y el 4.º gratis</option><option value="5">Compra 4 y el 5.º gratis</option><option value="6">Compra 5 y el 6.º gratis</option></select></label><p class="hint" style="margin:-4px 0 0">Se repite: con la oferta de 3+1, quien compra 8 beats se lleva 2 gratis</p><p class="hint" style="margin:6px 0 0"><b>Descuento por pack</b> cuando no llega a la oferta. Pon 0 para desactivarlo</p><div class="g2"><label>Con 2 beats (%)<input id="pk2" type="number" min="0" max="90"></label><label>Con 3 o más (%)<input id="pk3" type="number" min="0" max="90"></label></div><button type="submit" style="justify-self:start">Guardar</button><p class="msg" id="pkMsg"></p></form></div>
-        <div class="card"><h2>Protección de las previsualizaciones</h2><p class="hint" style="margin-bottom:12px">Lo que suena en la web se puede grabar o descargar. Por eso, al subir cada previsualización, el panel la convierte a MP3 de 128 kbps y le pone tu tag de voz repetido. Así no le sirve a nadie como beat gratis: el archivo bueno solo llega al comprar</p>
-          <form id="fTag" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><label>Tu tag de voz (MP3 o WAV, unos segundos)<input type="file" id="tgFile" accept="audio/*"></label><p class="hint" id="tgNow" style="margin:-4px 0 0"></p><label>Repetir el tag<select id="tgEvery"><option value="15">Cada 15 segundos</option><option value="20">Cada 20 segundos</option><option value="25">Cada 25 segundos</option><option value="30">Cada 30 segundos</option><option value="45">Cada 45 segundos</option></select></label><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="submit">Guardar</button><button type="button" class="ghost" id="tgAll">Poner el tag a las que ya están subidas</button></div><p class="msg" id="tgMsg"></p></form></div>
+        <div class="card"><h2>Protección de las previsualizaciones</h2><p class="hint" style="margin-bottom:12px">Lo que suena en la web se puede grabar o descargar. Por eso, al subir cada previsualización, el panel le pone tu tag de voz repetido (en MP3 de buena calidad). Así no le sirve a nadie como beat gratis: el archivo bueno solo llega al comprar. El audio original se guarda en privado, así que si cambias el tag puedes volver a crearlas todas</p>
+          <form id="fTag" style="display:grid;gap:12px" method="post" action="https://www.ivobeatz.com/admin.html"><label>Tu tag de voz (MP3 o WAV, unos segundos)<input type="file" id="tgFile" accept="audio/*"></label><p class="hint" id="tgNow" style="margin:-4px 0 0"></p><label>Repetir el tag<select id="tgEvery"><option value="15">Cada 15 segundos</option><option value="20">Cada 20 segundos</option><option value="25">Cada 25 segundos</option><option value="30">Cada 30 segundos</option><option value="45">Cada 45 segundos</option></select></label><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="submit">Guardar</button><button type="button" class="ghost" id="tgAll">Volver a crearlas con el tag actual</button></div><p class="msg" id="tgMsg"></p></form></div>
         <div class="card"><h2>Cupones</h2><p class="hint">Crea los códigos en Stripe: Catálogo de productos → Cupones → Nuevo, y después «Crear código promocional». El cliente lo escribe en la página de pago</p><p style="margin-top:14px"><a class="btn ghost sm" href="https://dashboard.stripe.com/coupons" target="_blank" rel="noopener">Abrir cupones en Stripe ↗</a></p></div>
         <div class="card"><h2>Medición</h2><p class="hint" style="margin-bottom:12px">Las visitas se cuentan de forma anónima, sin cookies. Tus propias visitas desde este navegador no se cuentan</p><label style="display:flex;gap:10px;align-items:center;font-size:14px;color:var(--ink);font-weight:500"><input type="checkbox" id="noTrack"> No contar mis visitas en este navegador</label></div>
         <div class="card"><h2>Verificación en dos pasos</h2><p id="mfaInfo" style="margin:0 0 10px"></p><p class="hint">Cada vez que abras el navegador, el panel te pedirá tu contraseña y el código de tu app de autenticación. Si pierdes el móvil, escríbeme y la restablezco desde Supabase</p></div>
@@ -268,7 +268,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
   <div class="dw-h"><h3 id="dBeatT">Nuevo beat</h3><button type="button" class="ghost icon" data-close aria-label="Cerrar">×</button></div>
   <div class="dw-b">
     <div class="sec">Previsualización</div>
-    <label class="drop" id="dropPv"><span class="di">♪</span><span><b id="pvName">Arrastra aquí el MP3 de previsualización</b><small id="pvSub">El beat completo o un trozo. Al guardar, la paso a 128 kbps con tu tag repetido. Detecto el BPM y la tonalidad automáticamente</small></span><input type="file" id="bPrev" accept="audio/*"></label>
+    <label class="drop" id="dropPv"><span class="di">♪</span><span><b id="pvName">Arrastra aquí el MP3 de previsualización</b><small id="pvSub">El beat completo o un trozo. Al guardar, le pongo tu tag repetido. Detecto el BPM y la tonalidad automáticamente</small></span><input type="file" id="bPrev" accept="audio/*"></label>
     <div class="detect" id="detect" hidden></div>
     <div class="sec">Datos del beat</div>
     <label>Nombre<input id="bName" required maxlength="60" placeholder="Por ejemplo: Noche Verde"></label>
@@ -492,7 +492,7 @@ $("beatTbl").addEventListener("click",async function(e){var btn=e.target.closest
   if(btn.dataset.a==="edit")return openBeat(b);
   if(btn.dataset.a==="vis"){await sb.from("beats").update({active:!b.active}).eq("id",b.id);toast(b.active?"Beat oculto":"Beat visible");return loadBeats()}
   if(btn.dataset.a==="del"){if(!confirm("¿Borrar «"+b.name+"» y todos sus archivos? No se puede deshacer"))return;
-    if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);if(b.cover_path)await sb.storage.from("fotos").remove([b.cover_path]);
+    if(b.preview_path)await sb.storage.from("previews").remove([b.preview_path]);await sb.storage.from("archivos").remove([ORIG(b.id)]);if(b.cover_path)await sb.storage.from("fotos").remove([b.cover_path]);
     var r2p=(b.beat_files||[]).filter(function(f){return f.file_path}).map(function(f){return f.file_path});if(r2p.length)await delR2(r2p);
     var d=await sb.from("beats").delete().eq("id",b.id);if(d.error)alert("No se pudo borrar");else toast("Beat borrado");loadBeats()}});
 var BDEF=[{k:"mp3",i:"MP3",l:"MP3",h:"Licencias Básica y Estándar",a:".mp3,audio/mpeg"},{k:"wav",i:"WAV",l:"WAV",h:"Licencias Estándar, Premium e Ilimitada",a:".wav,audio/wav,audio/x-wav"},{k:"stems",i:"ZIP",l:"Stems",h:"ZIP · Licencias Premium e Ilimitada",a:".zip,application/zip"}];
@@ -525,7 +525,7 @@ $("fBeat").addEventListener("submit",async function(e){e.preventDefault();var ms
     var row={name:$("bName").value.trim(),bpm:parseInt($("bBpm").value,10),key:$("bKey").value,genre:genre,price_from:parseInt($("bPrice").value,10),sort:parseInt($("bSort").value,10)||0,featured:$("bFeat").checked,tags:$("bTags").value.split(",").map(function(t){return t.trim().replace(/^#/,"").toLowerCase()}).filter(Boolean).slice(0,8)};
     var id;if(editB){var u=await sb.from("beats").update(row).eq("id",editB.id);if(u.error)throw u.error;id=editB.id}else{var i=await sb.from("beats").insert(row).select("id").single();if(i.error)throw i.error;id=i.data.id}
     var cv=$("bCover").files[0];if(cv){say(msg,"Subiendo la portada…");bar("bBar",10);var cp="beats/"+id+"/"+Date.now()+"."+ext(cv);await upload("fotos",cp,cv);var uc=await sb.from("beats").update({cover_path:cp}).eq("id",id);if(uc.error)throw uc.error;if(editB&&editB.cover_path)await sb.storage.from("fotos").remove([editB.cover_path])}
-    var pv=$("bPrev").files[0];if(pv){say(msg,"Protegiendo la previsualización (128 kbps con tu tag)…");bar("bBar",14);var pr=await protectPreview(pv,function(q){bar("bBar",14+Math.round(q*4))});say(msg,"Subiendo la previsualización…");bar("bBar",18);var p=id+"/"+Date.now()+(pr.tags?"-tag.mp3":"-protegida.mp3");await upload("previews",p,pr.blob);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
+    var pv=$("bPrev").files[0];if(pv){say(msg,"Guardando el original en privado…");bar("bBar",12);await upload("archivos",ORIG(id),pv);say(msg,"Poniendo tu tag a la previsualización…");bar("bBar",14);var pr=await protectPreview(pv,function(q){bar("bBar",14+Math.round(q*4))});say(msg,"Subiendo la previsualización…");bar("bBar",18);var p=id+"/"+Date.now()+(pr.tags?"-tag.mp3":"-protegida.mp3");await upload("previews",p,pr.blob);var up=await sb.from("beats").update({preview_path:p}).eq("id",id);if(up.error)throw up.error;if(editB&&editB.preview_path)await sb.storage.from("previews").remove([editB.preview_path])}
     await saveFiles("beat_files","beat_id",id,$("bFiles"),editB&&editB.beat_files,id+"/","bBar",msg,25);
     bar("bBar",100);toast(editB?"Beat actualizado":"Beat publicado");$("dBeat").close();loadBeats()
   }catch(err){say(msg,err.message||"No se pudo guardar","bad");bar("bBar",null)}
@@ -629,19 +629,25 @@ $("qCli").addEventListener("input",renderCli);
 async function loadAjustes(){mfaStatus();var s=await sb.from("shop_settings").select("pack2_pct,pack3_pct,free_every,gift_enabled,tag_path,tag_every").eq("id",1).maybeSingle();if(s.data){$("pk2").value=s.data.pack2_pct;$("pk3").value=s.data.pack3_pct;$("pkFree").value=String(s.data.free_every||0);$("pkGift").checked=s.data.gift_enabled!==false;TAG.path=s.data.tag_path||null;TAG.every=s.data.tag_every||25;TAG.buf=null;$("tgEvery").value=String(TAG.every);tagInfo()}}
 /* ---------- protección de las previsualizaciones: MP3 de 128 kbps con el tag de voz repetido ---------- */
 var TAG={path:null,every:25,buf:null,loaded:false};
+function ORIG(id){return"originales/"+id+"/preview"}
 function tagInfo(){var e=$("tgNow");if(e)e.textContent=TAG.path?"Tag guardado. Se repetirá cada "+TAG.every+" segundos en las previsualizaciones nuevas":"Aún no has subido tu tag. Sin él, las previsualizaciones solo bajan de calidad a 128 kbps"}
 async function tagSettings(){if(TAG.loaded)return;var s=await sb.from("shop_settings").select("tag_path,tag_every").eq("id",1).maybeSingle();if(s.data){TAG.path=s.data.tag_path||null;TAG.every=s.data.tag_every||25}TAG.loaded=true}
 function loadLame(){if(window.lamejs)return Promise.resolve();return new Promise(function(res,rej){var x=document.createElement("script");x.src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js";x.onload=function(){res()};x.onerror=function(){rej(new Error("No se ha podido cargar el codificador MP3. Comprueba tu conexión"))};document.head.appendChild(x)})}
-function i16(f){var o=new Int16Array(f.length);for(var i=0;i<f.length;i++){var v=Math.max(-1,Math.min(1,f[i]));o[i]=v<0?v*32768:v*32767}return o}
+function i16(f,k){k=k||1;var o=new Int16Array(f.length);for(var i=0;i<f.length;i++){var v=Math.max(-1,Math.min(1,f[i]*k));o[i]=v<0?v*32768:v*32767}return o}
 async function tagBuffer(ac){if(!TAG.path)return null;if(TAG.buf)return TAG.buf;var d=await sb.storage.from("archivos").download(TAG.path);if(d.error||!d.data)return null;TAG.buf=await ac.decodeAudioData(await d.data.arrayBuffer());return TAG.buf}
 async function protectPreview(input,onp){await tagSettings();await loadLame();
   var AC=window.AudioContext||window.webkitAudioContext,ac=new AC(),src=await ac.decodeAudioData(await input.arrayBuffer()),tag=null;
   try{tag=await tagBuffer(ac)}catch(e){tag=null}try{ac.close()}catch(e){}
   var sr=44100,len=Math.max(1,Math.ceil(src.duration*sr)),oc=new OfflineAudioContext(2,len,sr);
-  var lim=oc.createDynamicsCompressor();lim.threshold.value=-1.5;lim.knee.value=0;lim.ratio.value=20;lim.attack.value=0.002;lim.release.value=0.12;lim.connect(oc.destination);
-  var a=oc.createBufferSource();a.buffer=src;a.connect(lim);a.start(0);var n=0;
-  if(tag){for(var t=Math.min(1.5,src.duration/4);t<src.duration-0.5;t+=TAG.every){var b=oc.createBufferSource();b.buffer=tag;b.connect(lim);b.start(t);n++}}
-  var out=await oc.startRendering(),L=i16(out.getChannelData(0)),R=i16(out.getChannelData(1)),enc=new lamejs.Mp3Encoder(2,sr,128),parts=[];
+  var g=oc.createGain();g.gain.value=1;g.connect(oc.destination);
+  var a=oc.createBufferSource();a.buffer=src;a.connect(g);a.start(0);var n=0;
+  if(tag){var tg=oc.createGain();tg.gain.value=0.9;tg.connect(oc.destination);var D=0.6,step=Math.max(TAG.every,tag.duration+1);
+    // mientras suena el tag, el beat baja un poco (unos 4 dB) para que la voz se entienda sin saturar
+    for(var t=Math.min(1.5,src.duration/4);t<src.duration-0.5;t+=step){var b=oc.createBufferSource();b.buffer=tag;b.connect(tg);b.start(t);
+      var e=Math.min(src.duration,t+tag.duration);g.gain.setValueAtTime(1,Math.max(0,t-0.12));g.gain.linearRampToValueAtTime(D,t);g.gain.setValueAtTime(D,e);g.gain.linearRampToValueAtTime(1,e+0.25);n++}}
+  var out=await oc.startRendering(),c0=out.getChannelData(0),c1=out.getChannelData(1),pk=0;
+  for(var j=0;j<c0.length;j++){var v=Math.abs(c0[j]);if(v>pk)pk=v;v=Math.abs(c1[j]);if(v>pk)pk=v}
+  var k=pk>0.97?0.97/pk:1,L=i16(c0,k),R=i16(c1,k),enc=new lamejs.Mp3Encoder(2,sr,192),parts=[];
   for(var i=0;i<L.length;i+=1152){var m=enc.encodeBuffer(L.subarray(i,i+1152),R.subarray(i,i+1152));if(m.length)parts.push(new Uint8Array(m));if(i%(1152*300)===0){if(onp)onp(i/L.length);await new Promise(function(r){setTimeout(r,0)})}}
   var f=enc.flush();if(f.length)parts.push(new Uint8Array(f));
   var blob=new Blob(parts,{type:"audio/mpeg"});try{blob.name="previsualizacion-protegida.mp3"}catch(e){}return{blob:blob,tags:n}}
@@ -652,21 +658,24 @@ $("fTag").addEventListener("submit",async function(e){e.preventDefault();var m=$
       var pth="ajustes/tag-"+Date.now()+"."+ext(f);await upload("archivos",pth,f);row.tag_path=pth}
     var r=await sb.from("shop_settings").update(row).eq("id",1);if(r.error)throw r.error;
     if(row.tag_path&&TAG.path&&TAG.path!==row.tag_path)await sb.storage.from("archivos").remove([TAG.path]);
-    if(row.tag_path)TAG.path=row.tag_path;TAG.every=row.tag_every;TAG.buf=null;TAG.loaded=true;$("tgFile").value="";tagInfo();say(m,TAG.path?"Guardado. Ahora pulsa «Poner el tag a las que ya están subidas»":"Guardado","ok")}
+    if(row.tag_path)TAG.path=row.tag_path;TAG.every=row.tag_every;TAG.buf=null;TAG.loaded=true;$("tgFile").value="";tagInfo();say(m,TAG.path?"Guardado. Ahora pulsa «Volver a crearlas con el tag actual»":"Guardado","ok")}
   catch(x){say(m,x.message||"No se pudo guardar","bad")}});
 $("tgAll").addEventListener("click",async function(){var m=$("tgMsg"),btn=this;if(!BEATS.length)await loadBeats();
-  await tagSettings();
-  // con tag: se protege todo lo que aún no lo lleva (las que solo se bajaron a 128 kbps también). Sin tag: solo se baja la calidad de las originales
-  var list=BEATS.filter(function(b){return b.preview_path&&!/-tag\.mp3$/.test(b.preview_path)&&(TAG.path||!/-protegida\.mp3$/.test(b.preview_path))});
-  if(!list.length){say(m,TAG.path?"Todas las previsualizaciones ya llevan tu tag":"Todas están a 128 kbps. Sube tu tag arriba para ponérselo","ok");return}
-  if(!TAG.path&&!confirm("Aún no has subido tu tag de voz: solo se bajará la calidad a 128 kbps. ¿Seguir igualmente?"))return;
-  btn.disabled=true;var done=0,bad=0;
-  for(var k=0;k<list.length;k++){var b=list[k];try{say(m,"Protegiendo «"+b.name+"» ("+(k+1)+" de "+list.length+")…");
-      var res=await fetch(SB+"/storage/v1/object/public/previews/"+b.preview_path.split("/").map(encodeURIComponent).join("/"));if(!res.ok)throw new Error("no se pudo leer");
-      var pr=await protectPreview(await res.blob());if(TAG.path&&!pr.tags)throw new Error("sin tag");var np=b.id+"/"+Date.now()+(pr.tags?"-tag.mp3":"-protegida.mp3");await upload("previews",np,pr.blob);
+  await tagSettings();if(!TAG.path){say(m,"Primero sube tu tag de voz y pulsa Guardar","bad");return}
+  var list=BEATS.filter(function(b){return b.preview_path});if(!list.length){say(m,"Aún no hay previsualizaciones","ok");return}
+  if(!confirm("Se van a volver a crear "+list.length+" previsualizaciones con el tag actual. ¿Seguir?"))return;
+  btn.disabled=true;var done=0,bad=0,need=[];
+  for(var k=0;k<list.length;k++){var b=list[k];try{say(m,"Creando «"+b.name+"» ("+(k+1)+" de "+list.length+")…");
+      var o=await sb.storage.from("archivos").download(ORIG(b.id)),srcB=null;
+      if(!o.error&&o.data)srcB=o.data;
+      else if(!/-tag\.mp3$/.test(b.preview_path)){var res=await fetch(SB+"/storage/v1/object/public/previews/"+b.preview_path.split("/").map(encodeURIComponent).join("/"));if(!res.ok)throw new Error("no se pudo leer");srcB=await res.blob();await upload("archivos",ORIG(b.id),srcB)}
+      else{need.push(b.name);continue}
+      var pr=await protectPreview(srcB);if(!pr.tags)throw new Error("sin tag");var np=b.id+"/"+Date.now()+"-tag.mp3";await upload("previews",np,pr.blob);
       var u=await sb.from("beats").update({preview_path:np}).eq("id",b.id);if(u.error)throw u.error;await sb.storage.from("previews").remove([b.preview_path]);done++}
     catch(x){bad++}}
-  btn.disabled=false;say(m,done+" protegidas"+(bad?" · "+bad+" no se pudieron proteger: vuelve a subirlas desde el beat":""),bad?"bad":"ok");loadBeats()});
+  btn.disabled=false;
+  var t=done+" creadas con el tag actual";if(need.length)t+=" · Vuelve a subir la previsualización de: "+need.join(", ")+" (abre el beat, arrastra el audio original y guarda). Desde entonces el original queda guardado";if(bad)t+=" · "+bad+" fallaron";
+  say(m,t,need.length||bad?"bad":"ok");loadBeats()});
 $("fPack").addEventListener("submit",async function(e){e.preventDefault();var a=parseInt($("pk2").value,10)||0,b=parseInt($("pk3").value,10)||0;
   var f=parseInt($("pkFree").value,10)||0;if(f&&(f<2||f>10))f=0;   var r=await sb.from("shop_settings").update({pack2_pct:Math.max(0,Math.min(90,a)),pack3_pct:Math.max(0,Math.min(90,b)),free_every:f,gift_enabled:$("pkGift").checked,updated_at:new Date().toISOString()}).eq("id",1);say($("pkMsg"),r.error?"No se pudo guardar":"Guardado. El carrito ya usa estas ofertas",r.error?"bad":"ok")});
 $("noTrack").addEventListener("change",function(){try{localStorage.setItem("ivo_notrack",this.checked?"1":"0")}catch(e){}toast(this.checked?"Tus visitas no se contarán":"Tus visitas se contarán")});
