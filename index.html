@@ -2,12 +2,17 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261101111035" data-auto="1">
+<meta name="ivo-version" content="20261101120655" data-auto="1">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<script src="/i18n.js?v=20261101120655"></script>
 <title>IVO Beatz</title>
 <link rel="preload" as="image" href="/assets/ca603aca5f40f63e.avif" type="image/avif" fetchpriority="high">
 <meta name="description" content="IVO Beatz: beats con licencia, mezcla y máster profesional, plantillas vocales de artistas, plugins y herramientas gratuitas.">
 <link rel="canonical" href="https://ivobeatz.com/">
+<link rel="alternate" hreflang="es" href="https://ivobeatz.com/">
+<link rel="alternate" hreflang="en" href="https://ivobeatz.com/?lang=en">
+<link rel="alternate" hreflang="fr" href="https://ivobeatz.com/?lang=fr">
+<link rel="alternate" hreflang="x-default" href="https://ivobeatz.com/">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ivobeatz.com/">
 <meta property="og:locale" content="es_ES">
@@ -764,6 +769,16 @@ dialog.mdl[open],dialog#lic[open]{padding:12px}
 .beat .play{width:48px;height:48px}
 }
 .ph .lis{position:absolute;top:14px;left:14px;z-index:2;font-style:normal;font-size:12px;font-weight:700;letter-spacing:.02em;color:#17240a;background:#b9d86c;padding:5px 11px;border-radius:999px}
+.ph .demo{position:absolute;top:12px;right:12px;z-index:3;display:inline-flex;align-items:center;gap:7px;padding:7px 13px 7px 9px;border:0;border-radius:999px;background:rgba(14,15,12,.72);color:#fff;font:inherit;font-size:13px;font-weight:700;line-height:1;cursor:pointer;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);overflow:hidden;transition:background .2s}
+.ph .demo:hover{background:rgba(14,15,12,.88)}.ph .demo:focus-visible{outline:3px solid #b9d86c;outline-offset:2px}
+.ph .demo i{display:grid;place-items:center;width:22px;height:22px;border-radius:50%;background:#b9d86c;color:#17240a}
+.ph .demo .i2,.ph .demo.on .i1{display:none}.ph .demo.on .i2{display:block}
+.ph .demo::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p,0)*100%);background:#b9d86c}
+.ppdemo{display:flex;align-items:center;gap:12px;margin:14px 0 4px;padding:10px 12px;border:1px solid var(--line,#e2e2dd);border-radius:14px}
+.ppdemo button{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;border:0;background:#b9d86c;color:#17240a;cursor:pointer}
+.ppdemo .i2,.ppdemo.on .i1{display:none}.ppdemo.on .i2{display:block}
+.ppdemo div{flex:1;min-width:0}.ppdemo b{display:block;font-size:14px}.ppdemo small{display:block;font-size:12.5px;opacity:.75}
+.ppdemo .tr{height:4px;border-radius:4px;background:rgba(128,128,128,.25);margin-top:7px;overflow:hidden}.ppdemo .tr i{display:block;height:100%;width:calc(var(--p,0)*100%);background:#6F7F45}
 .hero{box-shadow:inset 0 0 160px rgba(0,0,0,.4)}
 
 /* portada con escena */
@@ -980,7 +995,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
   return load().then(function(){return new Promise(function(res,rej){var host=f||document.querySelector("dialog[open]")||document.body,box=document.getElementById("ts-box");
     if(!box){box=document.createElement("div");box.id="ts-box"}box.style.cssText="display:flex;justify-content:center;margin:10px 0";host.appendChild(box);
     if(window.__tsid!=null){try{turnstile.remove(window.__tsid)}catch(e){}window.__tsid=null}
-    window.__tsid=turnstile.render(box,{sitekey:K,appearance:"interaction-only",language:"es",callback:function(t){res(t)},"error-callback":function(){rej(new Error("captcha"))},"expired-callback":function(){rej(new Error("captcha"))}})})}).catch(function(){return undefined})};
+    window.__tsid=turnstile.render(box,{sitekey:K,appearance:"interaction-only",language:(window.IVO_LANG||"es"),callback:function(t){res(t)},"error-callback":function(){rej(new Error("captcha"))},"expired-callback":function(){rej(new Error("captcha"))}})})}).catch(function(){return undefined})};
 </script>
 </head>
 <body>
@@ -1611,6 +1626,9 @@ var d=$("ppick");if(!d)return;
 window.__presetPick=function(o){/* o: {id, slug, name, price, card} */
   var ref=o.id||o.slug;if(window.__track)window.__track("preset_open",ref,true);
   $("ppB").innerHTML='<h3 id="ppT">Vocal preset estilo '+hx(o.name)+'</h3><p class="ls">'+hx(String(o.price).replace(".",","))+' € · Requiere Waves y FabFilter · Guía incluida</p><h4>¿Para qué programa lo quieres?</h4><div class="pp-opts"><button type="button" data-pl="fl"><b>FL Studio</b><small>Plantilla .flp</small></button><button type="button" data-pl="ableton"><b>Ableton Live</b><small>Proyecto .als</small></button></div><p class="lnote" style="margin-top:14px">Recibes el archivo del programa que elijas. Si usas los dos, puedes añadir ambos al carrito</p><div class="lact" style="margin-top:6px"><button type="button" class="btn ghost ink sm" id="ppShare">Compartir</button></div>';
+  var du=window.__presetDemo?window.__presetDemo(o):"";if(du){var row=document.createElement("div");row.className="ppdemo";row.dataset.u=du;
+    row.innerHTML='<button type="button" aria-label="Escuchar la demo"><svg class="i1" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg><svg class="i2" width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg></button><div><b>Escucha cómo suena</b><small>Una canción mezclada con este preset</small><div class="tr"><i></i></div></div>';
+    var h4=$("ppB").querySelector("h4");h4.parentNode.insertBefore(row,h4);if(window.__demoRow)window.__demoRow(row)}
   Array.prototype.forEach.call(d.querySelectorAll("[data-pl]"),function(b){b.addEventListener("click",function(){var pl=b.dataset.pl,lab=pl==="fl"?"FL Studio":"Ableton Live";
     var it={t:"preset",platform:pl,name:"Vocal preset estilo "+o.name+" · "+lab,price:o.price};if(o.id)it.id=o.id;else it.slug=o.slug;
     window.__cart.add(it);if(window.__track)window.__track("add_cart",ref);d.close();window.__cart.open()})});
@@ -1624,6 +1642,27 @@ d.addEventListener("click",function(e){var r=d.querySelector(".lbox").getBoundin
 function cardInfo(card){var a=card.querySelector("[data-checkout]");if(!a)return null;var key=a.getAttribute("data-checkout"),id=a.getAttribute("data-preset-id"),sl=a.getAttribute("data-slug")||(id?"":key.replace("plantilla-",""));
   return{id:id,slug:sl,name:(card.querySelector(".ph span")||{}).textContent||"",price:parseFloat(((card.querySelector(".big")||{}).textContent||"").replace(",","."))||15,card:card}}
 window.__presetCard=cardInfo;
+/* demo de audio de cada preset: un solo reproductor, sin botón de descarga */
+var DA=null,DU="",DBTN=[];
+function demoOf(i){var m=window.__demos||{};return i?(m[i.id]||m[i.slug]||""):""}
+function demoUi(){DBTN=DBTN.filter(function(b){return document.contains(b)});var on=!!(DA&&!DA.paused),p=DA&&DA.duration?DA.currentTime/DA.duration:0;
+  DBTN.forEach(function(b){var me=b.dataset.u===DU;b.classList.toggle("on",me&&on);b.style.setProperty("--p",me?p:0);var lb=b.querySelector(".lb");if(lb)lb.textContent=me&&on?"Pausar demo":"Escuchar demo";b.setAttribute("aria-pressed",me&&on?"true":"false")})}
+function demoStop(){if(DA&&!DA.paused)DA.pause()}
+window.__demoStop=demoStop;
+function demoToggle(u){if(!DA){DA=new Audio();DA.preload="none";["play","pause","timeupdate","ended"].forEach(function(n){DA.addEventListener(n,demoUi)});DA.addEventListener("ended",function(){DA.currentTime=0;demoUi()})}
+  if(DU===u&&!DA.paused){DA.pause();return}
+  if(typeof cur!=="undefined"&&cur&&typeof pause==="function")pause(cur);
+  if(DU!==u){DU=u;DA.src=u}DA.play().catch(function(){demoUi()});if(window.__track)window.__track("preset_demo",u.split("/").slice(-2,-1)[0],true)}
+if(typeof window.play==="function"&&!window.play._d){var op=window.play;window.play=function(s){demoStop();return op.apply(this,arguments)};window.play._d=1}
+function demoBtn(u,cls,label){var b=document.createElement("button");b.type="button";b.className=cls;b.dataset.u=u;b.setAttribute("aria-pressed","false");b.setAttribute("aria-label",label);
+  b.innerHTML='<i><svg class="i1" width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2l10 6-10 6z"/></svg><svg class="i2" width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M3 2h4v12H3zM9 2h4v12H9z"/></svg></i><span class="lb">Escuchar demo</span>';
+  b.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();demoToggle(u)});DBTN.push(b);return b}
+window.__applyDemos=function(){Array.prototype.forEach.call(document.querySelectorAll("#plantillas .card.art"),function(c){var i=cardInfo(c),u=demoOf(i),ph=c.querySelector(".ph"),old=ph&&ph.querySelector(".demo");if(!ph)return;
+    if(old&&old.dataset.u!==u){old.remove();old=null}
+    if(u&&!old)ph.appendChild(demoBtn(u,"demo","Escuchar la demo del preset estilo "+(i&&i.name||"")))});demoUi()};
+window.__presetDemo=function(o){return demoOf(o)};
+window.__demoRow=function(row){var b=row.querySelector("button");b.addEventListener("click",function(e){e.preventDefault();demoToggle(row.dataset.u)});DBTN.push(row);demoUi()};
+window.__applyDemos();
 /* vistas de presets */
 if("IntersectionObserver" in window){var io=new IntersectionObserver(function(es){es.forEach(function(x){if(x.isIntersecting){var c=cardInfo(x.target);if(c&&window.__track)window.__track("preset_view",c.id||c.slug,true);io.unobserve(x.target)}})},{threshold:.6});
   var watch=function(){Array.prototype.forEach.call(document.querySelectorAll("#plantillas .card.art"),function(c){if(!c._w){c._w=1;io.observe(c)}})};watch();setInterval(watch,5000)}
@@ -1672,7 +1711,7 @@ pgo.addEventListener("click",async function(){if(!sel)return;var c=LIC[lk],u=PAY
 if(bb&&bb[6]&&window.__cart){window.__cart.add({t:"beat",id:bb[6],tier:lk,name:bb[0]+" · Licencia "+c[0],price:parseInt(c[1],10),cov:bb[7]||""});pk.close();window.__cart.open();return}
 if(u){window.open(u+(u.indexOf("?")<0?"?":"&")+"beat="+encodeURIComponent(sel),"_blank","noopener");$("pnote").textContent="Se ha abierto el pago de la licencia "+c[0]+" para «"+sel+"».";return}
 mail("Licencia "+c[0]+" · "+sel,"Hola, IVO Beatz, quiero la licencia "+c[0]+" ("+c[1]+") del beat «"+sel+"».\n\nMi nombre:\n");
-$("pnote").textContent="El pago online se activa en breve. Mientras tanto se abre tu app de correo con tu pedido (licencia "+c[0]+", beat «"+sel+"») para enviárnoslo"});
+$("pnote").textContent="El pago online se activa en breve. Mientras tanto se abre tu app de correo con tu pedido (licencia "+c[0]+", beat «"+sel+"») para enviármelo"});
 L.addEventListener("click",function(e){var a=e.target.closest("a.btn");if(a&&a.closest(".beat"))pre=a.closest(".beat")._s.name});
 document.addEventListener("click",function(e){var b=e.target.closest('[data-checkout^="licencia-"]');if(!b)return;e.preventDefault();var ld=$("lic");if(ld&&ld.open)ld.close();openPick(b.getAttribute("data-checkout").replace("licencia-",""))});
 /* ---- plantillas vocales ---- */
@@ -1751,7 +1790,7 @@ function applyPresets(list){var j=JSON.stringify(list);if(j===lastP)return;lastP
     if(p.stripe_link&&window.__PAY)window.__PAY[key]=p.stripe_link;cta.parentNode.insertBefore(d,cta)})}
 function live(){
   rest("beats?select=id,name,bpm,key,genre,price_from,preview_path,cover_path,tags,featured,slug,created_at&active=eq.true&order=sort.asc,created_at.desc").then(function(l){if(Array.isArray(l))applyBeats(l)});
-  rest("presets?select=id,artist,price,photo_path,stripe_link,slug&active=eq.true&show_card=eq.true&order=sort.asc,created_at.asc").then(function(l){if(Array.isArray(l))applyPresets(l)});
+  rest("presets?select=id,artist,price,photo_path,stripe_link,slug&active=eq.true&show_card=eq.true&order=sort.asc,created_at.asc").then(function(l){if(Array.isArray(l))applyPresets(l)}).then(function(){return rest("presets?select=id,slug,demo_path&active=eq.true&demo_path=not.is.null")}).then(function(l){if(!Array.isArray(l))return;var m={};l.forEach(function(p){var u=pubUrl("previews",p.demo_path);if(p.slug)m[p.slug]=u;m[p.id]=u});window.__demos=m;if(window.__applyDemos)window.__applyDemos()});
   if(window.__loadPack)window.__loadPack()}
 window.__demoB=B.slice();live();
 setInterval(function(){if(!document.hidden)live()},90000);
@@ -1766,7 +1805,7 @@ window.__checkout=function(body,btn){if(window.__track)window.__track("checkout"
     if(!d.open)d.showModal();entrar("login","Para comprar necesitas una cuenta: así tus descargas quedan guardadas en tu panel. Entra o crea una gratis");return true};
   return lib().then(function(){return sb.auth.getSession()}).then(function(r){var s=r.data.session;if(!s)return ask();
     var dev="";try{dev=localStorage.getItem("ivo_did")||"";if(!/^[A-Za-z0-9_-]{16,64}$/.test(dev)){var a=new Uint8Array(18);crypto.getRandomValues(a);dev=Array.prototype.map.call(a,function(x){return("0"+x.toString(16)).slice(-2)}).join("");localStorage.setItem("ivo_did",dev)}}catch(e){}
-    return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+s.access_token},body:JSON.stringify(Object.assign({},body,dev?{device:dev}:{}))})
+    return fetch(SB+"/functions/v1/create-checkout",{method:"POST",headers:{"Content-Type":"application/json",apikey:KEY,Authorization:"Bearer "+s.access_token},body:JSON.stringify(Object.assign({},body,dev?{device:dev}:{},{lang:window.IVO_LANG||"es"}))})
     .then(function(r){return r.json().then(function(j){return{ok:r.ok,status:r.status,j:j}})})
     .then(function(x){if(x.ok&&x.j&&x.j.url){location.href=x.j.url;return true}if(x.status===401)return ask();if(x.status===429){if(btn){btn.textContent="Demasiados intentos. Espera unos minutos";setTimeout(restore,5000)}return true}if(x.status===403&&x.j&&x.j.error==="verify")return verifyAsk(x.j.email||s.user.email,body);if(x.status===409&&x.j&&x.j.error==="regalo_ocupado"){if(window.__rewardLoad)window.__rewardLoad();if(btn){btn.textContent="Tenías otro pago abierto. Pulsa otra vez";setTimeout(restore,3500)}return true}return restore()})}).catch(restore)};
 function verifyAsk(email,body){if(btn0)btn0=null;document.querySelectorAll("dialog[open]").forEach(function(x){if(x.id!=="acc")x.close()});if(!d.open)d.showModal();
@@ -1801,7 +1840,7 @@ function entrar(tab,note){
   if(tab==="login"){$("afL").addEventListener("submit",async function(e){e.preventDefault();msg("Entrando…");var r=await sb.auth.signInWithPassword({email:$("aLe").value.trim(),password:$("aLp").value,options:{captchaToken:await __captcha()}});if(r.error){msg(err(r.error.message),"bad");return}cuenta(r.data.session)});
     $("aFor").addEventListener("click",async function(){var em=$("aLe").value.trim();if(!em){msg("Escribe tu email arriba y vuelve a pulsar","bad");return}msg("Enviando…");var r=await sb.auth.resetPasswordForEmail(em,{captchaToken:await __captcha(),redirectTo:location.origin+"/cuenta.html"});msg(r.error?err(r.error.message):"Si el email existe, te llegará un enlace para cambiar la contraseña",r.error?"bad":"ok")})}
   else{$("afA").addEventListener("submit",async function(e){e.preventDefault();var pw=$("aAp").value;if(pw.length<8){msg("La contraseña debe tener al menos 8 caracteres","bad");return}msg("Creando cuenta…");
-    var r=await sb.auth.signUp({email:$("aAe").value.trim(),password:pw,options:{captchaToken:await __captcha(),data:{nombre:$("aAn").value.trim()},emailRedirectTo:location.origin+"/cuenta.html"}});
+    var r=await sb.auth.signUp({email:$("aAe").value.trim(),password:pw,options:{captchaToken:await __captcha(),data:{nombre:$("aAn").value.trim(),lang:window.IVO_LANG||"es"},emailRedirectTo:location.origin+"/cuenta.html"}});
     if(r.error){msg(err(r.error.message),"bad");return}
     if(r.data.session){cuenta(r.data.session);return}
     entrar("login","Te llegará un correo para confirmar tu cuenta. Después podrás entrar")})}}
@@ -1810,7 +1849,7 @@ async function cuenta(s){
   var u=s.user;shell('<h3 id="at">Tu cuenta</h3><p class="ls">Cargando…</p>');
   var p=await sb.from("profiles").select("nombre,role,email").eq("id",u.id).maybeSingle();prof=p.data||{};
   var o=await sb.from("orders").select("id,created_at,status,total,items").eq("user_id",u.id).order("created_at",{ascending:false}).limit(20);
-  var list=(o.data||[]).map(function(x){var its=(x.items||[]).map(function(i){return esc(i.name||i.title||"")}).filter(Boolean).join(", ");return'<li><b>'+new Date(x.created_at).toLocaleDateString("es-ES")+'</b>'+(its?' · '+its:'')+(x.total!=null?' · '+x.total+' €':'')+'</li>'}).join("");
+  var list=(o.data||[]).map(function(x){var its=(x.items||[]).map(function(i){return esc(i.name||i.title||"")}).filter(Boolean).join(", ");return'<li><b>'+new Date(x.created_at).toLocaleDateString(window.IVO_LOCALE||"es-ES")+'</b>'+(its?' · '+its:'')+(x.total!=null?' · '+x.total+' €':'')+'</li>'}).join("");
   shell('<h3 id="at">Hola, '+esc(prof.nombre||u.email.split("@")[0])+'</h3><p class="ls">'+esc(u.email)+'</p><h4>Tus compras</h4>'+(list?'<ul class="aord">'+list+'</ul>':'<p class="lnote" style="margin:0">Todavía no tienes compras. Cuando compres, aparecerán aquí</p>')+
   '<div class="lact" style="margin-top:22px"><a class="btn sm" href="cuenta.html">Ir a mi panel</a>'+(prof.role==="admin"?'<a class="btn sm ghost ink" href="admin.html">Panel de administración</a>':'')+'<button type="button" class="btn sm ghost ink" id="aOut">Cerrar sesión</button></div>');
   $("aOut").addEventListener("click",async function(){await sb.auth.signOut();entrar("login")})}
@@ -1842,7 +1881,7 @@ function rwTick(){var l=rwLeft();document.querySelectorAll("[data-rw-t]").forEac
   if(!l){var had=!!RW;RW=null;clearInterval(rwT);rwT=null;rwBar();if(had){document.querySelectorAll(".rw-card").forEach(function(c){c.innerHTML='<span class="rw-h">El regalo ha caducado</span><p>Han pasado las 24 horas</p>'});document.dispatchEvent(new Event("ivo:reward"))}}}
 window.__rewardTick=rwTick;
 function rwMark(){var on=rwLeft()>0,h=document.documentElement;h.classList.toggle("rw-on",on);
-  if(on){var bp=19;/* precio de la licencia Básica, el mismo que cobra el servidor */h.style.setProperty("--rw-price",'"'+(Math.round(bp*(100-RW.pct))/100).toFixed(2).replace(".",",").replace(",00","")+' € con tu regalo"')}}
+  if(on){var bp=19;/* precio de la licencia Básica, el mismo que cobra el servidor */var rwp=(Math.round(bp*(100-RW.pct))/100).toFixed(2).replace(".",",").replace(",00","")+' € con tu regalo';h.style.setProperty("--rw-price",'"'+(window.ivoT?ivoT(rwp):rwp)+'"')}}
 function rwBar(){rwMark();var b=$("rwbar");if(!b)return;var hide=false;try{hide=!!RW&&sessionStorage.getItem("ivo_rw_x")===String(RW.exp)}catch(e){}b.hidden=!(rwLeft()>0)||hide}
 /* el último pago con el regalo tiene que empezar 31 minutos antes de las 24 horas (así termina dentro de ellas): la cuenta atrás llega a cero en ese momento */
 function rwSet(row){var exp=row&&!row.used_at&&row.expires_at?Date.parse(row.expires_at)-31*60e3:0;
@@ -1985,5 +2024,6 @@ document.addEventListener("input",function(e){var t=e.target;if(!t||t.tagName!==
 document.addEventListener("submit",function(e){var f=e.target;if(!f||!f.querySelectorAll)return;var ins=f.querySelectorAll('input[autocomplete="new-password"]');for(var i=0;i<ins.length;i++){var t=ins[i],em=f.querySelector('input[type="email"]'),w=why(t.value,em?em.value:(window.__userEmail||""));t.setCustomValidity(w);if(w){e.preventDefault();e.stopImmediatePropagation();t.reportValidity();t.dispatchEvent(new Event("input",{bubbles:true}));return}}},true);
 })();
 </script>
+<script>if(window.ivoLangUi)ivoLangUi({header:".hright",footer:".fcopy"});</script>
 </body>
 </html>

@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="ivo-version" content="20261101111035">
+<meta name="ivo-version" content="20261101120655">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<script src="/i18n.js?v=20261101120655"></script>
 <meta name="robots" content="noindex,nofollow">
 <title>Mi cuenta · IVO Beatz</title>
 <meta name="theme-color" content="#2E3720">
@@ -112,7 +113,7 @@ window.__captcha=function(){var K=window.TS_KEY;if(!K)return Promise.resolve(und
   return load().then(function(){return new Promise(function(res,rej){var host=f||document.querySelector("dialog[open]")||document.body,box=document.getElementById("ts-box");
     if(!box){box=document.createElement("div");box.id="ts-box"}box.style.cssText="display:flex;justify-content:center;margin:10px 0";host.appendChild(box);
     if(window.__tsid!=null){try{turnstile.remove(window.__tsid)}catch(e){}window.__tsid=null}
-    window.__tsid=turnstile.render(box,{sitekey:K,appearance:"interaction-only",language:"es",callback:function(t){res(t)},"error-callback":function(){rej(new Error("captcha"))},"expired-callback":function(){rej(new Error("captcha"))}})})}).catch(function(){return undefined})};
+    window.__tsid=turnstile.render(box,{sitekey:K,appearance:"interaction-only",language:(window.IVO_LANG||"es"),callback:function(t){res(t)},"error-callback":function(){rej(new Error("captcha"))},"expired-callback":function(){rej(new Error("captcha"))}})})}).catch(function(){return undefined})};
 </script>
 </head>
 <body>
@@ -213,7 +214,7 @@ function authForm(tab,note,noteCls){
     $("fR").addEventListener("submit",async function(e){e.preventDefault();msg("aM","Enviando…");var r=await sb.auth.resetPasswordForEmail($("rE").value.trim(),{captchaToken:await __captcha(),redirectTo:location.origin+location.pathname});msg("aM",r.error?err(r.error.message):"Si el email tiene cuenta, te llegará un enlace. Revisa también spam",r.error?"bad":"ok")})}
   if(tab==="alta"){
     $("fA").addEventListener("submit",async function(e){e.preventDefault();if($("aP").value.length<8){msg("aM","La contraseña debe tener al menos 8 caracteres","bad");return}msg("aM","Creando tu cuenta…");
-      var r=await sb.auth.signUp({email:$("aE").value.trim(),password:$("aP").value,options:{captchaToken:await __captcha(),data:{nombre:$("aN").value.trim()},emailRedirectTo:location.origin+location.pathname}});
+      var r=await sb.auth.signUp({email:$("aE").value.trim(),password:$("aP").value,options:{captchaToken:await __captcha(),data:{nombre:$("aN").value.trim(),lang:window.IVO_LANG||"es"},emailRedirectTo:location.origin+location.pathname}});
       if(r.error){msg("aM",err(r.error.message),"bad");return}
       if(r.data.session){boot();return}
       authForm("login","Te llegará un correo para confirmar tu cuenta. Pulsa el enlace y después entra aquí")})}
@@ -221,7 +222,7 @@ function authForm(tab,note,noteCls){
 
 /* ---------- panel ---------- */
 var ICON={svc:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/></svg>',beat:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h2M7 8v8M11 5v14M15 9v6M19 11v2"/></svg>',preset:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>'};
-function fmtDate(d){return new Date(d).toLocaleDateString("es-ES",{day:"numeric",month:"long",year:"numeric"})}
+function fmtDate(d){return new Date(d).toLocaleDateString(window.IVO_LOCALE||"es-ES",{day:"numeric",month:"long",year:"numeric"})}
 function euro(n){return n==null?"":Number(n).toFixed(2).replace(".",",")+" €"}
 var SVST={recibido:"Recibido",en_proceso:"En proceso",entregado:"Entregado"};
 async function loadOrders(){
@@ -351,5 +352,6 @@ document.addEventListener("input",function(e){var t=e.target;if(!t||t.tagName!==
 document.addEventListener("submit",function(e){var f=e.target;if(!f||!f.querySelectorAll)return;var ins=f.querySelectorAll('input[autocomplete="new-password"]');for(var i=0;i<ins.length;i++){var t=ins[i],em=f.querySelector('input[type="email"]'),w=why(t.value,em?em.value:(window.__userEmail||""));t.setCustomValidity(w);if(w){e.preventDefault();e.stopImmediatePropagation();t.reportValidity();t.dispatchEvent(new Event("input",{bubbles:true}));return}}},true);
 })();
 </script>
+<script>if(window.ivoLangUi)ivoLangUi({after:".top .sp",ask:false});</script>
 </body>
 </html>
